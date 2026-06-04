@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Vercel (each developer links their own; contains account-specific project IDs)
+.vercel/
+
+# Node
+node_modules/

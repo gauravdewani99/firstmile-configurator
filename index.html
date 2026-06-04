@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>First Mile Configurator</title>
+<link rel="icon" href="rebound-icon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#F4F6F9; --card:#FFFFFF; --border:#E8ECF0; --border-soft:#F1F5F9;
+  --text:#0F172A; --muted:#64748B; --dim:#94A3B8;
+  --brand:#1B3A5C; --brand-2:#2D5F8A; --brand-soft:#EEF2F7;
+  --green:#10B981; --green-soft:#ECFDF5; --green-ring:#D1FAE5;
+  --amber:#F59E0B; --amber-soft:#FFFBEB;
+  --red:#EF4444; --red-soft:#FEF2F2;
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --r-lg:14px; --r-md:10px; --r-sm:8px; --r-xs:6px;
+  --shadow-1:0 1px 2px rgba(15,23,42,.04), 0 1px 0 rgba(15,23,42,.02);
+  --shadow-2:0 6px 24px -8px rgba(15,23,42,.12), 0 2px 6px rgba(15,23,42,.04);
+  --shadow-3:0 24px 60px -16px rgba(15,23,42,.22), 0 8px 18px -8px rgba(15,23,42,.12);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  -webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv11";
+  font-size:14px;line-height:1.5;
+}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+
+/* ─── header ─── */
+.header{
+  position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--border);
+  box-shadow:0 1px 3px rgba(15,23,42,.04);
+  display:flex;align-items:center;padding:0 28px;height:60px;gap:14px;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo img{width:26px;height:26px;object-fit:contain}
+.logo-text{font-size:15px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
+.logo-text span{color:var(--brand-2);font-weight:500}
+.header-sep{width:1px;height:22px;background:var(--border)}
+.header-meta{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px}
+.meta-field{display:flex;align-items:center;gap:6px}
+.meta-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
+.meta-field .meta-val{font-size:12px;font-weight:600;color:var(--text)}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.header-back{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border:1px solid var(--border);border-radius:var(--r-sm);
+  background:var(--card);color:var(--muted);font-size:11.5px;font-weight:600;
+  transition:all .14s ease;
+}
+.header-back:hover{border-color:var(--brand-2);color:var(--brand)}
+.header-back svg{width:14px;height:14px}
+
+/* ─── buttons ─── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;
+  letter-spacing:-.1px;transition:all .15s ease;border:1px solid transparent;
+}
+.btn-ghost{color:var(--muted);border-color:var(--border);background:var(--card)}
+.btn-ghost:hover{color:var(--text);border-color:#CBD5E1}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-2)}
+.btn-primary:disabled{background:var(--border-soft);color:var(--dim);border-color:var(--border);cursor:not-allowed}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* ─── view shell ─── */
+.view-shell{
+  min-height:calc(100vh - 60px);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:64px 24px 48px;
+}
+@media (min-width:760px){
+  body[data-view="landing"] .view-shell{padding-top:84px}
+}
+
+/* ─── landing page ─── */
+.landing{max-width:620px;width:100%;text-align:center}
+.landing-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:72px;height:72px;border-radius:18px;background:var(--card);
+  border:1px solid var(--border);box-shadow:var(--shadow-1);margin-bottom:20px;
+}
+.landing-mark img{width:42px;height:42px;object-fit:contain}
+.landing-title{
+  font-size:32px;font-weight:700;letter-spacing:-1px;
+  color:var(--text);margin-bottom:10px;line-height:1.15;text-wrap:balance;
+}
+.landing-sub{
+  font-size:14.5px;color:var(--muted);margin-bottom:32px;
+  line-height:1.55;max-width:460px;margin-left:auto;margin-right:auto;
+}
+.landing-variants{display:flex;flex-direction:column;gap:12px;text-align:left}
+.variant-card{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:18px 22px;border:1.5px solid var(--border);border-radius:var(--r-lg);
+  background:var(--card);cursor:pointer;transition:all .18s ease;
+}
+.variant-card:hover{border-color:var(--brand-2);transform:translateY(-1px);box-shadow:var(--shadow-2)}
+.variant-icon{
+  width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-top:2px;
+}
+.variant-arrow{color:var(--dim);flex-shrink:0;transition:color .15s;margin-top:12px}
+.variant-icon.a{background:#EEF2FF;color:#4F46E5}
+.variant-icon.b{background:#FFF7ED;color:#EA580C}
+.variant-icon.c{background:#F0FDF4;color:#16A34A}
+.variant-icon.d{background:#F0FDFA;color:#0D9488}
+.variant-info{flex:1;min-width:0}
+.variant-name{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:2px;text-align:left}
+.variant-desc{font-size:12.5px;color:var(--muted);line-height:1.45;text-align:left}
+.variant-card:hover .variant-arrow{color:var(--brand)}
+.variant-arrow svg{width:16px;height:16px}
+
+/* ─── client-name modal ─── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.42);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .18s ease;
+  backdrop-filter:blur(2px);
+}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-card{
+  width:min(420px,calc(100vw - 36px));
+  background:var(--card);border-radius:16px;
+  border:1px solid var(--border);box-shadow:var(--shadow-3);
+  padding:26px 26px 22px;transform:translateY(8px) scale(.98);
+  transition:transform .28s cubic-bezier(.22,.68,.36,1),opacity .18s ease;
+}
+.modal-overlay.open .modal-card{transform:translateY(0) scale(1)}
+.modal-title{font-size:18px;font-weight:700;letter-spacing:-.3px;color:var(--text);margin-bottom:6px}
+.modal-sub{font-size:12.5px;color:var(--muted);margin-bottom:18px;line-height:1.55}
+.modal-input{
+  width:100%;padding:11px 13px;border:1px solid var(--border);
+  border-radius:var(--r-sm);background:var(--card);
+  font-size:14px;font-weight:500;color:var(--text);
+  transition:border-color .15s,box-shadow .15s;
+}
+.modal-input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.modal-hint{font-size:11px;color:var(--dim);margin-top:6px;min-height:14px}
+.modal-hint.err{color:var(--red)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+/* ─── wizard container ─── */
+.wizard{max-width:900px;width:100%;margin:0 auto;padding:32px 24px 80px}
+.wizard-header{margin-bottom:28px}
+.wizard-crumb{font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.wizard-title{font-size:22px;font-weight:700;letter-spacing:-.5px;color:var(--text);margin-bottom:3px}
+.wizard-sub{font-size:13px;color:var(--muted)}
+
+/* ─── country chips ─── */
+.country-grid{
+  display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 24px;
+}
+.country-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:20px;
+  border:1.5px solid var(--border);background:var(--card);
+  font-size:13px;font-weight:600;color:var(--text);
+  transition:all .15s;
+}
+.country-chip .flag{font-size:18px;line-height:1}
+.country-chip.selected{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+
+/* ─── card ─── */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:22px 24px;margin-bottom:16px;box-shadow:var(--shadow-1);
+  transition:border-color .2s,box-shadow .2s;
+}
+.card.active{border-color:#CBD5E1;box-shadow:var(--shadow-2)}
+.card-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+.card-num{
+  width:28px;height:28px;border-radius:8px;background:var(--brand-soft);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;
+}
+.card-done .card-num{background:var(--green-ring);color:#065F46}
+.card-titlewrap{flex:1;min-width:0}
+.card-title{font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
+.card-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.card-tag{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:3px 8px;border-radius:20px;flex-shrink:0;
+}
+.card-tag.on{background:var(--green-soft);color:#065F46;border:1px solid var(--green-ring)}
+.card-tag.off{background:var(--border-soft);color:var(--muted);border:1px solid var(--border)}
+
+/* ─── lane display ─── */
+.lane-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:20px;
+  background:#EEF6FB;border:1px solid #D9E8F2;
+  color:#0F4767;font-size:12px;font-weight:600;
+}
+.lane-badge .lane-arrow{color:var(--dim);font-size:11px}
+
+/* ─── radio / pill selectors ─── */
+.radio-group{display:flex;gap:6px;flex-wrap:wrap}
+.radio{
+  padding:8px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);
+  font-size:12.5px;font-weight:500;color:var(--muted);background:var(--card);transition:all .12s;
+  cursor:pointer;
+}
+.radio:hover{border-color:#CBD5E1;color:var(--text)}
+.radio.active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+
+/* ─── accordion (Variant A) ─── */
+.accordion{display:flex;flex-direction:column;gap:10px}
+.acc-item{
+  border:1.5px solid var(--border);border-radius:var(--r-lg);
+  background:var(--card);overflow:hidden;transition:border-color .18s,box-shadow .18s;
+}
+.acc-item.open{border-color:var(--brand-2);box-shadow:var(--shadow-2)}
+.acc-item.done{border-color:var(--green-ring)}
+.acc-trigger{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 20px;cursor:pointer;transition:background .12s;width:100%;text-align:left;
+  align-items:center;
+}
+.acc-trigger:hover{background:var(--border-soft)}
+.acc-flag{font-size:22px;flex-shrink:0}
+.acc-label{flex:1;min-width:0}
+.acc-country{font-size:14px;font-weight:700;letter-spacing:-.2px;color:var(--text)}
+.acc-lane{font-size:11.5px;color:var(--muted);margin-top:2px}
+.acc-status{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:3px 8px;border-radius:20px;flex-shrink:0;
+}
+.acc-status.pending{background:var(--border-soft);color:var(--dim)}
+.acc-status.done{background:var(--green-soft);color:#065F46;border:1px solid var(--green-ring)}
+.acc-chevron{color:var(--dim);transition:transform .2s;flex-shrink:0}
+.acc-chevron svg{width:16px;height:16px}
+.acc-item.open .acc-chevron{transform:rotate(180deg)}
+.acc-body{
+  display:none;padding:0 20px 20px;
+  border-top:1px solid var(--border-soft);
+}
+.acc-item.open .acc-body{display:block;animation:reveal .22s ease-out}
+@keyframes reveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+.acc-step{margin-top:16px}
+.acc-step + .acc-step{padding-top:16px;border-top:1px solid var(--border-soft)}
+.acc-step-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--dim);margin-bottom:8px;
+}
+
+/* ─── Variant B: carrier-first ─── */
+.carrier-section{margin-bottom:20px}
+.carrier-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px solid var(--border-soft);
+}
+.carrier-logo{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;letter-spacing:-.2px;
+}
+.carrier-logo.dhl{background:#FFCC00;color:#D40511}
+.carrier-logo.postnl{background:#FF6200;color:#fff}
+.carrier-name{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text)}
+.carrier-count{font-size:11px;color:var(--muted);font-weight:500}
+
+.lane-check{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  background:var(--card);cursor:pointer;transition:all .12s;margin-bottom:6px;
+}
+.lane-check:hover{border-color:#CBD5E1;background:#FAFBFC}
+.lane-check.active{border-color:var(--brand);background:var(--brand-soft)}
+.lane-check-box{
+  width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;
+}
+.lane-check.active .lane-check-box{background:var(--brand);border-color:var(--brand)}
+.lane-check-box svg{width:10px;height:10px;color:#fff;opacity:0}
+.lane-check.active .lane-check-box svg{opacity:1}
+.lane-check-label{font-size:13px;font-weight:500;color:var(--text)}
+.lane-check-sub{font-size:11px;color:var(--muted)}
+
+/* ─── Variant C: grid table ─── */
+.config-table{
+  width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;
+  background:var(--card);
+}
+.config-table thead th{
+  padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.6px;color:var(--dim);background:var(--border-soft);
+  text-align:left;border-bottom:1px solid var(--border);
+}
+.config-table tbody td{
+  padding:10px 14px;font-size:13px;color:var(--text);
+  border-bottom:1px solid var(--border-soft);vertical-align:middle;
+}
+.config-table tbody tr:last-child td{border-bottom:none}
+.config-table tbody tr:hover{background:#FAFBFC}
+.config-table select{
+  padding:6px 28px 6px 10px;border:1px solid var(--border);border-radius:var(--r-xs);
+  background:var(--card);font-size:12.5px;font-weight:500;color:var(--text);
+  cursor:pointer;transition:border-color .12s;
+  appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 8px center;
+}
+.config-table select:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.config-table input[type="text"]{
+  padding:6px 10px;border:1px solid var(--border);border-radius:var(--r-xs);
+  background:var(--card);font-size:12.5px;font-weight:500;width:130px;
+  transition:border-color .12s;
+}
+.config-table input[type="text"]:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.config-table .cell-flag{font-size:16px;margin-right:6px}
+.config-table .cell-lane{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted)}
+.config-table .cell-lane span{color:var(--text);font-weight:600}
+.auto-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:12px;
+  background:var(--green-soft);color:#065F46;
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+}
+
+/* ─── review table ─── */
+.review-table{
+  width:100%;border-collapse:separate;border-spacing:0;
+  border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;
+  background:var(--card);margin-top:16px;
+}
+.review-table thead th{
+  padding:12px 16px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.6px;color:var(--dim);background:var(--border-soft);
+  text-align:left;border-bottom:1px solid var(--border);
+}
+.review-table tbody td{
+  padding:12px 16px;font-size:13px;color:var(--text);
+  border-bottom:1px solid var(--border-soft);
+}
+.review-table tbody tr:last-child td{border-bottom:none}
+.review-table tbody tr:hover{background:#FAFBFC}
+.review-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:14px;font-size:11px;font-weight:600;
+}
+.review-pill.saas{background:#EEF2FF;color:#4338CA}
+.review-pill.managed{background:#FFF7ED;color:#C2410C}
+.review-pill.dhl{background:#FFF9DB;color:#B45309}
+.review-pill.postnl{background:#FFF0F0;color:#B91C1C}
+
+/* ─── sub-section dividers ─── */
+.section-divider{
+  display:flex;align-items:center;gap:12px;margin:28px 0 20px;
+}
+.section-divider-line{flex:1;height:1px;background:var(--border)}
+.section-divider-text{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--dim);flex-shrink:0;
+}
+
+/* ─── action bar ─── */
+.action-bar{
+  margin-top:24px;padding:22px 24px;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;box-shadow:var(--shadow-1);
+}
+.action-bar.ready{border-color:rgba(16,185,129,.32);background:linear-gradient(180deg,var(--green-soft) 0%,var(--card) 60%)}
+.action-bar-text{flex:1;min-width:240px}
+.action-bar-title{font-size:14.5px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:4px}
+.action-bar-sub{font-size:12.5px;color:var(--muted)}
+.action-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;border-radius:var(--r-md);
+  background:var(--brand);color:#fff;border:1.5px solid var(--brand);
+  font-size:13.5px;font-weight:600;letter-spacing:-.1px;
+  transition:all .15s ease;cursor:pointer;
+}
+.action-cta:hover{background:var(--brand-2);border-color:var(--brand-2);transform:translateY(-1px);box-shadow:var(--shadow-2)}
+.action-cta:disabled{background:var(--border-soft);color:var(--dim);border-color:var(--border);cursor:not-allowed;transform:none;box-shadow:none}
+.action-cta svg{width:16px;height:16px}
+
+/* ─── account number input ─── */
+.account-input{
+  width:100%;max-width:260px;padding:8px 12px;border:1px solid var(--border);
+  border-radius:var(--r-sm);background:var(--card);font-size:13px;font-weight:500;
+  transition:border-color .15s,box-shadow .15s;
+}
+.account-input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+
+/* ─── info banner ─── */
+.info-banner{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--r-sm);
+  background:var(--amber-soft);border:1px solid rgba(245,158,11,.22);margin-bottom:14px;
+  font-size:12.5px;color:#92400E;
+}
+.info-banner svg{width:16px;height:16px;flex-shrink:0;align-self:center;color:var(--amber)}
+.info-banner b{font-weight:700}
+.info-banner.blue{background:#EFF6FF;border-color:rgba(59,130,246,.18);color:#1E40AF}
+.info-banner.blue svg{color:#3B82F6}
+
+/* ─── Variant B: sub-config panel ─── */
+.sub-config{
+  margin-top:16px;padding:16px 20px;
+  border:1px solid var(--brand);border-radius:var(--r-md);
+  background:linear-gradient(180deg,#F8FAFD 0%,#FFFFFF 40%);
+  animation:reveal .25s ease-out;
+}
+.sub-config-title{
+  font-size:13px;font-weight:700;color:var(--brand);letter-spacing:-.2px;margin-bottom:14px;
+}
+.sub-config .field{margin-bottom:14px}
+.sub-config .field:last-child{margin-bottom:0}
+.sub-config .field-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--dim);margin-bottom:8px;display:block;
+}
+
+/* ─── feedback widget ─── */
+.fb-btn{
+  position:fixed;bottom:18px;right:18px;z-index:50;
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--border);background:var(--card);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s ease;cursor:pointer;box-shadow:var(--shadow-1);
+  animation:fb-pulse 12s ease-in-out infinite;
+}
+.fb-btn:hover{color:var(--brand);border-color:#CBD5E1;box-shadow:var(--shadow-2);transform:scale(1.04)}
+.fb-btn svg{width:16px;height:16px}
+@keyframes fb-pulse{
+  0%,90%,100%{box-shadow:var(--shadow-1)}
+  93%{box-shadow:0 0 0 4px rgba(27,58,92,.14),var(--shadow-2);border-color:var(--brand-2);color:var(--brand)}
+  96%{box-shadow:var(--shadow-1);border-color:var(--border);color:var(--muted)}
+}
+.fb-pop{
+  position:fixed;bottom:70px;right:18px;z-index:50;
+  width:300px;padding:14px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--shadow-3);
+  transform:translateY(-6px) scale(.98);opacity:0;pointer-events:none;
+  transition:all .2s ease;
+}
+.fb-pop.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+.fb-pop h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;letter-spacing:-.2px}
+.fb-pop textarea{
+  width:100%;height:80px;resize:none;outline:none;font:inherit;
+  border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;
+  font-size:12.5px;color:var(--text);background:var(--bg);transition:border .15s;
+}
+.fb-pop textarea:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.fb-pop textarea::placeholder{color:var(--dim)}
+.fb-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px}
+.fb-msg{font-size:11px;font-weight:600;opacity:0;transition:opacity .25s}
+.fb-msg.show{opacity:1}
+
+/* ═══════════════════════════════════════════════════
+   VARIANT D — CLIENT PREFERENCES
+   ═══════════════════════════════════════════════════ */
+/* layout: full-width questionnaire (JSON panel is a toggle overlay) */
+body[data-variant="D"] .wizard{max-width:1040px}
+
+/* question card */
+.q-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:22px 24px;margin-bottom:14px;box-shadow:var(--shadow-1);
+  transition:border-color .2s,box-shadow .2s,opacity .25s,transform .25s;
+}
+.q-card.locked{opacity:.5;pointer-events:none;filter:saturate(.7)}
+.q-card-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:4px}
+.q-num{
+  width:26px;height:26px;border-radius:8px;background:var(--brand-soft);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px;
+}
+.q-card.answered .q-num{background:var(--green-ring);color:#065F46}
+.q-titlewrap{flex:1;min-width:0}
+.q-title{font-size:15.5px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
+.q-sub{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+.q-body{margin-top:16px}
+.q-mini-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);margin:16px 0 8px}
+.q-mini-label:first-child{margin-top:0}
+
+/* option cards (radio-like big buttons) */
+.opt-list{display:flex;flex-direction:column;gap:8px}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--r-md);
+  background:var(--card);cursor:pointer;transition:all .14s;
+}
+.opt:hover{border-color:#CBD5E1;background:#FAFBFC}
+.opt.active{border-color:var(--brand);background:var(--brand-soft)}
+.opt-radio{
+  width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all .14s;
+}
+.opt.active .opt-radio{border-color:var(--brand)}
+.opt.active .opt-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.opt-text{flex:1;min-width:0}
+.opt-name{font-size:13.5px;font-weight:600;color:var(--text)}
+.opt-name .opt-code{font-size:11px;font-weight:700;color:var(--brand-2);background:var(--brand-soft);padding:1px 7px;border-radius:10px;margin-left:6px;letter-spacing:.3px}
+.opt-desc{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* region accordion (countries) */
+.region{border:1.5px solid var(--border);border-radius:var(--r-md);margin-bottom:8px;overflow:hidden;background:var(--card)}
+.region.open{border-color:#CBD5E1}
+.region-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;transition:background .12s;width:100%;text-align:left}
+.region-head:hover{background:var(--border-soft)}
+.region-check{
+  width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all .12s;background:var(--card);
+}
+.region-check svg{width:11px;height:11px;color:#fff;opacity:0}
+.region-check.all{background:var(--brand);border-color:var(--brand)}
+.region-check.all svg{opacity:1}
+.region-check.some{background:var(--brand);border-color:var(--brand)}
+.region-check.some::after{content:'';width:9px;height:2px;background:#fff;border-radius:1px;position:absolute}
+.region-check.some svg{opacity:0}
+.region-name{flex:1;font-size:13.5px;font-weight:700;color:var(--text);letter-spacing:-.2px}
+.region-count{font-size:11.5px;font-weight:600;color:var(--muted);background:var(--border-soft);padding:2px 9px;border-radius:12px}
+.region-chev{color:var(--dim);transition:transform .2s;flex-shrink:0}
+.region-chev svg{width:16px;height:16px}
+.region.open .region-chev{transform:rotate(180deg)}
+.region-body{display:none;padding:6px 12px 12px;border-top:1px solid var(--border-soft)}
+.region.open .region-body{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
+@media (max-width:640px){.region.open .region-body{grid-template-columns:1fr}}
+
+.cc{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;transition:background .1s}
+.cc:hover{background:var(--border-soft)}
+.cc-box{
+  width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all .12s;background:var(--card);
+}
+.cc-box svg{width:10px;height:10px;color:#fff;opacity:0}
+.cc.on .cc-box{background:var(--brand);border-color:var(--brand)}
+.cc.on .cc-box svg{opacity:1}
+.cc-flag{font-size:15px;line-height:1}
+.cc-name{font-size:12.5px;font-weight:500;color:var(--text)}
+.cc-wh{font-size:10px;color:var(--dim);font-family:var(--mono,monospace);margin-left:auto}
+
+/* checklist (local warehouses) */
+.wh-list{display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto;padding-right:4px}
+.wh-row{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  border:1px solid var(--border);border-radius:var(--r-sm);background:var(--card);cursor:pointer;transition:all .12s;
+}
+.wh-row:hover{border-color:#CBD5E1}
+.wh-row.on{border-color:var(--brand);background:var(--brand-soft)}
+.wh-row .cc-box{border-radius:4px}
+.wh-flag{font-size:15px}
+.wh-country{font-size:12.5px;font-weight:600;color:var(--text);min-width:120px}
+.wh-code{font-size:11px;color:var(--brand-2);font-family:var(--mono,monospace)}
+.wh-code.placeholder{color:var(--dim)}
+
+/* badge for SaaS / Managed */
+.lane-type-badge{
+  display:inline-flex;align-items:center;gap:7px;margin-top:14px;
+  padding:9px 14px;border-radius:var(--r-md);font-size:12.5px;font-weight:600;
+}
+.lane-type-badge svg{width:15px;height:15px;flex-shrink:0}
+.lane-type-badge.saas{background:#EEF2FF;color:#4338CA;border:1px solid #C7D2FE}
+.lane-type-badge.managed{background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA}
+.lane-type-badge b{font-weight:800}
+
+/* address / credential form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.form-grid .fg-full{grid-column:1 / -1}
+@media (max-width:560px){.form-grid{grid-template-columns:1fr}}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
+.fg input,.fg select{
+  width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--r-sm);
+  background:var(--card);font-size:13px;font-weight:500;color:var(--text);transition:border-color .15s,box-shadow .15s;
+}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+
+/* coverage selector */
+.coverage-note{margin-top:6px}
+.exc-banner{
+  display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:var(--r-sm);
+  background:var(--red-soft);border:1px solid rgba(239,68,68,.22);margin-top:12px;font-size:12.5px;color:#991B1B;
+}
+.exc-banner svg{width:16px;height:16px;flex-shrink:0;color:var(--red);margin-top:1px}
+.exc-banner b{font-weight:700}
+
+/* carrier availability cards */
+.carrier-pick{display:flex;flex-direction:column;gap:8px}
+.carrier-opt{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;width:100%;text-align:left;
+  border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--card);cursor:pointer;transition:all .14s;
+}
+.carrier-opt:hover:not(.disabled){border-color:#CBD5E1;background:#FAFBFC}
+.carrier-opt.active{border-color:var(--brand);background:var(--brand-soft)}
+.carrier-opt.disabled{opacity:.55;cursor:not-allowed;background:var(--border-soft)}
+.carrier-opt.locked{border-color:#C7D2FE;background:#EEF2FF}
+.carrier-badge{
+  width:42px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;flex-shrink:0;letter-spacing:-.2px;
+}
+.cb-dhl{background:#FFCC00;color:#D40511}
+.cb-postnl{background:#FF6200;color:#fff}
+.cb-postitalia{background:#003366;color:#fff}
+.cb-fedex{background:#4D148C;color:#FF6600}
+.cb-generic{background:var(--brand-soft);color:var(--brand)}
+.carrier-opt-info{flex:1;min-width:0}
+.carrier-opt-name{font-size:13.5px;font-weight:700;color:var(--text)}
+.carrier-opt-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.carrier-cov{font-size:11px;font-weight:600;padding:2px 9px;border-radius:10px;flex-shrink:0}
+.carrier-cov.full{background:var(--green-soft);color:#065F46}
+.carrier-cov.partial{background:var(--amber-soft);color:#92400E}
+.carrier-cov.none{background:var(--red-soft);color:#991B1B}
+
+/* per-country availability matrix */
+.avail-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin-top:14px}
+.avail-table th{padding:9px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);background:var(--border-soft);text-align:left;border-bottom:1px solid var(--border)}
+.avail-table td{padding:9px 12px;font-size:12.5px;border-bottom:1px solid var(--border-soft)}
+.avail-table tr:last-child td{border-bottom:none}
+.avail-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:12px;font-size:10.5px;font-weight:700}
+.avail-pill.ok{background:var(--green-soft);color:#065F46}
+.avail-pill.no{background:var(--red-soft);color:#991B1B}
+.avail-fix{font-size:11px;color:var(--brand-2);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+
+/* ═══ JSON preview panel (ported from HUB config) ═══ */
+.json-fab{
+  position:fixed;bottom:18px;right:66px;z-index:50;
+  display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 16px;border-radius:20px;
+  border:1px solid var(--border);background:var(--card);color:var(--brand);
+  font-size:12.5px;font-weight:700;box-shadow:var(--shadow-1);transition:all .18s;
+}
+.json-fab:hover{box-shadow:var(--shadow-2);transform:translateY(-1px);border-color:#CBD5E1}
+.json-fab svg{width:15px;height:15px}
+body:not([data-variant="D"]) .json-fab,
+body:not([data-variant="D"]) .json-panel,
+body[data-view="landing"] .json-fab,
+body[data-view="landing"] .json-panel{display:none}
+.json-panel{
+  position:fixed;top:78px;right:16px;bottom:74px;width:440px;max-width:calc(100vw - 32px);
+  z-index:49;border-radius:18px;background:#0F172A;overflow:hidden;display:flex;flex-direction:column;
+  transform:translateX(calc(100% + 30px));opacity:0;pointer-events:none;
+  transition:transform .32s cubic-bezier(.22,.68,.36,1),opacity .22s ease-out,box-shadow .32s;
+  box-shadow:0 2px 10px rgba(15,23,42,.08);
+}
+.json-panel.open{transform:translateX(0);opacity:1;pointer-events:auto;box-shadow:0 30px 60px -16px rgba(15,23,42,.28),0 12px 24px -12px rgba(15,23,42,.16)}
+.json-close{position:absolute;top:14px;right:14px;z-index:2;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#94A3B8;background:#1E293B;transition:all .12s}
+.json-close:hover{background:#334155;color:#fff}
+.json-close svg{width:12px;height:12px}
+.json-head{display:flex;align-items:center;gap:9px;padding:16px 20px;border-bottom:1px solid #1E293B;color:#E2E8F0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.json-head-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.2)}
+.json-copy{margin-left:auto;display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--r-xs);background:#1E293B;color:#CBD5E1;font-size:11px;font-weight:600;text-transform:none;letter-spacing:0;transition:all .12s}
+.json-copy:hover{background:#334155;color:#fff}
+.json-copy.copied{background:var(--green);color:#fff}
+.json-copy svg{width:13px;height:13px}
+.json-body{flex:1;overflow:auto;padding:16px 20px;font-family:var(--mono,ui-monospace,Menlo,monospace);font-size:12px;line-height:1.65;color:#CBD5E1}
+.json-body pre{white-space:pre;margin:0}
+.jk{color:#93C5FD}.js{color:#A7F3D0}.jn{color:#FCA5A5}.jb{color:#C4B5FD}.jnull{color:#64748B;font-style:italic}
+@media (max-width:1180px){.json-panel{top:64px;right:8px;bottom:64px;border-radius:14px;width:min(440px,calc(100vw - 16px))}}
+
+/* view switching */
+body[data-view="landing"] .wizard-view,
+body[data-view="landing"] .header-meta,
+body[data-view="landing"] .header-sep,
+body[data-view="landing"] .header-right{display:none}
+body[data-view="wizard"] #view-landing{display:none}
+
+/* ─── mobile scroll hint for grid ─── */
+.table-scroll-wrap{position:relative}
+.table-scroll-hint{
+  display:none;align-items:center;gap:5px;
+  font-size:11px;font-weight:600;color:var(--dim);margin-bottom:8px;
+  letter-spacing:.2px;
+}
+.table-scroll-hint svg{width:14px;height:14px}
+
+/* ─── responsive ─── */
+@media (max-width:760px){
+  .header{padding:8px 14px;gap:8px;height:auto;min-height:54px;flex-wrap:wrap}
+  .logo-text{font-size:13px}
+  .logo img{width:22px;height:22px}
+  .header-sep{display:none}
+  .wizard{padding:20px 16px 60px}
+  .config-table{font-size:12px;min-width:700px}
+  .config-table thead th{padding:8px 10px;font-size:9px}
+  .config-table tbody td{padding:8px 10px}
+  .table-scroll-hint{display:inline-flex}
+  .fb-btn{bottom:14px;right:14px;width:38px;height:38px}
+}
+
+/* ─── scrollbar ─── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body data-view="landing">
+
+<header class="header">
+  <a class="logo" href="#/">
+    <img src="rebound-icon.png" alt="ReBound" />
+    <div class="logo-text">First Mile <span>Configurator</span></div>
+  </a>
+  <div class="header-sep"></div>
+  <div class="header-meta" id="header-meta">
+    <div class="meta-field">
+      <label>Client</label>
+      <span class="meta-val" id="meta-client">—</span>
+    </div>
+    <div class="meta-field">
+      <label>Variant</label>
+      <span class="meta-val" id="meta-variant">—</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="header-back" onclick="goHome()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Start over
+    </button>
+  </div>
+</header>
+
+<!-- Landing view -->
+<section id="view-landing" class="view-shell">
+  <div class="landing">
+    <div class="landing-mark"><img src="rebound-icon.png" alt="" /></div>
+    <h1 class="landing-title">First Mile Configurator</h1>
+    <p class="landing-sub">Configure first mile lanes for a client — carrier, service, routing type and account numbers for each pickup country.</p>
+    <div class="landing-variants">
+      <button class="variant-card" onclick="startVariant('A')">
+        <div class="variant-icon a">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </div>
+        <div class="variant-info">
+          <div class="variant-name">Lane-by-Lane Stepper</div>
+          <div class="variant-desc">Configure each country one at a time with a guided accordion flow. Best for smaller lane counts.</div>
+        </div>
+        <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+      <button class="variant-card" onclick="startVariant('B')">
+        <div class="variant-icon b">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+        </div>
+        <div class="variant-info">
+          <div class="variant-name">Carrier-First Bulk</div>
+          <div class="variant-desc">Pick a carrier first, then assign lanes to it. Ideal when most lanes share the same carrier.</div>
+        </div>
+        <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+      <button class="variant-card" onclick="startVariant('C')">
+        <div class="variant-icon c">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </div>
+        <div class="variant-info">
+          <div class="variant-name">Inline Grid</div>
+          <div class="variant-desc">All lanes in a single table with inline dropdowns. Power-user friendly, fastest for bulk configuration.</div>
+        </div>
+        <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+      <button class="variant-card" onclick="startVariant('D')">
+        <div class="variant-icon d">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        </div>
+        <div class="variant-info">
+          <div class="variant-name">Client Preferences</div>
+          <div class="variant-desc">Answer a guided set of preference questions — pickup countries, destination, carrier contracts, return service — and we derive every lane for you.</div>
+        </div>
+        <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Wizard view (populated by JS) -->
+<div class="wizard-view">
+  <div class="wizard" id="wizard"></div>
+</div>
+
+<!-- Client-name prompt modal -->
+<div class="modal-overlay" id="client-modal">
+  <div class="modal-card">
+    <div class="modal-title">Client Name</div>
+    <div class="modal-sub">Enter the client identifier. This is used to label the configuration.</div>
+    <input id="client-modal-input" class="modal-input" type="text" autocomplete="off" />
+    <div class="modal-hint" id="client-modal-hint"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeClientModal()">Cancel</button>
+      <button class="btn btn-primary" id="client-modal-go" onclick="confirmClient()">Start &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- JSON preview panel (Variant D) -->
+<button class="json-fab" onclick="toggleJsonPanel()" title="View configuration JSON">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+  Preview JSON
+</button>
+<aside class="json-panel" id="json-panel">
+  <button class="json-close" onclick="toggleJsonPanel()" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="json-head">
+    <span class="json-head-dot"></span>
+    Configuration output
+    <button class="json-copy" id="json-copy" onclick="copyJson()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy
+    </button>
+  </div>
+  <div class="json-body"><pre id="json-out"></pre></div>
+</aside>
+
+<!-- Feedback widget -->
+<button class="fb-btn" onclick="toggleFb()" title="Send feedback" aria-label="Send feedback">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+<div class="fb-pop" id="fb-pop">
+  <h4>Send feedback</h4>
+  <textarea id="fb-text" placeholder="What could be better?"></textarea>
+  <div class="fb-foot">
+    <span class="fb-msg" id="fb-msg"></span>
+    <button class="btn btn-primary" onclick="sendFb()" style="font-size:11.5px;padding:6px 14px">Send</button>
+  </div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────────
+   MOCK DATA
+   ───────────────────────────────────────────────── */
+const COUNTRIES = [
+  { code:'DE', name:'Germany',   flag:'🇩🇪', wh:'DE_ASC_Nettetal' },
+  { code:'GB', name:'United Kingdom', flag:'🇬🇧', wh:'GB_ASC_Corby' },
+  { code:'FR', name:'France',    flag:'🇫🇷', wh:'France_Yusen_Valenciennes' },
+  { code:'AU', name:'Australia', flag:'🇦🇺', wh:'Australia_SEKO_Mascot' },
+  { code:'US', name:'USA',       flag:'🇺🇸', wh:'USA_SEKO_Cranbury' },
+  { code:'SE', name:'Sweden',    flag:'🇸🇪', wh:'SE_Yusen_Malmo' },
+  { code:'ES', name:'Spain',     flag:'🇪🇸', wh:'Spain_Yusen_Barcelona' },
+  { code:'PT', name:'Portugal',  flag:'🇵🇹', wh:'Portugal_CTT_Lisbon' },
+  { code:'IE', name:'Ireland',   flag:'🇮🇪', wh:'Ireland_Hytech_Dublin' },
+  { code:'IT', name:'Italy',     flag:'🇮🇹', wh:'Italy_Yusen_Milano' },
+];
+
+const PROCESSING_WH = 'NL_ASC_Nettetal';
+const CARRIERS = ['DHL','PostNL'];
+const SERVICES = ['Paperless','Regular'];
+
+/* ─────────────────────────────────────────────────
+   VARIANT D — CLIENT PREFERENCES — DATA
+   ───────────────────────────────────────────────── */
+/* WH strings sourced from generic_sorting_matrix.dmn where dmn:true.
+   Others follow the same Country_Provider_City convention (placeholder). */
+const PREF_REGIONS = [
+  { name:'European Union', countries:[
+    { code:'DE', name:'Germany',     flag:'🇩🇪', wh:'DE_ASC_Nettetal',            dmn:true },
+    { code:'FR', name:'France',      flag:'🇫🇷', wh:'France_Yusen_Valenciennes',  dmn:true },
+    { code:'ES', name:'Spain',       flag:'🇪🇸', wh:'Spain_Yusen_Barcelona',      dmn:true },
+    { code:'IT', name:'Italy',       flag:'🇮🇹', wh:'Italy_Yusen_Milano',         dmn:true },
+    { code:'SE', name:'Sweden',      flag:'🇸🇪', wh:'Sweden_Jumbo_Malmo',         dmn:true },
+    { code:'PT', name:'Portugal',    flag:'🇵🇹', wh:'Portugal_CTT_Lisbon',        dmn:true },
+    { code:'IE', name:'Ireland',     flag:'🇮🇪', wh:'Ireland_Hytech_Dublin',      dmn:true },
+    { code:'NL', name:'Netherlands', flag:'🇳🇱', wh:'Netherlands_Cycleon_Utrecht',dmn:true },
+    { code:'BE', name:'Belgium',     flag:'🇧🇪', wh:'Belgium_Yusen_Herentals',    dmn:true },
+    { code:'AT', name:'Austria',     flag:'🇦🇹', wh:'Austria_Lagermax_Obertrum',  dmn:true },
+  ]},
+  { name:'North America', countries:[
+    { code:'US', name:'USA',           flag:'🇺🇸', wh:'USA_SEKO_Cranbury',        dmn:true },
+    { code:'CA', name:'Canada',        flag:'🇨🇦', wh:'Canada_Yusen_Brampton',    dmn:true },
+    { code:'MX', name:'Mexico',        flag:'🇲🇽', wh:'Mexico_Estafeta_Cuautitlan',dmn:false },
+    { code:'CR', name:'Costa Rica',    flag:'🇨🇷', wh:'CostaRica_Correos_SanJose', dmn:false },
+    { code:'PA', name:'Panama',        flag:'🇵🇦', wh:'Panama_Multimodal_Colon',   dmn:false },
+    { code:'GT', name:'Guatemala',     flag:'🇬🇹', wh:'Guatemala_Cargo_Guatemala', dmn:false },
+    { code:'DO', name:'Dominican Rep.',flag:'🇩🇴', wh:'DomRep_Caribe_SantoDomingo',dmn:false },
+    { code:'JM', name:'Jamaica',       flag:'🇯🇲', wh:'Jamaica_Knutsford_Kingston',dmn:false },
+    { code:'BS', name:'Bahamas',       flag:'🇧🇸', wh:'Bahamas_Island_Nassau',     dmn:false },
+    { code:'HN', name:'Honduras',      flag:'🇭🇳', wh:'Honduras_Transunion_SanPedro',dmn:false },
+  ]},
+  { name:'South America', countries:[
+    { code:'BR', name:'Brazil',    flag:'🇧🇷', wh:'Brazil_Correios_SaoPaulo',     dmn:false },
+    { code:'AR', name:'Argentina', flag:'🇦🇷', wh:'Argentina_Andreani_BuenosAires',dmn:false },
+    { code:'CL', name:'Chile',     flag:'🇨🇱', wh:'Chile_Chilexpress_Santiago',   dmn:false },
+    { code:'CO', name:'Colombia',  flag:'🇨🇴', wh:'Colombia_Servientrega_Bogota', dmn:false },
+    { code:'PE', name:'Peru',      flag:'🇵🇪', wh:'Peru_Olva_Lima',               dmn:false },
+    { code:'UY', name:'Uruguay',   flag:'🇺🇾', wh:'Uruguay_DAC_Montevideo',       dmn:false },
+    { code:'EC', name:'Ecuador',   flag:'🇪🇨', wh:'Ecuador_Servientrega_Quito',   dmn:false },
+    { code:'PY', name:'Paraguay',  flag:'🇵🇾', wh:'Paraguay_AeroCargo_Asuncion',  dmn:false },
+    { code:'BO', name:'Bolivia',   flag:'🇧🇴', wh:'Bolivia_Cruz_LaPaz',           dmn:false },
+    { code:'VE', name:'Venezuela', flag:'🇻🇪', wh:'Venezuela_Zoom_Caracas',       dmn:false },
+  ]},
+  { name:'Asia', countries:[
+    { code:'JP', name:'Japan',       flag:'🇯🇵', wh:'Japan_Yamato_Tokyo',          dmn:false },
+    { code:'CN', name:'China',       flag:'🇨🇳', wh:'China_SF_Shanghai',           dmn:false },
+    { code:'IN', name:'India',       flag:'🇮🇳', wh:'India_Delhivery_Mumbai',      dmn:false },
+    { code:'SG', name:'Singapore',   flag:'🇸🇬', wh:'Singapore_Ninja_Changi',      dmn:false },
+    { code:'KR', name:'South Korea', flag:'🇰🇷', wh:'SouthKorea_CJ_Seoul',         dmn:false },
+    { code:'HK', name:'Hong Kong',   flag:'🇭🇰', wh:'HongKong_Kerry_Kowloon',      dmn:false },
+    { code:'TH', name:'Thailand',    flag:'🇹🇭', wh:'Thailand_Flash_Bangkok',      dmn:false },
+    { code:'MY', name:'Malaysia',    flag:'🇲🇾', wh:'Malaysia_PosLaju_KualaLumpur',dmn:false },
+    { code:'ID', name:'Indonesia',   flag:'🇮🇩', wh:'Indonesia_JNE_Jakarta',       dmn:false },
+    { code:'VN', name:'Vietnam',     flag:'🇻🇳', wh:'Vietnam_GHN_Hanoi',           dmn:false },
+  ]},
+  { name:'Pacific', countries:[
+    { code:'AU', name:'Australia',       flag:'🇦🇺', wh:'Australia_SEKO_Mascot',     dmn:true },
+    { code:'NZ', name:'New Zealand',     flag:'🇳🇿', wh:'NewZealand_NZPost_Auckland',dmn:false },
+    { code:'FJ', name:'Fiji',            flag:'🇫🇯', wh:'Fiji_Post_Suva',            dmn:false },
+    { code:'PG', name:'Papua New Guinea',flag:'🇵🇬', wh:'PNG_Post_PortMoresby',      dmn:false },
+    { code:'WS', name:'Samoa',           flag:'🇼🇸', wh:'Samoa_Post_Apia',           dmn:false },
+    { code:'TO', name:'Tonga',           flag:'🇹🇴', wh:'Tonga_Post_Nukualofa',      dmn:false },
+    { code:'VU', name:'Vanuatu',         flag:'🇻🇺', wh:'Vanuatu_Post_PortVila',     dmn:false },
+    { code:'SB', name:'Solomon Islands', flag:'🇸🇧', wh:'Solomon_Post_Honiara',      dmn:false },
+    { code:'PW', name:'Palau',           flag:'🇵🇼', wh:'Palau_Post_Ngerulmud',      dmn:false },
+    { code:'FM', name:'Micronesia',      flag:'🇫🇲', wh:'Micronesia_Post_Palikir',   dmn:false },
+  ]},
+];
+const PREF_COUNTRIES = PREF_REGIONS.flatMap(r => r.countries.map(c => ({...c, region:r.name})));
+const PREF_COUNTRY_BY_CODE = Object.fromEntries(PREF_COUNTRIES.map(c => [c.code, c]));
+const ERC_WAREHOUSE = 'DE_ASC_Nettetal';
+
+const DTP_PARTNERS = ['Liquidation Hub','Refurbish Center','Repair Center','Disposition','Recycling','Donation'];
+const CONTRACT_CARRIERS = ['DHL','PostNL','PostItalia','FedEx']; // dynamic list (Q3, client-owned)
+const RETURN_SERVICES = ['Pickup','Drop-off','Self-post'];
+const RETURN_LABELS   = ['Printed label','Paperless / QR code'];
+
+/* consumer-facing carrier catalog (Q6) — which carriers offer which service+label, and where */
+const CARRIER_CATALOG = [
+  { id:'DHL',        name:'DHL',            badge:'cb-dhl',        services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','North America','Pacific'] },
+  { id:'PostNL',     name:'PostNL',         badge:'cb-postnl',     services:['Drop-off','Self-post'],labels:['Printed label','Paperless / QR code'], regions:['European Union'] },
+  { id:'PostItalia', name:'Poste Italiane', badge:'cb-postitalia', services:['Drop-off'],            labels:['Printed label'],                       regions:['European Union'], countries:['IT'] },
+  { id:'FedEx',      name:'FedEx',          badge:'cb-fedex',      services:['Pickup','Drop-off'],   labels:['Printed label'],                       regions:['North America','Asia','South America'] },
+  { id:'GLS',        name:'GLS',            badge:'cb-generic',    services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','North America'] },
+  { id:'Evri',       name:'Evri',           badge:'cb-generic',    services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union'] },
+];
+function carrierServesCountry(carrier, country, service, label){
+  if(service && !carrier.services.includes(service)) return false;
+  if(label && !carrier.labels.includes(label)) return false;
+  if(carrier.countries) return carrier.countries.includes(country.code);
+  return carrier.regions.includes(country.region);
+}
+
+/* ─────────────────────────────────────────────────
+   STATE
+   ───────────────────────────────────────────────── */
+let state = {
+  client: '',
+  variant: null,
+  view: 'landing',
+  lanes: {},
+};
+
+function initLanes(){
+  state.lanes = {};
+  COUNTRIES.forEach(c => {
+    state.lanes[c.code] = {
+      country: c,
+      carrier: null,
+      service: null,
+      routing: null,
+      accountNumber: '',
+    };
+  });
+}
+
+/* ─── Variant D state ─── */
+let prefState = {};
+function initPrefs(){
+  prefState = {
+    pickupCountries:{},      // code -> selected
+    openRegions:{},          // region name -> open
+    destination:null,        // 'DTW' | 'DTR' | 'DTP'
+    dtwType:null,            // 'local' | 'ERC'
+    localWarehouses:{},      // code -> selected (for DTW local)
+    dtrAddress:{ line1:'', line2:'', line3:'', city:'', postal:'', country:'' },
+    dtpPartner:null,
+    hasOwnContract:null,     // true (SaaS) | false (Managed)
+    saasCarrier:null,
+    saasService:null,
+    saasCreds:{ accountId:'', apiKey:'' },
+    saasCoverage:{},         // code -> covered by client's own contract
+    billingAccount:null,     // 'rebound' | 'client'
+    bankDetails:{ holder:'', iban:'', bic:'' },
+    returnService:null,
+    returnLabel:null,
+    managedCarrier:null,     // carrier id chosen for the consumer experience
+    overrides:{},            // code -> { carrier } per-lane exception fix
+  };
+  // default: every country pre-selected (comes from upstream squad config)
+  PREF_COUNTRIES.forEach(c => { prefState.pickupCountries[c.code] = true; prefState.localWarehouses[c.code] = true; });
+  PREF_REGIONS.forEach((r,i) => { prefState.openRegions[r.name] = (i === 0); });
+}
+function prefSelectedCountries(){ return PREF_COUNTRIES.filter(c => prefState.pickupCountries[c.code]); }
+
+/* ─────────────────────────────────────────────────
+   HELPERS
+   ───────────────────────────────────────────────── */
+function $(sel){ return document.querySelector(sel); }
+function el(tag, attrs){
+  const e = document.createElement(tag);
+  const kids = Array.from(arguments).slice(2);
+  if(attrs){
+    Object.keys(attrs).forEach(k => {
+      if(k === 'html') e.innerHTML = attrs[k];
+      else if(k === 'class') e.className = attrs[k];
+      else if(k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+      else if(k === 'style' && typeof attrs[k] === 'object'){
+        Object.assign(e.style, attrs[k]);
+      } else e.setAttribute(k, attrs[k]);
+    });
+  }
+  kids.forEach(kid => {
+    if(kid == null) return;
+    if(typeof kid === 'string' || typeof kid === 'number') e.appendChild(document.createTextNode(kid));
+    else e.appendChild(kid);
+  });
+  return e;
+}
+
+function icon(name){
+  const icons = {
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    chevDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+  };
+  return icons[name] || '';
+}
+
+function allLanesConfigured(){
+  return Object.values(state.lanes).every(l => l.carrier && l.service && l.routing && (l.routing === 'SaaS' || l.accountNumber.trim()));
+}
+
+/* ─────────────────────────────────────────────────
+   ROTATING PLACEHOLDER
+   ───────────────────────────────────────────────── */
+function startRotatingPlaceholder(input, options){
+  if(input._rotating) return;
+  if(!options || !options.length){ input.placeholder = 'Type and press Enter'; return; }
+  input._rotating = true;
+  let optIdx = 0, charIdx = 0, mode = 'typing';
+  function tick(){
+    if(!input.isConnected){ input._rotating = false; return; }
+    if(input.value){ input.placeholder = ''; return setTimeout(tick, 800); }
+    const opt = options[optIdx % options.length];
+    if(mode === 'typing'){
+      input.placeholder = opt.slice(0, charIdx);
+      if(charIdx < opt.length){ charIdx++; setTimeout(tick, 80); }
+      else { mode = 'pausing'; setTimeout(tick, 1400); }
+    } else if(mode === 'pausing'){
+      mode = 'erasing'; setTimeout(tick, 30);
+    } else {
+      input.placeholder = opt.slice(0, charIdx);
+      if(charIdx > 0){ charIdx--; setTimeout(tick, 40); }
+      else { optIdx++; mode = 'typing'; setTimeout(tick, 220); }
+    }
+  }
+  tick();
+}
+
+/* ─────────────────────────────────────────────────
+   CLIENT MODAL
+   ───────────────────────────────────────────────── */
+let pendingVariant = null;
+const CLIENT_NAME_RE = /^[A-Za-z0-9_.\-]+$/;
+
+function startVariant(v){
+  pendingVariant = v;
+  openClientModal();
+}
+
+function openClientModal(){
+  const overlay = document.getElementById('client-modal');
+  const inp = document.getElementById('client-modal-input');
+  const hint = document.getElementById('client-modal-hint');
+  inp.value = state.client || '';
+  hint.textContent = '';
+  hint.classList.remove('err');
+  overlay.classList.add('open');
+  setTimeout(() => startRotatingPlaceholder(inp, ['demo_client','nike_eu','zara_returns']), 0);
+  setTimeout(() => inp.focus(), 60);
+}
+
+function closeClientModal(){
+  document.getElementById('client-modal').classList.remove('open');
+}
+
+function confirmClient(){
+  const inp = document.getElementById('client-modal-input');
+  const hint = document.getElementById('client-modal-hint');
+  const v = (inp.value || '').trim();
+  if(v.length < 2 || !CLIENT_NAME_RE.test(v)){
+    hint.textContent = 'Use at least 2 chars — letters, digits, underscores, dots, hyphens. No spaces.';
+    hint.classList.add('err');
+    inp.focus();
+    return;
+  }
+  state.client = v;
+  state.variant = pendingVariant;
+  closeClientModal();
+  if(state.variant === 'D'){ initPrefs(); }
+  else { initLanes(); }
+  setView('wizard');
+  renderWizard();
+}
+
+document.addEventListener('keydown', e => {
+  const overlay = document.getElementById('client-modal');
+  if(!overlay || !overlay.classList.contains('open')) return;
+  if(e.key === 'Enter'){ e.preventDefault(); confirmClient(); }
+  else if(e.key === 'Escape') closeClientModal();
+});
+document.getElementById('client-modal').addEventListener('click', e => {
+  if(e.target.id === 'client-modal') closeClientModal();
+});
+
+/* ─────────────────────────────────────────────────
+   VIEW MANAGEMENT
+   ───────────────────────────────────────────────── */
+function setView(v){
+  state.view = v;
+  document.body.setAttribute('data-view', v);
+  if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
+  else document.body.removeAttribute('data-variant');
+  document.getElementById('meta-client').textContent = state.client || '—';
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences' };
+  document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
+}
+
+function goHome(){
+  state.variant = null;
+  state.client = '';
+  const jp = document.getElementById('json-panel');
+  if(jp) jp.classList.remove('open');
+  setView('landing');
+  document.getElementById('wizard').innerHTML = '';
+}
+
+/* ─────────────────────────────────────────────────
+   WIZARD RENDER DISPATCHER
+   ───────────────────────────────────────────────── */
+function renderWizard(){
+  const root = document.getElementById('wizard');
+  root.innerHTML = '';
+
+  if(state.variant === 'D'){ renderVariantD(root); updateJson(); return; }
+
+  const header = el('div',{class:'wizard-header'},
+    el('div',{class:'wizard-crumb'}, 'First Mile Config'),
+    el('div',{class:'wizard-title'}, `Configure lanes for ${state.client}`),
+    el('div',{class:'wizard-sub'}, `${COUNTRIES.length} pickup countries · Variant ${state.variant}`)
+  );
+  root.appendChild(header);
+
+  // Country chips display
+  const chipSection = el('div',{class:'card'},
+    el('div',{class:'card-head'},
+      el('div',{class:'card-num'},'1'),
+      el('div',{class:'card-titlewrap'},
+        el('div',{class:'card-title'},'Pickup Countries'),
+        el('div',{class:'card-sub'},'Countries opted by the client (from upstream squad)')
+      )
+    )
+  );
+  const chipGrid = el('div',{class:'country-grid'});
+  COUNTRIES.forEach(c => {
+    chipGrid.appendChild(el('div',{class:'country-chip selected'},
+      el('span',{class:'flag'}, c.flag),
+      `${c.name}`
+    ));
+  });
+  chipSection.appendChild(chipGrid);
+
+  // Lane info
+  const laneInfo = el('div',{class:'info-banner blue'},
+    el('span',{html:icon('info')}),
+    el('span',{}, `Each country creates a first mile lane: pickup warehouse → ${PROCESSING_WH} (processing hub).`)
+  );
+  chipSection.appendChild(laneInfo);
+  root.appendChild(chipSection);
+
+  // Variant-specific config
+  if(state.variant === 'A') renderVariantA(root);
+  else if(state.variant === 'B') renderVariantB(root);
+  else if(state.variant === 'C') renderVariantC(root);
+}
+
+/* ─────────────────────────────────────────────────
+   VARIANT A: LANE-BY-LANE STEPPER (ACCORDION)
+   ───────────────────────────────────────────────── */
+function renderVariantA(root){
+  const card = el('div',{class:'card'},
+    el('div',{class:'card-head'},
+      el('div',{class:'card-num'},'2'),
+      el('div',{class:'card-titlewrap'},
+        el('div',{class:'card-title'},'Lane Configuration'),
+        el('div',{class:'card-sub'},'Expand each country to configure carrier, service, and routing')
+      )
+    )
+  );
+
+  const accordion = el('div',{class:'accordion', id:'accordion-a'});
+  COUNTRIES.forEach(c => {
+    const lane = state.lanes[c.code];
+    const isDone = lane.carrier && lane.service && lane.routing && (lane.routing === 'SaaS' || lane.accountNumber.trim());
+
+    const item = el('div',{class:'acc-item' + (isDone ? ' done' : ''), 'data-code':c.code});
+
+    const trigger = el('button',{class:'acc-trigger', onclick:() => toggleAccordion(c.code)},
+      el('span',{class:'acc-flag'}, c.flag),
+      el('div',{class:'acc-label'},
+        el('div',{class:'acc-country'}, c.name),
+        el('div',{class:'acc-lane'}, `${c.wh} → ${PROCESSING_WH}`)
+      ),
+      el('span',{class:'acc-status ' + (isDone ? 'done' : 'pending')}, isDone ? 'Configured' : 'Pending'),
+      el('span',{class:'acc-chevron',html:icon('chevDown')})
+    );
+    item.appendChild(trigger);
+
+    const body = el('div',{class:'acc-body'});
+    body.appendChild(buildLaneConfig(c.code, 'A'));
+    item.appendChild(body);
+    accordion.appendChild(item);
+  });
+
+  card.appendChild(accordion);
+  root.appendChild(card);
+
+  // Review button
+  root.appendChild(buildReviewSection());
+}
+
+function toggleAccordion(code){
+  const items = document.querySelectorAll('#accordion-a .acc-item');
+  items.forEach(item => {
+    if(item.getAttribute('data-code') === code){
+      item.classList.toggle('open');
+    } else {
+      item.classList.remove('open');
+    }
+  });
+}
+
+/* ─────────────────────────────────────────────────
+   VARIANT B: CARRIER-FIRST BULK
+   ───────────────────────────────────────────────── */
+function renderVariantB(root){
+  const card = el('div',{class:'card'},
+    el('div',{class:'card-head'},
+      el('div',{class:'card-num'},'2'),
+      el('div',{class:'card-titlewrap'},
+        el('div',{class:'card-title'},'Choose Carrier per Lane'),
+        el('div',{class:'card-sub'},'Select which carrier handles each country\'s first mile')
+      )
+    )
+  );
+
+  CARRIERS.forEach(carrier => {
+    const section = el('div',{class:'carrier-section'});
+    const logoClass = carrier.toLowerCase().replace(/\s/g,'');
+
+    section.appendChild(el('div',{class:'carrier-header'},
+      el('div',{class:`carrier-logo ${logoClass}`}, carrier === 'DHL' ? 'DHL' : 'PN'),
+      el('div',{},
+        el('div',{class:'carrier-name'}, carrier),
+        el('div',{class:'carrier-count', id:`carrier-count-${logoClass}`}, 'Select lanes below')
+      )
+    ));
+
+    const laneList = el('div',{class:'lane-list', id:`carrier-lanes-${logoClass}`});
+    COUNTRIES.forEach(c => {
+      const lane = state.lanes[c.code];
+      const isActive = lane.carrier === carrier;
+      const check = el('button',{
+        class:'lane-check' + (isActive ? ' active' : ''),
+        onclick:() => {
+          if(lane.carrier === carrier){
+            lane.carrier = null;
+            lane.service = null;
+            lane.routing = null;
+            lane.accountNumber = '';
+          } else {
+            lane.carrier = carrier;
+          }
+          renderWizard();
+        }
+      },
+        el('div',{class:'lane-check-box', html:icon('check')}),
+        el('span',{class:'lane-check-label'}, `${c.flag} ${c.name}`),
+        el('span',{class:'lane-check-sub'}, `${c.wh} → ${PROCESSING_WH}`)
+      );
+      laneList.appendChild(check);
+    });
+    section.appendChild(laneList);
+    card.appendChild(section);
+  });
+
+  root.appendChild(card);
+
+  // Service + routing config for lanes that have a carrier
+  const assignedLanes = Object.entries(state.lanes).filter(([,l]) => l.carrier);
+  if(assignedLanes.length > 0){
+    const configCard = el('div',{class:'card'},
+      el('div',{class:'card-head'},
+        el('div',{class:'card-num'},'3'),
+        el('div',{class:'card-titlewrap'},
+          el('div',{class:'card-title'},'Service & Routing'),
+          el('div',{class:'card-sub'},'Configure service type, routing, and account numbers for each assigned lane')
+        )
+      )
+    );
+
+    assignedLanes.forEach(([code, lane]) => {
+      const c = lane.country;
+      const panel = el('div',{class:'sub-config'},
+        el('div',{class:'sub-config-title'}, `${c.flag} ${c.name} — ${lane.carrier}`)
+      );
+      panel.appendChild(buildLaneSubConfig(code));
+      configCard.appendChild(panel);
+    });
+
+    root.appendChild(configCard);
+  }
+
+  root.appendChild(buildReviewSection());
+}
+
+/* ─────────────────────────────────────────────────
+   VARIANT C: INLINE GRID
+   ───────────────────────────────────────────────── */
+function renderVariantC(root){
+  const card = el('div',{class:'card'},
+    el('div',{class:'card-head'},
+      el('div',{class:'card-num'},'2'),
+      el('div',{class:'card-titlewrap'},
+        el('div',{class:'card-title'},'Lane Configuration Grid'),
+        el('div',{class:'card-sub'},'Configure all lanes directly in the table below')
+      )
+    )
+  );
+
+  const tableWrap = el('div',{class:'table-scroll-wrap',style:{overflowX:'auto'}});
+  const scrollHint = el('div',{class:'table-scroll-hint'},
+    'Scroll right to see all columns ',
+    el('span',{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'})
+  );
+  tableWrap.appendChild(scrollHint);
+  const table = el('table',{class:'config-table'});
+
+  const thead = el('thead',{},
+    el('tr',{},
+      el('th',{},'Country'),
+      el('th',{},'Lane'),
+      el('th',{},'Carrier'),
+      el('th',{},'Service'),
+      el('th',{},'Routing'),
+      el('th',{},'Account #')
+    )
+  );
+  table.appendChild(thead);
+
+  const tbody = el('tbody',{});
+  COUNTRIES.forEach(c => {
+    const lane = state.lanes[c.code];
+    const tr = el('tr',{});
+
+    // Country
+    tr.appendChild(el('td',{},
+      el('span',{class:'cell-flag'}, c.flag),
+      el('strong',{}, c.name)
+    ));
+
+    // Lane
+    const laneCell = el('td',{});
+    const laneDiv = el('div',{class:'cell-lane'},
+      el('span',{}, c.wh.split('_').slice(-1)[0]),
+      ' → ',
+      el('span',{}, PROCESSING_WH.split('_').slice(-1)[0])
+    );
+    laneCell.appendChild(laneDiv);
+    tr.appendChild(laneCell);
+
+    // Carrier dropdown
+    const carrierSelect = el('select',{
+      onchange:(e) => {
+        lane.carrier = e.target.value || null;
+        if(!lane.carrier){ lane.service = null; lane.routing = null; lane.accountNumber = ''; }
+        renderWizard();
+      }
+    });
+    carrierSelect.appendChild(el('option',{value:''},'Select...'));
+    CARRIERS.forEach(cr => {
+      const opt = el('option',{value:cr}, cr);
+      if(lane.carrier === cr) opt.selected = true;
+      carrierSelect.appendChild(opt);
+    });
+    tr.appendChild(el('td',{}, carrierSelect));
+
+    // Service dropdown
+    const serviceSelect = el('select',{
+      disabled: !lane.carrier ? 'disabled' : undefined,
+      onchange:(e) => { lane.service = e.target.value || null; renderWizard(); }
+    });
+    serviceSelect.appendChild(el('option',{value:''},'Select...'));
+    SERVICES.forEach(sv => {
+      const opt = el('option',{value:sv}, sv);
+      if(lane.service === sv) opt.selected = true;
+      serviceSelect.appendChild(opt);
+    });
+    if(!lane.carrier) serviceSelect.disabled = true;
+    tr.appendChild(el('td',{}, serviceSelect));
+
+    // Routing dropdown
+    const routingSelect = el('select',{
+      disabled: !lane.service ? 'disabled' : undefined,
+      onchange:(e) => {
+        lane.routing = e.target.value || null;
+        if(lane.routing === 'SaaS') lane.accountNumber = 'AUTO-' + c.code + '-' + (lane.carrier||'').toUpperCase().slice(0,3);
+        else lane.accountNumber = '';
+        renderWizard();
+      }
+    });
+    routingSelect.appendChild(el('option',{value:''},'Select...'));
+    ['SaaS','Managed'].forEach(rt => {
+      const opt = el('option',{value:rt}, rt);
+      if(lane.routing === rt) opt.selected = true;
+      routingSelect.appendChild(opt);
+    });
+    if(!lane.service) routingSelect.disabled = true;
+    tr.appendChild(el('td',{}, routingSelect));
+
+    // Account #
+    const acctCell = el('td',{});
+    if(lane.routing === 'SaaS'){
+      acctCell.appendChild(el('span',{class:'auto-tag'}, '⚡ Auto: ' + lane.accountNumber));
+    } else if(lane.routing === 'Managed'){
+      const inp = el('input',{
+        type:'text',class:'account-input',placeholder:'Enter account #',
+        value: lane.accountNumber,
+        oninput:(e) => { lane.accountNumber = e.target.value; updateReviewButton(); }
+      });
+      acctCell.appendChild(inp);
+    } else {
+      acctCell.appendChild(el('span',{style:{color:'var(--dim)',fontSize:'12px'}}, '—'));
+    }
+    tr.appendChild(acctCell);
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  tableWrap.appendChild(table);
+  card.appendChild(tableWrap);
+  root.appendChild(card);
+
+  root.appendChild(buildReviewSection());
+}
+
+/* ─────────────────────────────────────────────────
+   SHARED: LANE CONFIG BUILDER (for Variant A accordion)
+   ───────────────────────────────────────────────── */
+function buildLaneConfig(code, variant){
+  const lane = state.lanes[code];
+  const wrap = el('div',{});
+
+  // Carrier
+  const carrierStep = el('div',{class:'acc-step'},
+    el('div',{class:'acc-step-label'}, 'Carrier')
+  );
+  const carrierGroup = el('div',{class:'radio-group'});
+  CARRIERS.forEach(c => {
+    carrierGroup.appendChild(el('button',{
+      class:'radio' + (lane.carrier === c ? ' active' : ''),
+      onclick:() => {
+        lane.carrier = c;
+        if(!lane.service) lane.service = null;
+        lane.routing = null;
+        lane.accountNumber = '';
+        renderWizard();
+        setTimeout(() => {
+          const item = document.querySelector(`[data-code="${code}"]`);
+          if(item) item.classList.add('open');
+        }, 10);
+      }
+    }, c));
+  });
+  carrierStep.appendChild(carrierGroup);
+  wrap.appendChild(carrierStep);
+
+  // Service (only if carrier selected)
+  if(lane.carrier){
+    const serviceStep = el('div',{class:'acc-step'},
+      el('div',{class:'acc-step-label'}, 'Service')
+    );
+    const serviceGroup = el('div',{class:'radio-group'});
+    SERVICES.forEach(s => {
+      serviceGroup.appendChild(el('button',{
+        class:'radio' + (lane.service === s ? ' active' : ''),
+        onclick:() => {
+          lane.service = s;
+          lane.routing = null;
+          lane.accountNumber = '';
+          renderWizard();
+          setTimeout(() => {
+            const item = document.querySelector(`[data-code="${code}"]`);
+            if(item) item.classList.add('open');
+          }, 10);
+        }
+      }, s));
+    });
+    serviceStep.appendChild(serviceGroup);
+    wrap.appendChild(serviceStep);
+  }
+
+  // Routing (only if service selected)
+  if(lane.carrier && lane.service){
+    const routingStep = el('div',{class:'acc-step'},
+      el('div',{class:'acc-step-label'}, 'Routing Type')
+    );
+    const routingInfo = el('div',{class:'info-banner',style:{marginBottom:'10px'}},
+      el('span',{html:icon('info')}),
+      el('span',{html:'<b>SaaS</b> = ReBound owns the carrier contract. <b>Managed</b> = Client owns the contract.'})
+    );
+    routingStep.appendChild(routingInfo);
+
+    const routingGroup = el('div',{class:'radio-group'});
+    ['SaaS','Managed'].forEach(r => {
+      routingGroup.appendChild(el('button',{
+        class:'radio' + (lane.routing === r ? ' active' : ''),
+        onclick:() => {
+          lane.routing = r;
+          if(r === 'SaaS'){
+            lane.accountNumber = 'AUTO-' + code + '-' + lane.carrier.toUpperCase().slice(0,3);
+          } else {
+            lane.accountNumber = '';
+          }
+          renderWizard();
+          setTimeout(() => {
+            const item = document.querySelector(`[data-code="${code}"]`);
+            if(item) item.classList.add('open');
+          }, 10);
+        }
+      }, r));
+    });
+    routingStep.appendChild(routingGroup);
+    wrap.appendChild(routingStep);
+  }
+
+  // Account number
+  if(lane.routing){
+    const acctStep = el('div',{class:'acc-step'},
+      el('div',{class:'acc-step-label'}, 'Account Number')
+    );
+    if(lane.routing === 'SaaS'){
+      acctStep.appendChild(el('div',{class:'auto-tag',style:{display:'inline-flex'}}, '⚡ Auto-retrieved: ' + lane.accountNumber));
+    } else {
+      const inp = el('input',{
+        type:'text', class:'account-input', placeholder:'Enter account number',
+        value:lane.accountNumber,
+        oninput:(e) => {
+          lane.accountNumber = e.target.value;
+          updateReviewButton();
+        }
+      });
+      acctStep.appendChild(inp);
+    }
+    wrap.appendChild(acctStep);
+  }
+
+  return wrap;
+}
+
+/* ─────────────────────────────────────────────────
+   SHARED: LANE SUB-CONFIG (for Variant B)
+   ───────────────────────────────────────────────── */
+function buildLaneSubConfig(code){
+  const lane = state.lanes[code];
+  const wrap = el('div',{});
+
+  // Service
+  const serviceField = el('div',{class:'field'},
+    el('label',{class:'field-label'}, 'Service')
+  );
+  const serviceGroup = el('div',{class:'radio-group'});
+  SERVICES.forEach(s => {
+    serviceGroup.appendChild(el('button',{
+      class:'radio' + (lane.service === s ? ' active' : ''),
+      onclick:() => {
+        lane.service = s;
+        lane.routing = null;
+        lane.accountNumber = '';
+        renderWizard();
+      }
+    }, s));
+  });
+  serviceField.appendChild(serviceGroup);
+  wrap.appendChild(serviceField);
+
+  // Routing
+  if(lane.service){
+    const routingField = el('div',{class:'field'},
+      el('label',{class:'field-label'}, 'Routing Type')
+    );
+    const routingGroup = el('div',{class:'radio-group'});
+    ['SaaS','Managed'].forEach(r => {
+      routingGroup.appendChild(el('button',{
+        class:'radio' + (lane.routing === r ? ' active' : ''),
+        onclick:() => {
+          lane.routing = r;
+          if(r === 'SaaS') lane.accountNumber = 'AUTO-' + code + '-' + lane.carrier.toUpperCase().slice(0,3);
+          else lane.accountNumber = '';
+          renderWizard();
+        }
+      }, r));
+    });
+    routingField.appendChild(routingGroup);
+    wrap.appendChild(routingField);
+  }
+
+  // Account number
+  if(lane.routing){
+    const acctField = el('div',{class:'field'},
+      el('label',{class:'field-label'}, 'Account Number')
+    );
+    if(lane.routing === 'SaaS'){
+      acctField.appendChild(el('div',{class:'auto-tag',style:{display:'inline-flex'}}, '⚡ Auto-retrieved: ' + lane.accountNumber));
+    } else {
+      acctField.appendChild(el('input',{
+        type:'text', class:'account-input', placeholder:'Enter account number',
+        value: lane.accountNumber,
+        oninput:(e) => { lane.accountNumber = e.target.value; updateReviewButton(); }
+      }));
+    }
+    wrap.appendChild(acctField);
+  }
+
+  return wrap;
+}
+
+/* ─────────────────────────────────────────────────
+   REVIEW TABLE
+   ───────────────────────────────────────────────── */
+function buildReviewSection(){
+  const wrap = el('div',{id:'review-section'});
+
+  const divider = el('div',{class:'section-divider'},
+    el('div',{class:'section-divider-line'}),
+    el('div',{class:'section-divider-text'}, 'Review'),
+    el('div',{class:'section-divider-line'})
+  );
+  wrap.appendChild(divider);
+
+  const ready = allLanesConfigured();
+
+  const actionBar = el('div',{class:'action-bar' + (ready ? ' ready' : '')},
+    el('div',{class:'action-bar-text'},
+      el('div',{class:'action-bar-title'}, ready ? 'All lanes configured' : 'Configuration incomplete'),
+      el('div',{class:'action-bar-sub'}, ready
+        ? `${COUNTRIES.length} lanes ready for review`
+        : `${Object.values(state.lanes).filter(l => l.carrier && l.service && l.routing && (l.routing === 'SaaS' || l.accountNumber.trim())).length} of ${COUNTRIES.length} lanes configured`
+      )
+    ),
+    el('button',{
+      class:'action-cta',
+      disabled: !ready ? 'disabled' : undefined,
+      id:'review-btn',
+      onclick:() => toggleReviewTable()
+    },
+      el('span',{html:icon('check')}),
+      'Review Configuration'
+    )
+  );
+  if(!ready) actionBar.querySelector('.action-cta').disabled = true;
+  wrap.appendChild(actionBar);
+
+  const tableWrap = el('div',{id:'review-table-wrap',style:{display:'none'}});
+  if(ready){
+    const table = el('table',{class:'review-table'});
+    table.appendChild(el('thead',{},
+      el('tr',{},
+        el('th',{},'Country'),
+        el('th',{},'Lane'),
+        el('th',{},'Carrier'),
+        el('th',{},'Service'),
+        el('th',{},'Routing'),
+        el('th',{},'Account #')
+      )
+    ));
+    const tbody = el('tbody',{});
+    COUNTRIES.forEach(c => {
+      const lane = state.lanes[c.code];
+      const tr = el('tr',{});
+      tr.appendChild(el('td',{}, `${c.flag} ${c.name}`));
+      tr.appendChild(el('td',{},
+        el('span',{class:'lane-badge'},
+          c.wh.split('_').slice(-1)[0],
+          el('span',{class:'lane-arrow'}, ' → '),
+          PROCESSING_WH.split('_').slice(-1)[0]
+        )
+      ));
+      tr.appendChild(el('td',{},
+        el('span',{class:`review-pill ${lane.carrier.toLowerCase()}`}, lane.carrier)
+      ));
+      tr.appendChild(el('td',{}, lane.service));
+      tr.appendChild(el('td',{},
+        el('span',{class:`review-pill ${lane.routing.toLowerCase()}`}, lane.routing)
+      ));
+      tr.appendChild(el('td',{style:{fontFamily:'var(--mono, monospace)',fontSize:'12px'}}, lane.accountNumber));
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    tableWrap.appendChild(table);
+  }
+  wrap.appendChild(tableWrap);
+
+  return wrap;
+}
+
+function toggleReviewTable(){
+  const wrap = document.getElementById('review-table-wrap');
+  if(!wrap) return;
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+  wrap.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function updateReviewButton(){
+  const btn = document.getElementById('review-btn');
+  if(btn) btn.disabled = !allLanesConfigured();
+}
+
+/* ═══════════════════════════════════════════════════
+   VARIANT D — CLIENT PREFERENCES (guided questionnaire)
+   ═══════════════════════════════════════════════════ */
+function rerenderD(){ renderWizard(); }
+
+function svgCheck(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'; }
+
+/* ─── completion / reveal predicates ─── */
+function laneType(code){
+  if(prefState.hasOwnContract === true && prefState.saasCoverage[code]) return 'SaaS';
+  return 'Managed';
+}
+function dManagedLanes(){ return prefSelectedCountries().filter(c => laneType(c.code) === 'Managed'); }
+function dHasSaasUncovered(){
+  return prefState.hasOwnContract === true && prefSelectedCountries().some(c => !prefState.saasCoverage[c.code]);
+}
+function dCountriesReady(){ return prefSelectedCountries().length > 0; }
+function dDestinationReady(){
+  if(!prefState.destination) return false;
+  if(prefState.destination === 'DTW') return !!prefState.dtwType;
+  return true; // DTR / DTP reveal once selected; text validated at submit
+}
+function dContractReady(){
+  if(prefState.hasOwnContract === null) return false;
+  if(prefState.hasOwnContract === true) return !!(prefState.saasCarrier && prefState.saasService);
+  return prefState.billingAccount !== null;
+}
+function dServiceReady(){ return !!prefState.returnService; }
+function dLabelReady(){ return !!prefState.returnLabel; }
+function dCarrierReady(){ return dManagedLanes().length === 0 || !!prefState.managedCarrier; }
+
+/* ─── carrier availability for a managed lane ─── */
+function dManagedCarrierObj(){ return CARRIER_CATALOG.find(c => c.id === prefState.managedCarrier) || null; }
+function dLaneCarrierObj(code){
+  if(laneType(code) === 'SaaS') return null; // client's own contract carrier
+  const ov = prefState.overrides[code];
+  if(ov) return CARRIER_CATALOG.find(c => c.id === ov) || null;
+  return dManagedCarrierObj();
+}
+function dLaneAvailable(code){
+  if(laneType(code) === 'SaaS') return true;
+  const carrier = dLaneCarrierObj(code);
+  if(!carrier) return false;
+  return carrierServesCountry(carrier, PREF_COUNTRY_BY_CODE[code], prefState.returnService, prefState.returnLabel);
+}
+
+/* ─── text-field validity (checked at submit) ─── */
+function dSubmitMissing(){
+  const miss = [];
+  if(!dCountriesReady()) miss.push('select at least one pickup country');
+  if(prefState.destination === 'DTR'){
+    if(!prefState.dtrAddress.line1.trim()) miss.push('destination address line 1');
+    if(!prefState.dtrAddress.city.trim()) miss.push('destination city');
+    if(!prefState.dtrAddress.country.trim()) miss.push('destination country');
+  }
+  if(prefState.hasOwnContract === true && !prefState.saasCreds.accountId.trim()) miss.push('carrier agreement credentials');
+  if(prefState.hasOwnContract === false && prefState.billingAccount === 'client'){
+    if(!prefState.bankDetails.holder.trim()) miss.push('bank account holder');
+    if(!prefState.bankDetails.iban.trim()) miss.push('bank IBAN');
+  }
+  if(!dServiceReady()) miss.push('return service');
+  if(!dLabelReady()) miss.push('return label option');
+  if(!dCarrierReady()) miss.push('carrier for managed lanes');
+  // any unresolved availability exception?
+  const unresolved = dManagedLanes().filter(c => !dLaneAvailable(c.code));
+  if(unresolved.length) miss.push(`resolve ${unresolved.length} unavailable lane(s)`);
+  return miss;
+}
+
+/* ─── main render ─── */
+function renderVariantD(root){
+  const sel = prefSelectedCountries();
+  root.appendChild(el('div',{class:'wizard-header'},
+    el('div',{class:'wizard-crumb'}, 'First Mile Config · Client Preferences'),
+    el('div',{class:'wizard-title'}, `Preferences for ${state.client}`)
+  ));
+
+  root.appendChild(dCardCountries());
+  if(dCountriesReady()) root.appendChild(dCardDestination());
+  if(dCountriesReady() && dDestinationReady()) root.appendChild(dCardContract());
+  if(dDestinationReady() && dContractReady()) root.appendChild(dCardReturnService());
+  if(dContractReady() && dServiceReady()) root.appendChild(dCardReturnLabel());
+  if(dServiceReady() && dLabelReady()) root.appendChild(dCardCarrier());
+  if(dLabelReady() && dCarrierReady()) root.appendChild(dCardSubmit());
+}
+
+/* ─── Q1: pickup countries ─── */
+function dCardCountries(){
+  const total = PREF_COUNTRIES.length;
+  const selN = prefSelectedCountries().length;
+  const card = el('div',{class:'q-card' + (dCountriesReady() ? ' answered' : '')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, dCountriesReady() ? el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}}) : '1'),
+      el('div',{class:'q-titlewrap'},
+        el('div',{class:'q-title'}, 'What countries will returns be picked up from?')
+      )
+    )
+  );
+  const body = el('div',{class:'q-body'});
+  PREF_REGIONS.forEach(region => {
+    const codes = region.countries.map(c => c.code);
+    const onCount = codes.filter(c => prefState.pickupCountries[c]).length;
+    const allOn = onCount === codes.length, someOn = onCount > 0 && !allOn;
+    const open = prefState.openRegions[region.name];
+
+    const checkCls = 'region-check' + (allOn ? ' all' : someOn ? ' some' : '');
+    const head = el('button',{class:'region-head', onclick:(e)=>{
+      // clicks on the checkbox toggle all; elsewhere toggles open
+      prefState.openRegions[region.name] = !prefState.openRegions[region.name]; rerenderD();
+    }});
+    const checkBox = el('span',{class:checkCls, style:{position:'relative'}, html:allOn ? svgCheck() : '', onclick:(e)=>{
+      e.stopPropagation();
+      const target = !allOn; codes.forEach(c => prefState.pickupCountries[c] = target);
+      rerenderD();
+    }});
+    head.appendChild(checkBox);
+    head.appendChild(el('span',{class:'region-name'}, region.name));
+    head.appendChild(el('span',{class:'region-count'}, `${onCount} / ${codes.length}`));
+    head.appendChild(el('span',{class:'region-chev', html:icon('chevDown')}));
+
+    const region_el = el('div',{class:'region' + (open ? ' open' : '')});
+    region_el.appendChild(head);
+
+    const rbody = el('div',{class:'region-body'});
+    region.countries.forEach(c => {
+      const on = prefState.pickupCountries[c.code];
+      rbody.appendChild(el('div',{class:'cc' + (on ? ' on' : ''), onclick:()=>{
+        prefState.pickupCountries[c.code] = !prefState.pickupCountries[c.code]; rerenderD();
+      }},
+        el('span',{class:'cc-box', html:svgCheck()}),
+        el('span',{class:'cc-flag'}, c.flag),
+        el('span',{class:'cc-name'}, c.name)
+      ));
+    });
+    region_el.appendChild(rbody);
+    body.appendChild(region_el);
+  });
+  card.appendChild(body);
+  return card;
+}
+
+/* ─── Q2: destination ─── */
+function dCardDestination(){
+  const ready = dDestinationReady();
+  const card = el('div',{class:'q-card' + (ready ? ' answered' : '')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, ready ? el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}}) : '2'),
+      el('div',{class:'q-titlewrap'},
+        el('div',{class:'q-title'}, 'Where do you want to send the return parcel?')
+      )
+    )
+  );
+  const body = el('div',{class:'q-body'});
+  const opts = [
+    { v:'DTW', name:'ReBound Warehouse', code:'DTW' },
+    { v:'DTR', name:'Client facility or Warehouse', code:'DTR' },
+    { v:'DTP', name:'ReBound Partners', code:'DTP' },
+  ];
+  const list = el('div',{class:'opt-list'});
+  opts.forEach(o => {
+    list.appendChild(el('button',{class:'opt' + (prefState.destination===o.v?' active':''), onclick:()=>{
+      prefState.destination = o.v;
+      if(o.v!=='DTW') prefState.dtwType = null;
+      rerenderD();
+    }},
+      el('span',{class:'opt-radio'}),
+      el('span',{class:'opt-text'},
+        el('span',{class:'opt-name'}, o.name, el('span',{class:'opt-code'}, o.code))
+      )
+    ));
+  });
+  body.appendChild(list);
+
+  // DTW branch
+  if(prefState.destination === 'DTW'){
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Which warehouse do you want to send it to?'));
+    const wlist = el('div',{class:'opt-list'});
+    [['local','Local'],['ERC','ERC']].forEach(([v,n])=>{
+      wlist.appendChild(el('button',{class:'opt'+(prefState.dtwType===v?' active':''), onclick:()=>{ prefState.dtwType=v; rerenderD(); }},
+        el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, n))
+      ));
+    });
+    body.appendChild(wlist);
+
+    if(prefState.dtwType === 'ERC'){
+      body.appendChild(el('div',{class:'info-banner blue',style:{marginTop:'12px',marginBottom:'0'}},
+        el('span',{html:icon('info')}),
+        el('span',{html:`<b>${ERC_WAREHOUSE}</b>`})
+      ));
+    } else if(prefState.dtwType === 'local'){
+      body.appendChild(el('div',{class:'q-mini-label'}, 'Local destination warehouses'));
+      const whWrap = el('div',{class:'wh-list'});
+      prefSelectedCountries().forEach(c => {
+        const on = prefState.localWarehouses[c.code];
+        whWrap.appendChild(el('div',{class:'wh-row'+(on?' on':''), onclick:()=>{ prefState.localWarehouses[c.code]=!on; rerenderD(); }},
+          el('span',{class:'cc-box', html:svgCheck()}),
+          el('span',{class:'wh-flag'}, c.flag),
+          el('span',{class:'wh-country'}, c.name),
+          el('span',{class:'wh-code'+(c.dmn?'':' placeholder')}, c.wh)
+        ));
+      });
+      body.appendChild(whWrap);
+    }
+  }
+
+  // DTR branch
+  if(prefState.destination === 'DTR'){
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Destination address'));
+    body.appendChild(dAddressForm());
+  }
+
+  // DTP branch
+  if(prefState.destination === 'DTP'){
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Choose a ReBound partner'));
+    const plist = el('div',{class:'opt-list'});
+    DTP_PARTNERS.forEach(p => {
+      plist.appendChild(el('button',{class:'opt'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
+        el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+      ));
+    });
+    body.appendChild(plist);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+function dAddressForm(){
+  const a = prefState.dtrAddress;
+  const grid = el('div',{class:'form-grid'});
+  const mk = (key,label,full)=> el('div',{class:'fg'+(full?' fg-full':''), style: full?{gridColumn:'1 / -1'}:undefined},
+    el('label',{}, label),
+    el('input',{type:'text', value:a[key], placeholder:label, oninput:(e)=>{ a[key]=e.target.value; updateJson(); refreshSubmitBtn(); }})
+  );
+  grid.appendChild(mk('line1','Address line 1', true));
+  grid.appendChild(mk('line2','Address line 2', true));
+  grid.appendChild(mk('line3','Address line 3', true));
+  grid.appendChild(mk('city','City'));
+  grid.appendChild(mk('postal','Postal code'));
+  grid.appendChild(mk('country','Country', true));
+  return grid;
+}
+
+/* ─── Q3: carrier contract ─── */
+function dCardContract(){
+  const ready = dContractReady();
+  const card = el('div',{class:'q-card' + (ready ? ' answered' : '')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, ready ? el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}}) : '3'),
+      el('div',{class:'q-titlewrap'},
+        el('div',{class:'q-title'}, 'Do you have your own contract with carriers?')
+      )
+    )
+  );
+  const body = el('div',{class:'q-body'});
+  const list = el('div',{class:'opt-list'});
+  [[true,'Yes'],[false,'No']].forEach(([v,n])=>{
+    list.appendChild(el('button',{class:'opt'+(prefState.hasOwnContract===v?' active':''), onclick:()=>{
+      prefState.hasOwnContract=v;
+      if(v){ prefSelectedCountries().forEach(c=>{ if(prefState.saasCoverage[c.code]===undefined) prefState.saasCoverage[c.code]=true; }); }
+      rerenderD();
+    }},
+      el('span',{class:'opt-radio'}),
+      el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, n))
+    ));
+  });
+  body.appendChild(list);
+
+  if(prefState.hasOwnContract === true){
+    body.appendChild(el('div',{class:'lane-type-badge saas'},
+      el('span',{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'}),
+      el('span',{html:'This is a <b>client-owned contract</b> → SaaS lane'})
+    ));
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Which carrier company?'));
+    const cg = el('div',{class:'radio-group'});
+    CONTRACT_CARRIERS.forEach(cr => cg.appendChild(el('button',{class:'radio'+(prefState.saasCarrier===cr?' active':''), onclick:()=>{ prefState.saasCarrier=cr; rerenderD(); }}, cr)));
+    body.appendChild(cg);
+
+    if(prefState.saasCarrier){
+      body.appendChild(el('div',{class:'q-mini-label'}, 'What type of return service?'));
+      const sg = el('div',{class:'radio-group'});
+      RETURN_SERVICES.forEach(s => sg.appendChild(el('button',{class:'radio'+(prefState.saasService===s?' active':''), onclick:()=>{ prefState.saasService=s; rerenderD(); }}, s)));
+      body.appendChild(sg);
+    }
+
+    if(prefState.saasCarrier && prefState.saasService){
+      body.appendChild(el('div',{class:'q-mini-label'}, `Credentials for your ${prefState.saasCarrier} agreement`));
+      const grid = el('div',{class:'form-grid'});
+      grid.appendChild(el('div',{class:'fg'}, el('label',{},'Account / Contract ID'),
+        el('input',{type:'text', value:prefState.saasCreds.accountId, placeholder:'e.g. 0001234567', oninput:(e)=>{ prefState.saasCreds.accountId=e.target.value; updateJson(); refreshSubmitBtn(); }})));
+      grid.appendChild(el('div',{class:'fg'}, el('label',{},'API key / Reference'),
+        el('input',{type:'text', value:prefState.saasCreds.apiKey, placeholder:'optional', oninput:(e)=>{ prefState.saasCreds.apiKey=e.target.value; updateJson(); }})));
+      body.appendChild(grid);
+
+      // Coverage — carrier may serve only some locations
+      body.appendChild(el('div',{class:'q-mini-label'}, 'Which pickup countries does this contract cover?'));
+      const cov = el('div',{class:'wh-list'});
+      prefSelectedCountries().forEach(c => {
+        const on = prefState.saasCoverage[c.code];
+        cov.appendChild(el('div',{class:'wh-row'+(on?' on':''), onclick:()=>{ prefState.saasCoverage[c.code]=!on; rerenderD(); }},
+          el('span',{class:'cc-box', html:svgCheck()}),
+          el('span',{class:'wh-flag'}, c.flag),
+          el('span',{class:'wh-country'}, c.name),
+          el('span',{class:'wh-code'+(on?'':' placeholder')}, on ? 'client contract' : 'ReBound managed')
+        ));
+      });
+      body.appendChild(cov);
+
+      if(dHasSaasUncovered()){
+        const uncovered = prefSelectedCountries().filter(c=>!prefState.saasCoverage[c.code]);
+        body.appendChild(el('div',{class:'exc-banner'},
+          el('span',{html:icon('info')}),
+          el('span',{html:`<b>${uncovered.length} lane(s)</b> (${uncovered.map(c=>c.name).join(', ')}) aren't covered by your contract. They'll be configured as <b>ReBound-owned Managed</b> lanes — pick the billing account below.`})
+        ));
+        body.appendChild(dManagedBillingBlock(true));
+      }
+    }
+  } else if(prefState.hasOwnContract === false){
+    body.appendChild(el('div',{class:'lane-type-badge managed'},
+      el('span',{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9M14 17H5M17 17a3 3 0 100-6 3 3 0 000 6zM7 13a3 3 0 100-6 3 3 0 000 6z"/></svg>'}),
+      el('span',{html:'This is a <b>ReBound-owned contract</b> → Managed lane'})
+    ));
+    body.appendChild(dManagedBillingBlock(false));
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+function dManagedBillingBlock(forFallback){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'q-mini-label'}, 'Which account would you like to use for billing?'));
+  const list = el('div',{class:'opt-list'});
+  [['rebound','ReBound account'],['client','Client’s own account']].forEach(([v,n])=>{
+    list.appendChild(el('button',{class:'opt'+(prefState.billingAccount===v?' active':''), onclick:()=>{ prefState.billingAccount=v; rerenderD(); }},
+      el('span',{class:'opt-radio'}),
+      el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, n))
+    ));
+  });
+  wrap.appendChild(list);
+  if(prefState.billingAccount === 'client'){
+    wrap.appendChild(el('div',{class:'q-mini-label'}, 'Bank details'));
+    const b = prefState.bankDetails;
+    const grid = el('div',{class:'form-grid'});
+    grid.appendChild(el('div',{class:'fg fg-full',style:{gridColumn:'1 / -1'}}, el('label',{},'Account holder'),
+      el('input',{type:'text', value:b.holder, placeholder:'Account holder name', oninput:(e)=>{ b.holder=e.target.value; updateJson(); refreshSubmitBtn(); }})));
+    grid.appendChild(el('div',{class:'fg'}, el('label',{},'IBAN'),
+      el('input',{type:'text', value:b.iban, placeholder:'IBAN', oninput:(e)=>{ b.iban=e.target.value; updateJson(); refreshSubmitBtn(); }})));
+    grid.appendChild(el('div',{class:'fg'}, el('label',{},'BIC / SWIFT'),
+      el('input',{type:'text', value:b.bic, placeholder:'BIC', oninput:(e)=>{ b.bic=e.target.value; updateJson(); }})));
+    wrap.appendChild(grid);
+  }
+  return wrap;
+}
+
+/* ─── Q4: return service ─── */
+function dCardReturnService(){
+  const ready = dServiceReady();
+  const card = el('div',{class:'q-card'+(ready?' answered':'')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, ready ? el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}}) : '4'),
+      el('div',{class:'q-titlewrap'},
+        el('div',{class:'q-title'}, 'Which return service would you like?')
+      )
+    )
+  );
+  const body = el('div',{class:'q-body'});
+  const g = el('div',{class:'radio-group'});
+  RETURN_SERVICES.forEach(s => g.appendChild(el('button',{class:'radio'+(prefState.returnService===s?' active':''), onclick:()=>{ prefState.returnService=s; prefState.overrides={}; rerenderD(); }}, s)));
+  body.appendChild(g);
+  card.appendChild(body);
+  return card;
+}
+
+/* ─── Q5: return label ─── */
+function dCardReturnLabel(){
+  const ready = dLabelReady();
+  const card = el('div',{class:'q-card'+(ready?' answered':'')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, ready ? el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}}) : '5'),
+      el('div',{class:'q-titlewrap'},
+        el('div',{class:'q-title'}, 'Which return label option would you like to offer to your consumers?')
+      )
+    )
+  );
+  const body = el('div',{class:'q-body'});
+  const g = el('div',{class:'radio-group'});
+  RETURN_LABELS.forEach(s => g.appendChild(el('button',{class:'radio'+(prefState.returnLabel===s?' active':''), onclick:()=>{ prefState.returnLabel=s; prefState.overrides={}; rerenderD(); }}, s)));
+  body.appendChild(g);
+  card.appendChild(body);
+  return card;
+}
+
+/* ─── Q6: carrier selection + availability ─── */
+function dCardCarrier(){
+  const ready = dCarrierReady();
+  const managed = dManagedLanes();
+  const card = el('div',{class:'q-card'+(ready?' answered':'')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, ready ? el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}}) : '6'),
+      el('div',{class:'q-titlewrap'},
+        el('div',{class:'q-title'}, 'Choose the carrier for your return lanes')
+      )
+    )
+  );
+  const body = el('div',{class:'q-body'});
+
+  if(prefState.hasOwnContract === true){
+    const saasLanes = prefSelectedCountries().filter(c=>laneType(c.code)==='SaaS');
+    if(saasLanes.length){
+      body.appendChild(el('div',{class:'lane-type-badge saas',style:{marginTop:'0'}},
+        el('span',{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'}),
+        el('span',{html:`${saasLanes.length} SaaS lane(s) are locked to your contract carrier <b>${prefState.saasCarrier}</b>.`})
+      ));
+    }
+  }
+
+  if(managed.length === 0){
+    body.appendChild(el('div',{class:'info-banner blue',style:{marginBottom:'0'}},
+      el('span',{html:icon('info')}),
+      el('span',{html:'All selected lanes are covered by your own carrier contract — no ReBound carrier selection needed.'})
+    ));
+    card.appendChild(body);
+    return card;
+  }
+
+  body.appendChild(el('div',{class:'q-mini-label'}, `Available carriers for your ${managed.length} ReBound-managed lane(s)`));
+  const pick = el('div',{class:'carrier-pick'});
+  CARRIER_CATALOG.forEach(carrier => {
+    const offersCombo = carrier.services.includes(prefState.returnService) && carrier.labels.includes(prefState.returnLabel);
+    const servedCount = managed.filter(c => carrierServesCountry(carrier, c, prefState.returnService, prefState.returnLabel)).length;
+    const cov = !offersCombo || servedCount===0 ? 'none' : servedCount===managed.length ? 'full' : 'partial';
+    const disabled = cov === 'none';
+    const active = prefState.managedCarrier === carrier.id;
+    const covLabel = cov==='full' ? 'All lanes' : cov==='partial' ? `${servedCount}/${managed.length} lanes` : 'Not available';
+    pick.appendChild(el('button',{class:'carrier-opt'+(active?' active':'')+(disabled?' disabled':''), onclick: disabled?undefined:()=>{ prefState.managedCarrier=carrier.id; prefState.overrides={}; rerenderD(); }},
+      el('span',{class:'carrier-badge '+carrier.badge}, carrier.id==='PostItalia'?'PI':carrier.id==='PostNL'?'PN':carrier.id),
+      el('span',{class:'carrier-opt-info'},
+        el('span',{class:'carrier-opt-name'}, carrier.name),
+        el('span',{class:'carrier-opt-meta'}, `${carrier.services.join(' · ')} — ${carrier.labels.map(l=>l.split(' ')[0]).join(' / ')}`)
+      ),
+      el('span',{class:'carrier-cov '+cov}, covLabel)
+    ));
+  });
+  body.appendChild(pick);
+
+  // availability matrix + exception handling
+  if(prefState.managedCarrier){
+    const unavailable = managed.filter(c => !dLaneAvailable(c.code));
+    if(unavailable.length){
+      body.appendChild(el('div',{class:'exc-banner'},
+        el('span',{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'}),
+        el('span',{html:`<b>${dManagedCarrierObj().name}</b> can't offer <b>${prefState.returnService} + ${prefState.returnLabel}</b> in ${unavailable.length} country(ies). Pick an alternative carrier per lane below, or change the service/label above.`})
+      ));
+    }
+    const table = el('table',{class:'avail-table'});
+    table.appendChild(el('thead',{}, el('tr',{},
+      el('th',{},'Country'), el('th',{},'Carrier'), el('th',{},'Status'), el('th',{},'Fix')
+    )));
+    const tb = el('tbody',{});
+    managed.forEach(c => {
+      const ok = dLaneAvailable(c.code);
+      const carrier = dLaneCarrierObj(c.code);
+      const tr = el('tr',{});
+      tr.appendChild(el('td',{}, `${c.flag} ${c.name}`));
+      tr.appendChild(el('td',{}, carrier ? carrier.name : '—'));
+      tr.appendChild(el('td',{}, el('span',{class:'avail-pill '+(ok?'ok':'no')}, ok?'Available':'Unavailable')));
+      const fixCell = el('td',{});
+      if(!ok){
+        const alts = CARRIER_CATALOG.filter(ca => carrierServesCountry(ca, c, prefState.returnService, prefState.returnLabel));
+        if(alts.length){
+          const sel = el('select',{style:{padding:'5px 8px',border:'1px solid var(--border)',borderRadius:'6px',fontSize:'12px'}, onchange:(e)=>{ if(e.target.value){ prefState.overrides[c.code]=e.target.value; rerenderD(); } }});
+          sel.appendChild(el('option',{value:''},'Try another carrier…'));
+          alts.forEach(a => sel.appendChild(el('option',{value:a.id}, a.name)));
+          fixCell.appendChild(sel);
+        } else {
+          fixCell.appendChild(el('span',{style:{fontSize:'11px',color:'var(--red)'}}, 'No carrier offers this service+label here — change service/label.'));
+        }
+      } else {
+        fixCell.appendChild(el('span',{style:{color:'var(--green)',fontSize:'12px'}}, '✓'));
+      }
+      tr.appendChild(fixCell);
+      tb.appendChild(tr);
+    });
+    table.appendChild(tb);
+    body.appendChild(table);
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+/* ─── Q7: submit ─── */
+function dCardSubmit(){
+  const missing = dSubmitMissing();
+  const ready = missing.length === 0;
+  const wrap = el('div',{id:'d-submit'});
+  wrap.appendChild(el('div',{class:'section-divider'},
+    el('div',{class:'section-divider-line'}), el('div',{class:'section-divider-text'}, 'Finish'), el('div',{class:'section-divider-line'})
+  ));
+  const bar = el('div',{class:'action-bar'+(ready?' ready':'')},
+    el('div',{class:'action-bar-text'},
+      el('div',{class:'action-bar-title', id:'d-submit-title'}, ready ? 'Preferences complete' : 'A few details left'),
+      el('div',{class:'action-bar-sub', id:'d-submit-sub'}, ready
+        ? `${prefSelectedCountries().length} lanes derived · config ready on the right`
+        : 'Still need: ' + missing.join(', '))
+    ),
+    el('button',{class:'action-cta', id:'d-submit-btn', disabled: ready?undefined:'disabled', onclick:()=>{ if(dSubmitMissing().length===0) dDoSubmit(); }},
+      el('span',{html:svgCheck()}), 'Submit configuration'
+    )
+  );
+  if(!ready) bar.querySelector('#d-submit-btn').disabled = true;
+  wrap.appendChild(bar);
+  return wrap;
+}
+function refreshSubmitBtn(){
+  const btn = document.getElementById('d-submit-btn');
+  if(!btn) return;
+  const missing = dSubmitMissing();
+  const ready = missing.length === 0;
+  btn.disabled = !ready;
+  const bar = btn.closest('.action-bar');
+  if(bar) bar.classList.toggle('ready', ready);
+  const t = document.getElementById('d-submit-title'), s = document.getElementById('d-submit-sub');
+  if(t) t.textContent = ready ? 'Preferences complete' : 'A few details left';
+  if(s) s.textContent = ready ? `${prefSelectedCountries().length} lanes derived · config ready on the right` : 'Still need: ' + missing.join(', ');
+}
+function dDoSubmit(){
+  const btn = document.getElementById('d-submit-btn');
+  if(btn){ btn.innerHTML = '✓ Submitted'; btn.disabled = true; }
+  const jp = document.getElementById('json-panel');
+  if(jp && !jp.classList.contains('open')) toggleJsonPanel();
+  const sub = document.getElementById('d-submit-sub');
+  if(sub) sub.textContent = 'Configuration captured. The JSON on the right is the output payload.';
+}
+
+/* ═══ JSON PREVIEW PANEL ═══ */
+function dDestinationWarehouse(code){
+  if(prefState.destination === 'DTW') return prefState.dtwType === 'ERC' ? ERC_WAREHOUSE : (prefState.localWarehouses[code] ? PREF_COUNTRY_BY_CODE[code].wh : null);
+  if(prefState.destination === 'DTR') return 'Client facility';
+  if(prefState.destination === 'DTP') return prefState.dtpPartner || null;
+  return null;
+}
+function buildPrefJson(){
+  const sel = prefSelectedCountries();
+  const out = {
+    client: state.client,
+    configurator: 'client-preferences',
+    processingHub: PROCESSING_WH,
+    pickup: {
+      totalSelected: sel.length,
+      byRegion: PREF_REGIONS.map(r => ({
+        region: r.name,
+        countries: r.countries.filter(c=>prefState.pickupCountries[c.code]).map(c=>c.code)
+      })).filter(r => r.countries.length)
+    },
+    destination: (()=>{
+      if(!prefState.destination) return null;
+      if(prefState.destination==='DTW') return {
+        type:'DTW', label:'ReBound Warehouse', warehouseScope: prefState.dtwType,
+        ...(prefState.dtwType==='ERC' ? { warehouse: ERC_WAREHOUSE } :
+            prefState.dtwType==='local' ? { localWarehouses: sel.filter(c=>prefState.localWarehouses[c.code]).map(c=>({country:c.code, warehouse:c.wh, source: c.dmn?'generic_sorting_matrix.dmn':'placeholder'})) } : {})
+      };
+      if(prefState.destination==='DTR') return { type:'DTR', label:'Client facility or Warehouse', address: {...prefState.dtrAddress} };
+      if(prefState.destination==='DTP') return { type:'DTP', label:'ReBound Partners', partner: prefState.dtpPartner };
+    })(),
+    carrierContract: (()=>{
+      if(prefState.hasOwnContract===null) return null;
+      if(prefState.hasOwnContract===true){
+        const obj = {
+          ownership:'client-owned', laneType:'SaaS',
+          carrier: prefState.saasCarrier, returnService: prefState.saasService,
+          credentials: { accountId: prefState.saasCreds.accountId || null, apiKey: prefState.saasCreds.apiKey || null },
+          coverage: { covered: sel.filter(c=>prefState.saasCoverage[c.code]).map(c=>c.code), uncovered: sel.filter(c=>!prefState.saasCoverage[c.code]).map(c=>c.code) }
+        };
+        if(dHasSaasUncovered()) obj.fallbackBilling = prefState.billingAccount ? { account: prefState.billingAccount, ...(prefState.billingAccount==='client'?{bankDetails:{...prefState.bankDetails}}:{}) } : null;
+        return obj;
+      }
+      return {
+        ownership:'rebound-owned', laneType:'Managed',
+        billingAccount: prefState.billingAccount,
+        ...(prefState.billingAccount==='client' ? { bankDetails: {...prefState.bankDetails} } : {})
+      };
+    })(),
+    consumerReturnExperience: {
+      returnService: prefState.returnService,
+      returnLabel: prefState.returnLabel,
+      managedCarrier: prefState.managedCarrier
+    },
+    lanes: sel.map(c => {
+      const lt = laneType(c.code);
+      const carrier = lt==='SaaS' ? prefState.saasCarrier : (dLaneCarrierObj(c.code)?.id || prefState.managedCarrier);
+      const available = dLaneAvailable(c.code);
+      const lane = {
+        country: c.code,
+        origin: c.wh,
+        destination: dDestinationWarehouse(c.code),
+        processingHub: PROCESSING_WH,
+        laneType: lt,
+        carrier: carrier || null,
+        service: lt==='SaaS' ? prefState.saasService : prefState.returnService,
+        label: prefState.returnLabel,
+        available
+      };
+      if(lt==='Managed' && !available) lane.exception = 'service+label not available with selected carrier in this country';
+      if(prefState.overrides[c.code]) lane.carrierOverride = prefState.overrides[c.code];
+      return lane;
+    }),
+    exceptions: sel.filter(c=>laneType(c.code)==='Managed' && !dLaneAvailable(c.code)).map(c=>({
+      country:c.code,
+      message:`${dManagedCarrierObj()?.name||'Carrier'} does not offer ${prefState.returnService} + ${prefState.returnLabel} in ${c.name}. Try another carrier or change the service/label.`
+    })),
+    completeness: { ready: dSubmitMissing().length===0, missing: dSubmitMissing() }
+  };
+  return out;
+}
+function highlightJson(obj){
+  const str = JSON.stringify(obj, null, 2);
+  return str.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(\.\d+)?([eE][+-]?\d+)?)/g, m=>{
+      let cls='jn';
+      if(/^"/.test(m)){ cls = /:$/.test(m) ? 'jk' : 'js'; }
+      else if(/true|false/.test(m)){ cls='jb'; }
+      else if(/null/.test(m)){ cls='jnull'; }
+      return `<span class="${cls}">${m}</span>`;
+    });
+}
+function updateJson(){
+  if(state.variant !== 'D') return;
+  const out = document.getElementById('json-out');
+  if(out) out.innerHTML = highlightJson(buildPrefJson());
+}
+function toggleJsonPanel(){
+  const jp = document.getElementById('json-panel');
+  if(!jp) return;
+  jp.classList.toggle('open');
+  if(jp.classList.contains('open')) updateJson();
+}
+function copyJson(){
+  const txt = JSON.stringify(buildPrefJson(), null, 2);
+  const btn = document.getElementById('json-copy');
+  const done = ()=>{ if(btn){ btn.classList.add('copied'); const o=btn.innerHTML; btn.innerHTML='✓ Copied'; setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML=o; },1400);} };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
+  else { const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); done(); }
+}
+
+/* ─────────────────────────────────────────────────
+   FEEDBACK WIDGET
+   ───────────────────────────────────────────────── */
+function toggleFb(){
+  const pop = document.getElementById('fb-pop');
+  pop.classList.toggle('open');
+  if(pop.classList.contains('open')){
+    setTimeout(() => document.getElementById('fb-text').focus(), 120);
+  }
+}
+
+function sendFb(){
+  const ta = document.getElementById('fb-text');
+  const msg = document.getElementById('fb-msg');
+  const text = ta.value.trim();
+  if(!text) return;
+  const payload = { text, client: state.client, variant: state.variant, when: new Date().toISOString() };
+  try{
+    const key = 'firstmile-config-feedback';
+    const list = JSON.parse(localStorage.getItem(key) || '[]');
+    list.push(payload);
+    localStorage.setItem(key, JSON.stringify(list));
+  }catch(e){}
+  ta.value = '';
+  msg.textContent = '✓ Feedback saved. Thank you!';
+  msg.style.color = 'var(--green)';
+  msg.classList.add('show');
+  setTimeout(() => {
+    msg.classList.remove('show');
+    document.getElementById('fb-pop').classList.remove('open');
+  }, 1800);
+}
+
+document.addEventListener('click', e => {
+  const pop = document.getElementById('fb-pop');
+  const btn = document.querySelector('.fb-btn');
+  if(pop && pop.classList.contains('open') && !pop.contains(e.target) && !btn.contains(e.target)){
+    pop.classList.remove('open');
+  }
+});
+
+/* ─── Init ─── */
+setView('landing');
+</script>
+</body>
+</html>
