@@ -465,6 +465,24 @@ a{color:inherit;text-decoration:none}
 body[data-variant="D"] .wizard,
 body[data-variant="E"] .wizard{max-width:1040px}
 
+/* ─── Variant E (Tabular) table extras ─── */
+.config-table .lane-badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.config-table .lane-badge.managed{background:var(--brand-soft);color:var(--brand)}
+.config-table .lane-badge.saas{background:#F0FDFA;color:#0D9488}
+.config-table .tab-check{width:18px;height:18px;border:1.5px solid var(--border);border-radius:5px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#fff;color:#fff;transition:all .12s}
+.config-table .tab-check.on{background:var(--brand);border-color:var(--brand)}
+.config-table .tab-check svg{width:11px;height:11px}
+.row-act{display:inline-flex;align-items:center;gap:6px}
+.row-act button{width:25px;height:25px;border:1px solid var(--border);background:#fff;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .12s;padding:0}
+.row-act button:hover{border-color:var(--brand-2);color:var(--brand);background:var(--brand-soft)}
+.row-act button.rm:hover{border-color:var(--red);color:var(--red);background:var(--red-soft)}
+.row-act svg{width:13px;height:13px}
+@keyframes needFillPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}50%{box-shadow:0 0 0 3px rgba(239,68,68,.16)}}
+.need-fill{border-color:var(--red)!important;animation:needFillPulse 1.5s ease-in-out infinite}
+.combo-warn{display:flex;gap:11px;align-items:center;padding:14px 16px;border:1px solid rgba(239,68,68,.28);background:var(--red-soft);border-radius:12px;color:#991B1B;font-size:13px;line-height:1.45}
+.combo-warn svg{width:18px;height:18px;flex-shrink:0;color:var(--red)}
+.combo-warn b{font-weight:700}
+
 /* question card */
 .q-card{
   background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
@@ -931,7 +949,7 @@ const RETURN_LABELS   = ['Printed label','Paperless / QR code'];
 /* consumer-facing carrier catalog (Q6) — which carriers offer which service+label, and where */
 const CARRIER_CATALOG = [
   { id:'DHL',        name:'DHL',            badge:'cb-dhl',        services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','North America','Pacific'] },
-  { id:'PostNL',     name:'PostNL',         badge:'cb-postnl',     services:['Drop-off','Self-post'],labels:['Printed label','Paperless / QR code'], regions:['European Union'] },
+  { id:'PostNL',     name:'PostNL',         badge:'cb-postnl',     services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union'] },
   { id:'PostItalia', name:'Poste Italiane', badge:'cb-postitalia', services:['Drop-off'],            labels:['Printed label'],                       regions:['European Union'], countries:['IT'] },
   { id:'FedEx',      name:'FedEx',          badge:'cb-fedex',      services:['Pickup','Drop-off'],   labels:['Printed label'],                       regions:['North America','Asia','South America'] },
   { id:'GLS',        name:'GLS',            badge:'cb-generic',    services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','North America'] },
@@ -998,26 +1016,45 @@ function prefSelectedCountries(){ return PREF_COUNTRIES.filter(c => prefState.pi
 
 /* ─── Variant E (Tabular) state ─── */
 let tabState = {};
+let _tabSeq = 0;
+function makeTabRow(code, primary){
+  return { id:'r'+(++_tabSeq), code, primary:!!primary, carrier:null, service:null, label:null, hasContract:false, accountNumber:'' };
+}
 function initTabular(){
+  _tabSeq = 0;
   tabState = {
     returnService: null,   // Q1 — global
     returnLabel:   null,    // Q2 — global
     destination:   null,    // Q3 — global (DTW | DTR | DTP)
-    rows: {},               // code -> { carrier, service, label }
+    dtwType:       null,    // 'local' | 'ERC'
+    dtrAddress:    { line1:'', line2:'', line3:'', city:'', postal:'', country:'' },
+    dtpPartner:    null,
+    rows: COUNTRIES.map(c => makeTabRow(c.code, true)),  // one primary lane per country
   };
-  COUNTRIES.forEach(c => { tabState.rows[c.code] = { carrier:null, service:null, label:null }; });
 }
-const TAB_CARRIERS = CARRIER_CATALOG.map(c => c.id); // dropdown options
-function tabDefaultCarrier(){ return TAB_CARRIERS[0]; } // default carrier (DHL); availability logic comes later
-// push the current global answers down into every row (resets per-row overrides)
+// carriers that can serve a given service + label (used for defaults, per-row options, and the no-carrier check)
+function eAvailableCarriers(service, label){
+  return CARRIER_CATALOG.filter(c => (!service || c.services.includes(service)) && (!label || c.labels.includes(label)));
+}
+function eComboCovered(){ return eAvailableCarriers(tabState.returnService, tabState.returnLabel).length > 0; }
+function tabDefaultCarrier(){ const av = eAvailableCarriers(tabState.returnService, tabState.returnLabel); return av.length ? av[0].id : null; }
+// push the global answers down into PRIMARY rows only (duplicated rows stay as the user set them)
 function tabSyncRows(){
-  COUNTRIES.forEach(c => {
-    const r = tabState.rows[c.code];
-    r.service = tabState.returnService;
-    r.label   = tabState.returnLabel;
-    if(!r.carrier) r.carrier = tabDefaultCarrier();
+  tabState.rows.forEach(r => {
+    if(r.primary){
+      r.service = tabState.returnService;
+      r.label   = tabState.returnLabel;
+      if(!r.carrier || !eAvailableCarriers(r.service, r.label).some(c=>c.id===r.carrier)) r.carrier = tabDefaultCarrier();
+    }
   });
 }
+function tabDuplicate(id){
+  const idx = tabState.rows.findIndex(r=>r.id===id);
+  if(idx<0) return;
+  tabState.rows.splice(idx+1, 0, makeTabRow(tabState.rows[idx].code, false)); // blank config — user must fill
+  rerenderE();
+}
+function tabRemove(id){ tabState.rows = tabState.rows.filter(r=>r.id!==id); rerenderE(); }
 
 /* ─────────────────────────────────────────────────
    HELPERS
@@ -2411,8 +2448,22 @@ function rerenderE(){ renderWizard(); }
 
 function eServiceReady(){ return !!tabState.returnService; }
 function eLabelReady(){ return !!tabState.returnLabel; }
-function eDestReady(){ return !!tabState.destination; }
+function eDestReady(){
+  if(!tabState.destination) return false;
+  if(tabState.destination === 'DTW') return !!tabState.dtwType;
+  if(tabState.destination === 'DTP') return !!tabState.dtpPartner;
+  if(tabState.destination === 'DTR'){ const a = tabState.dtrAddress; return !!(a.line1.trim() && a.city.trim() && a.country.trim()); }
+  return true;
+}
 function eTableReady(){ return eServiceReady() && eLabelReady() && eDestReady(); }
+
+// short, human label for the destination column (depends on Q3 + follow-ups)
+function eDestCell(c){
+  if(tabState.destination === 'DTW') return tabState.dtwType === 'ERC' ? ERC_WAREHOUSE.split('_').slice(-1)[0] : c.wh.split('_').slice(-1)[0];
+  if(tabState.destination === 'DTR') return tabState.dtrAddress.city || 'Client facility';
+  if(tabState.destination === 'DTP') return tabState.dtpPartner || 'Partner';
+  return '—';
+}
 
 function renderVariantE(root){
   root.appendChild(el('div',{class:'wizard-header'},
@@ -2466,7 +2517,7 @@ function eCardLabel(locked){
   return card;
 }
 
-/* Q3 — destination */
+/* Q3 — destination + dynamic follow-ups */
 function eCardDestination(locked){
   const card = eCard(3, 'Where do you want to send the return parcel?', eDestReady(), locked);
   const body = el('div',{class:'q-body'});
@@ -2479,7 +2530,7 @@ function eCardDestination(locked){
   opts.forEach(o => {
     list.appendChild(el('button',{class:'opt'+(tabState.destination===o.v?' active':''), onclick:()=>{
       tabState.destination = o.v;
-      if(eTableReady()) tabSyncRows();
+      if(o.v !== 'DTW') tabState.dtwType = null;
       rerenderE();
     }},
       el('span',{class:'opt-radio'}),
@@ -2487,13 +2538,77 @@ function eCardDestination(locked){
     ));
   });
   body.appendChild(list);
+
+  // DTW → which warehouse?
+  if(tabState.destination === 'DTW'){
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Which warehouse do you want to send it to?'));
+    const wlist = el('div',{class:'opt-list'});
+    [['local','Local'],['ERC','ERC']].forEach(([v,n])=>{
+      wlist.appendChild(el('button',{class:'opt'+(tabState.dtwType===v?' active':''), onclick:()=>{ tabState.dtwType=v; rerenderE(); }},
+        el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, n))
+      ));
+    });
+    body.appendChild(wlist);
+    if(tabState.dtwType === 'ERC'){
+      body.appendChild(el('div',{class:'info-banner blue',style:{marginTop:'12px',marginBottom:'0'}},
+        el('span',{html:icon('info')}), el('span',{html:`<b>${ERC_WAREHOUSE}</b>`})));
+    } else if(tabState.dtwType === 'local'){
+      body.appendChild(el('div',{class:'info-banner blue',style:{marginTop:'12px',marginBottom:'0'}},
+        el('span',{html:icon('info')}), el('span',{html:'Each return is routed to its origin country’s local warehouse.'})));
+    }
+  }
+
+  // DTR → address form
+  if(tabState.destination === 'DTR'){
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Destination address'));
+    body.appendChild(eAddressForm());
+  }
+
+  // DTP → choose a partner
+  if(tabState.destination === 'DTP'){
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Choose a ReBound partner'));
+    const plist = el('div',{class:'opt-list'});
+    DTP_PARTNERS.forEach(p => {
+      plist.appendChild(el('button',{class:'opt'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
+        el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+      ));
+    });
+    body.appendChild(plist);
+  }
+
   card.appendChild(body);
   return card;
 }
 
-/* Table — pre-filled lanes with per-row dropdown overrides */
+function eAddressForm(){
+  const a = tabState.dtrAddress;
+  const grid = el('div',{class:'form-grid'});
+  const mk = (key,label,full)=> el('div',{class:'fg'+(full?' fg-full':''), style: full?{gridColumn:'1 / -1'}:undefined},
+    el('label',{}, label),
+    el('input',{type:'text', value:a[key], placeholder:label, oninput:(e)=>{ a[key]=e.target.value; }, onchange:()=>rerenderE()})
+  );
+  grid.appendChild(mk('line1','Address line 1', true));
+  grid.appendChild(mk('line2','Address line 2', true));
+  grid.appendChild(mk('line3','Address line 3', true));
+  grid.appendChild(mk('city','City'));
+  grid.appendChild(mk('postal','Postal code'));
+  grid.appendChild(mk('country','Country', true));
+  return grid;
+}
+
+/* helper: build a <select> with a placeholder + red boundary when empty */
+function eSelect(value, options, onChange){
+  const sel = el('select',{onchange:(e)=>onChange(e.target.value || null)});
+  const ph = el('option',{value:''}, 'Select…'); if(value==null) ph.selected = true; sel.appendChild(ph);
+  options.forEach(o => { const opt = el('option',{value:o.value}, o.text); if(value===o.value) opt.selected = true; sel.appendChild(opt); });
+  if(value==null) sel.classList.add('need-fill');
+  return sel;
+}
+
+/* Table — pre-filled lanes, per-row overrides, contract → SaaS + account #, duplicable rows */
 function eCardTable(locked){
-  // make sure every row carries the chosen defaults before we render
   if(!locked) tabSyncRows();
 
   const card = el('div',{class:'q-card'+(locked?' locked':'')},
@@ -2504,45 +2619,87 @@ function eCardTable(locked){
   );
   const body = el('div',{class:'q-body'});
 
+  // No carrier exists for the chosen service × label → user must change one of them
+  if(!locked && !eComboCovered()){
+    body.appendChild(el('div',{class:'combo-warn'},
+      el('span',{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'}),
+      el('span',{html:`No carrier offers <b>${tabState.returnService}</b> with a <b>${tabState.returnLabel}</b>. Change the return service or label above to continue.`})
+    ));
+    card.appendChild(body);
+    return card;
+  }
+
+  const showAccount = tabState.rows.some(r => r.hasContract);
+
   const tableWrap = el('div',{class:'table-scroll-wrap',style:{overflowX:'auto'}});
   const table = el('table',{class:'config-table'});
-  table.appendChild(el('thead',{}, el('tr',{},
-    el('th',{},'Country'), el('th',{},'Lane'), el('th',{},'Carrier'), el('th',{},'Return service'), el('th',{},'Return label')
-  )));
+  const headRow = el('tr',{},
+    el('th',{},'Country'), el('th',{},'Origin'), el('th',{},'Destination'),
+    el('th',{},'Carrier'), el('th',{},'Return service'), el('th',{},'Return label'),
+    el('th',{},'Lane type'), el('th',{},'Contract?')
+  );
+  if(showAccount) headRow.appendChild(el('th',{},'Account #'));
+  headRow.appendChild(el('th',{},''));
+  table.appendChild(el('thead',{}, headRow));
+
   const tbody = el('tbody',{});
-  COUNTRIES.forEach(c => {
-    const r = tabState.rows[c.code];
+  tabState.rows.forEach(r => {
+    const c = COUNTRIES.find(x => x.code === r.code);
     const tr = el('tr',{});
+
     // Country
     tr.appendChild(el('td',{}, el('span',{class:'cell-flag'}, c.flag), el('strong',{}, c.name)));
-    // Lane
-    tr.appendChild(el('td',{}, el('div',{class:'cell-lane'},
-      el('span',{}, c.wh.split('_').slice(-1)[0]), ' → ', el('span',{}, PROCESSING_WH.split('_').slice(-1)[0])
-    )));
-    // Carrier dropdown
-    const carrierSel = el('select',{onchange:(e)=>{ r.carrier = e.target.value; rerenderE(); }});
-    CARRIER_CATALOG.forEach(cr => {
-      const opt = el('option',{value:cr.id}, cr.name);
-      if(r.carrier === cr.id) opt.selected = true;
-      carrierSel.appendChild(opt);
-    });
-    tr.appendChild(el('td',{}, carrierSel));
-    // Return service dropdown
-    const svcSel = el('select',{onchange:(e)=>{ r.service = e.target.value; rerenderE(); }});
-    RETURN_SERVICES.forEach(s => {
-      const opt = el('option',{value:s}, s);
-      if(r.service === s) opt.selected = true;
-      svcSel.appendChild(opt);
-    });
-    tr.appendChild(el('td',{}, svcSel));
-    // Return label dropdown
-    const lblSel = el('select',{onchange:(e)=>{ r.label = e.target.value; rerenderE(); }});
-    RETURN_LABELS.forEach(s => {
-      const opt = el('option',{value:s}, s);
-      if(r.label === s) opt.selected = true;
-      lblSel.appendChild(opt);
-    });
-    tr.appendChild(el('td',{}, lblSel));
+    // Origin / Destination (split lane)
+    tr.appendChild(el('td',{}, el('span',{class:'cell-lane'}, el('span',{}, c.wh.split('_').slice(-1)[0]))));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-lane'}, el('span',{}, eDestCell(c)))));
+
+    // Carrier — options limited to those serving this row's service+label
+    const carrierOpts = eAvailableCarriers(r.service, r.label).map(cr => ({value:cr.id, text:cr.name}));
+    tr.appendChild(el('td',{}, eSelect(r.carrier, carrierOpts, (v)=>{ r.carrier = v; rerenderE(); })));
+
+    // Return service — clears carrier if it no longer serves the new combo
+    tr.appendChild(el('td',{}, eSelect(r.service, RETURN_SERVICES.map(s=>({value:s,text:s})), (v)=>{
+      r.service = v; if(r.carrier && !eAvailableCarriers(r.service, r.label).some(x=>x.id===r.carrier)) r.carrier=null; rerenderE();
+    })));
+    // Return label
+    tr.appendChild(el('td',{}, eSelect(r.label, RETURN_LABELS.map(s=>({value:s,text:s})), (v)=>{
+      r.label = v; if(r.carrier && !eAvailableCarriers(r.service, r.label).some(x=>x.id===r.carrier)) r.carrier=null; rerenderE();
+    })));
+
+    // Lane type (derived, uneditable)
+    const lt = r.hasContract ? 'SaaS' : 'Managed';
+    tr.appendChild(el('td',{}, el('span',{class:'lane-badge '+(r.hasContract?'saas':'managed')}, lt)));
+
+    // Contract with carrier? (checkbox)
+    tr.appendChild(el('td',{}, el('span',{class:'tab-check'+(r.hasContract?' on':''), html:r.hasContract?svgCheck():'', onclick:()=>{
+      r.hasContract = !r.hasContract; if(!r.hasContract) r.accountNumber=''; rerenderE();
+    }})));
+
+    // Account # (dynamic column)
+    if(showAccount){
+      const acctCell = el('td',{});
+      if(r.hasContract){
+        acctCell.appendChild(el('input',{type:'text', class:'account-input'+(r.accountNumber.trim()?'':' need-fill'),
+          value:r.accountNumber, placeholder:'Account #',
+          oninput:(e)=>{ r.accountNumber=e.target.value; e.target.classList.toggle('need-fill', !e.target.value.trim()); }}));
+      } else {
+        acctCell.appendChild(el('span',{style:{color:'var(--dim)'}}, '—'));
+      }
+      tr.appendChild(acctCell);
+    }
+
+    // Row actions: duplicate (+) always, remove (×) on duplicated rows
+    const actCell = el('td',{});
+    const act = el('div',{class:'row-act'});
+    act.appendChild(el('button',{class:'dup', title:'Duplicate lane', onclick:()=>tabDuplicate(r.id),
+      html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'}));
+    if(!r.primary){
+      act.appendChild(el('button',{class:'rm', title:'Remove lane', onclick:()=>tabRemove(r.id),
+        html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'}));
+    }
+    actCell.appendChild(act);
+    tr.appendChild(actCell);
+
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
