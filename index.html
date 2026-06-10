@@ -112,8 +112,10 @@ a{color:inherit;text-decoration:none}
 .variant-icon.b{background:#FFF7ED;color:#EA580C}
 .variant-icon.c{background:#F0FDF4;color:#16A34A}
 .variant-icon.d{background:#F0FDFA;color:#0D9488}
+.variant-icon.e{background:#FEF2F8;color:#DB2777}
 .variant-info{flex:1;min-width:0}
-.variant-name{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:2px;text-align:left}
+.variant-name{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:2px;text-align:left;display:flex;align-items:center;gap:8px}
+.vtag{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;border-radius:5px;background:var(--brand-soft);color:var(--brand);font-size:10.5px;font-weight:800;letter-spacing:.3px;flex-shrink:0}
 .variant-desc{font-size:12.5px;color:var(--muted);line-height:1.45;text-align:left}
 .variant-card:hover .variant-arrow{color:var(--brand)}
 .variant-arrow svg{width:16px;height:16px}
@@ -460,7 +462,8 @@ a{color:inherit;text-decoration:none}
    VARIANT D — CLIENT PREFERENCES
    ═══════════════════════════════════════════════════ */
 /* layout: full-width questionnaire (JSON panel is a toggle overlay) */
-body[data-variant="D"] .wizard{max-width:1040px}
+body[data-variant="D"] .wizard,
+body[data-variant="E"] .wizard{max-width:1040px}
 
 /* question card */
 .q-card{
@@ -729,7 +732,7 @@ body[data-view="wizard"] #view-landing{display:none}
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
         </div>
         <div class="variant-info">
-          <div class="variant-name">Lane-by-Lane Stepper</div>
+          <div class="variant-name"><span class="vtag">v1</span>Lane-by-Lane Stepper</div>
           <div class="variant-desc">Configure each country one at a time with a guided accordion flow. Best for smaller lane counts.</div>
         </div>
         <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -739,7 +742,7 @@ body[data-view="wizard"] #view-landing{display:none}
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
         </div>
         <div class="variant-info">
-          <div class="variant-name">Carrier-First Bulk</div>
+          <div class="variant-name"><span class="vtag">v2</span>Carrier-First Bulk</div>
           <div class="variant-desc">Pick a carrier first, then assign lanes to it. Ideal when most lanes share the same carrier.</div>
         </div>
         <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -749,7 +752,7 @@ body[data-view="wizard"] #view-landing{display:none}
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
         </div>
         <div class="variant-info">
-          <div class="variant-name">Inline Grid</div>
+          <div class="variant-name"><span class="vtag">v3</span>Inline Grid</div>
           <div class="variant-desc">All lanes in a single table with inline dropdowns. Power-user friendly, fastest for bulk configuration.</div>
         </div>
         <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -759,8 +762,18 @@ body[data-view="wizard"] #view-landing{display:none}
           <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
         </div>
         <div class="variant-info">
-          <div class="variant-name">Client Preferences</div>
+          <div class="variant-name"><span class="vtag">v4</span>Client Preferences</div>
           <div class="variant-desc">Answer a guided set of preference questions — pickup countries, destination, carrier contracts, return service — and we derive every lane for you.</div>
+        </div>
+        <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+      <button class="variant-card" onclick="startVariant('E')">
+        <div class="variant-icon e">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
+        </div>
+        <div class="variant-info">
+          <div class="variant-name"><span class="vtag">v5</span>Tabular</div>
+          <div class="variant-desc">Answer a few global questions — return service, label and destination — then fine-tune every lane in a pre-filled table. A hybrid of the stepper and inline grid.</div>
         </div>
         <div class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
       </button>
@@ -983,6 +996,29 @@ function initPrefs(){
 }
 function prefSelectedCountries(){ return PREF_COUNTRIES.filter(c => prefState.pickupCountries[c.code]); }
 
+/* ─── Variant E (Tabular) state ─── */
+let tabState = {};
+function initTabular(){
+  tabState = {
+    returnService: null,   // Q1 — global
+    returnLabel:   null,    // Q2 — global
+    destination:   null,    // Q3 — global (DTW | DTR | DTP)
+    rows: {},               // code -> { carrier, service, label }
+  };
+  COUNTRIES.forEach(c => { tabState.rows[c.code] = { carrier:null, service:null, label:null }; });
+}
+const TAB_CARRIERS = CARRIER_CATALOG.map(c => c.id); // dropdown options
+function tabDefaultCarrier(){ return TAB_CARRIERS[0]; } // default carrier (DHL); availability logic comes later
+// push the current global answers down into every row (resets per-row overrides)
+function tabSyncRows(){
+  COUNTRIES.forEach(c => {
+    const r = tabState.rows[c.code];
+    r.service = tabState.returnService;
+    r.label   = tabState.returnLabel;
+    if(!r.carrier) r.carrier = tabDefaultCarrier();
+  });
+}
+
 /* ─────────────────────────────────────────────────
    HELPERS
    ───────────────────────────────────────────────── */
@@ -1090,6 +1126,7 @@ function confirmClient(){
   state.variant = pendingVariant;
   closeClientModal();
   if(state.variant === 'D'){ initPrefs(); }
+  else if(state.variant === 'E'){ initTabular(); }
   else { initLanes(); }
   setView('wizard');
   renderWizard();
@@ -1114,7 +1151,7 @@ function setView(v){
   if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
   else document.body.removeAttribute('data-variant');
   document.getElementById('meta-client').textContent = state.client || '—';
-  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences' };
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
 }
 
@@ -1135,6 +1172,7 @@ function renderWizard(){
   root.innerHTML = '';
 
   if(state.variant === 'D'){ renderVariantD(root); updateJson(); return; }
+  if(state.variant === 'E'){ renderVariantE(root); return; }
 
   const header = el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config'),
@@ -2364,6 +2402,154 @@ function copyJson(){
   const done = ()=>{ if(btn){ btn.classList.add('copied'); const o=btn.innerHTML; btn.innerHTML='✓ Copied'; setTimeout(()=>{ btn.classList.remove('copied'); btn.innerHTML=o; },1400);} };
   if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(done); }
   else { const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} ta.remove(); done(); }
+}
+
+/* ═════════════════════════════════════════════════
+   VARIANT E — TABULAR (hybrid: stepper questions → inline grid)
+   ═════════════════════════════════════════════════ */
+function rerenderE(){ renderWizard(); }
+
+function eServiceReady(){ return !!tabState.returnService; }
+function eLabelReady(){ return !!tabState.returnLabel; }
+function eDestReady(){ return !!tabState.destination; }
+function eTableReady(){ return eServiceReady() && eLabelReady() && eDestReady(); }
+
+function renderVariantE(root){
+  root.appendChild(el('div',{class:'wizard-header'},
+    el('div',{class:'wizard-crumb'}, 'First Mile Config · Tabular'),
+    el('div',{class:'wizard-title'}, `Tabular configuration for ${state.client}`)
+  ));
+
+  // Q1 — always unlocked
+  root.appendChild(eCardService(false));
+  // Q2 — locked until Q1 answered
+  root.appendChild(eCardLabel(!eServiceReady()));
+  // Q3 — locked until Q2 answered
+  root.appendChild(eCardDestination(!eLabelReady()));
+  // Table — locked until Q3 answered
+  root.appendChild(eCardTable(!eDestReady()));
+}
+
+/* shared card shell */
+function eCard(num, title, answered, locked){
+  return el('div',{class:'q-card'+(answered?' answered':'')+(locked?' locked':'')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, answered ? el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}}) : String(num)),
+      el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, title))
+    )
+  );
+}
+
+/* Q1 — return service */
+function eCardService(locked){
+  const card = eCard(1, 'Which return service would you like?', eServiceReady(), locked);
+  const body = el('div',{class:'q-body'});
+  const g = el('div',{class:'radio-group'});
+  RETURN_SERVICES.forEach(s => g.appendChild(el('button',{class:'radio'+(tabState.returnService===s?' active':''), onclick:()=>{
+    tabState.returnService = s; if(eTableReady()) tabSyncRows(); rerenderE();
+  }}, s)));
+  body.appendChild(g);
+  card.appendChild(body);
+  return card;
+}
+
+/* Q2 — return label */
+function eCardLabel(locked){
+  const card = eCard(2, 'Which return label option would you like?', eLabelReady(), locked);
+  const body = el('div',{class:'q-body'});
+  const g = el('div',{class:'radio-group'});
+  RETURN_LABELS.forEach(s => g.appendChild(el('button',{class:'radio'+(tabState.returnLabel===s?' active':''), onclick:()=>{
+    tabState.returnLabel = s; if(eTableReady()) tabSyncRows(); rerenderE();
+  }}, s)));
+  body.appendChild(g);
+  card.appendChild(body);
+  return card;
+}
+
+/* Q3 — destination */
+function eCardDestination(locked){
+  const card = eCard(3, 'Where do you want to send the return parcel?', eDestReady(), locked);
+  const body = el('div',{class:'q-body'});
+  const opts = [
+    { v:'DTW', name:'ReBound Warehouse', code:'DTW' },
+    { v:'DTR', name:'Client facility or Warehouse', code:'DTR' },
+    { v:'DTP', name:'ReBound Partners', code:'DTP' },
+  ];
+  const list = el('div',{class:'opt-list'});
+  opts.forEach(o => {
+    list.appendChild(el('button',{class:'opt'+(tabState.destination===o.v?' active':''), onclick:()=>{
+      tabState.destination = o.v;
+      if(eTableReady()) tabSyncRows();
+      rerenderE();
+    }},
+      el('span',{class:'opt-radio'}),
+      el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, o.name, el('span',{class:'opt-code'}, o.code)))
+    ));
+  });
+  body.appendChild(list);
+  card.appendChild(body);
+  return card;
+}
+
+/* Table — pre-filled lanes with per-row dropdown overrides */
+function eCardTable(locked){
+  // make sure every row carries the chosen defaults before we render
+  if(!locked) tabSyncRows();
+
+  const card = el('div',{class:'q-card'+(locked?' locked':'')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, '4'),
+      el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
+    )
+  );
+  const body = el('div',{class:'q-body'});
+
+  const tableWrap = el('div',{class:'table-scroll-wrap',style:{overflowX:'auto'}});
+  const table = el('table',{class:'config-table'});
+  table.appendChild(el('thead',{}, el('tr',{},
+    el('th',{},'Country'), el('th',{},'Lane'), el('th',{},'Carrier'), el('th',{},'Return service'), el('th',{},'Return label')
+  )));
+  const tbody = el('tbody',{});
+  COUNTRIES.forEach(c => {
+    const r = tabState.rows[c.code];
+    const tr = el('tr',{});
+    // Country
+    tr.appendChild(el('td',{}, el('span',{class:'cell-flag'}, c.flag), el('strong',{}, c.name)));
+    // Lane
+    tr.appendChild(el('td',{}, el('div',{class:'cell-lane'},
+      el('span',{}, c.wh.split('_').slice(-1)[0]), ' → ', el('span',{}, PROCESSING_WH.split('_').slice(-1)[0])
+    )));
+    // Carrier dropdown
+    const carrierSel = el('select',{onchange:(e)=>{ r.carrier = e.target.value; rerenderE(); }});
+    CARRIER_CATALOG.forEach(cr => {
+      const opt = el('option',{value:cr.id}, cr.name);
+      if(r.carrier === cr.id) opt.selected = true;
+      carrierSel.appendChild(opt);
+    });
+    tr.appendChild(el('td',{}, carrierSel));
+    // Return service dropdown
+    const svcSel = el('select',{onchange:(e)=>{ r.service = e.target.value; rerenderE(); }});
+    RETURN_SERVICES.forEach(s => {
+      const opt = el('option',{value:s}, s);
+      if(r.service === s) opt.selected = true;
+      svcSel.appendChild(opt);
+    });
+    tr.appendChild(el('td',{}, svcSel));
+    // Return label dropdown
+    const lblSel = el('select',{onchange:(e)=>{ r.label = e.target.value; rerenderE(); }});
+    RETURN_LABELS.forEach(s => {
+      const opt = el('option',{value:s}, s);
+      if(r.label === s) opt.selected = true;
+      lblSel.appendChild(opt);
+    });
+    tr.appendChild(el('td',{}, lblSel));
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  tableWrap.appendChild(table);
+  body.appendChild(tableWrap);
+  card.appendChild(body);
+  return card;
 }
 
 /* ─────────────────────────────────────────────────
