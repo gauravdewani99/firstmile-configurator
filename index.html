@@ -599,6 +599,46 @@ body[data-variant="E"] .wizard{max-width:1040px}
 .minichip{padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);font-size:12.5px;font-weight:600;color:var(--text);transition:all .12s}
 .minichip:hover{border-color:#CBD5E1;background:#FAFBFC}
 .minichip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.minichip.nocarrier{opacity:.5;text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:1.5px}
+.minichip.nocarrier.on{opacity:1}
+
+/* ─── carrier-service-selector: refresh banner, skeleton, review highlight, unavailable rows ─── */
+.carrier-refresh{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;margin-bottom:14px;font-size:12.5px;line-height:1.45}
+.carrier-refresh.refreshing{background:var(--brand-soft);border:1px solid rgba(45,95,138,.18);color:var(--brand)}
+.carrier-refresh.review{background:var(--amber-soft);border:1px solid rgba(245,158,11,.3);color:#92400E}
+.carrier-refresh b{font-weight:700}
+.cr-ic{display:inline-flex;flex-shrink:0;color:var(--amber)}
+.cr-ic svg{width:16px;height:16px}
+.cr-tx{flex:1}
+.cr-spinner{width:15px;height:15px;border:2px solid rgba(45,95,138,.25);border-top-color:var(--brand);border-radius:50%;flex-shrink:0;animation:crSpin .7s linear infinite}
+@keyframes crSpin{to{transform:rotate(360deg)}}
+.cr-go{flex-shrink:0;padding:5px 12px;border-radius:7px;background:var(--amber);color:#fff;font-size:11.5px;font-weight:700;transition:filter .12s}
+.cr-go:hover{filter:brightness(1.05)}
+.cr-x{flex-shrink:0;width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#92400E;opacity:.7}
+.cr-x svg{width:12px;height:12px}
+.cr-x:hover{opacity:1;background:rgba(146,64,14,.1)}
+/* carrier column review highlight */
+.config-table.carriers-review th.th-carrier{color:var(--red)}
+.config-table.carriers-review .carrier-cell{background:rgba(239,68,68,.05);box-shadow:inset 2px 0 0 var(--red)}
+.config-table.carriers-review .carrier-cell select{border-color:rgba(239,68,68,.5)}
+/* carrier loading skeleton */
+.carrier-skeleton{display:inline-flex;align-items:center;gap:6px}
+.carrier-skeleton .cs-bar{width:54px;height:11px;border-radius:4px;background:linear-gradient(90deg,#EEF2F7 25%,#E2E8F0 50%,#EEF2F7 75%);background-size:200% 100%;animation:csShimmer 1.1s ease-in-out infinite}
+.carrier-skeleton .cs-dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(90deg,#EEF2F7 25%,#E2E8F0 50%,#EEF2F7 75%);background-size:200% 100%;animation:csShimmer 1.1s ease-in-out infinite}
+@keyframes csShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* unavailable (unserviceable) lane — blurred with a fix prompt */
+tr.lane-row.unavail td>*:not(.lane-unavailable-overlay){filter:blur(1.6px);opacity:.45;pointer-events:none;user-select:none}
+tr.lane-row.unavail:hover{background:transparent}
+.lane-unavailable-overlay{position:absolute;left:0;top:0;right:0;bottom:0;z-index:3;display:flex;align-items:center;gap:10px;padding:0 14px;background:linear-gradient(90deg,rgba(254,242,242,.97),rgba(254,242,242,.88));border-left:2px solid var(--red);filter:none!important;opacity:1!important;pointer-events:auto!important}
+.lua-ic{display:inline-flex;flex-shrink:0;color:var(--red)}
+.lua-ic svg{width:16px;height:16px}
+.lua-tx{flex:1;font-size:12px;color:#991B1B;line-height:1.35}
+.lua-tx b{font-weight:700}
+.lua-btn{flex-shrink:0;padding:5px 13px;border-radius:7px;background:var(--red);color:#fff;font-size:11.5px;font-weight:700;transition:filter .12s}
+.lua-btn:hover{filter:brightness(1.05)}
+.lua-del{flex-shrink:0;width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--red);border:1px solid rgba(239,68,68,.35);background:#fff}
+.lua-del svg{width:13px;height:13px}
+.lua-del:hover{background:var(--red);color:#fff}
 
 /* question card */
 .q-card{
@@ -1099,12 +1139,12 @@ const ADDRESS_COUNTRY_BY_CODE = Object.fromEntries(ADDRESS_COUNTRIES.map(c => [c
 
 /* consumer-facing carrier catalog (Q6) — which carriers offer which service+label, and where */
 const CARRIER_CATALOG = [
-  { id:'DHL',        name:'DHL',            badge:'cb-dhl',        services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','North America','Pacific'] },
+  { id:'DHL',        name:'DHL',            badge:'cb-dhl',        services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America','Pacific'] },
   { id:'PostNL',     name:'PostNL',         badge:'cb-postnl',     services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union'] },
   { id:'PostItalia', name:'Poste Italiane', badge:'cb-postitalia', services:['Drop-off'],            labels:['Printed label'],                       regions:['European Union'], countries:['IT'] },
   { id:'FedEx',      name:'FedEx',          badge:'cb-fedex',      services:['Pickup','Drop-off'],   labels:['Printed label'],                       regions:['North America','Asia','South America'] },
-  { id:'GLS',        name:'GLS',            badge:'cb-generic',    services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','North America'] },
-  { id:'Evri',       name:'Evri',           badge:'cb-generic',    services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union'] },
+  { id:'GLS',        name:'GLS',            badge:'cb-generic',    services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America'] },
+  { id:'Evri',       name:'Evri',           badge:'cb-generic',    services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union','United Kingdom'] },
 ];
 function carrierServesCountry(carrier, country, service, label){
   if(service && !carrier.services.includes(service)) return false;
@@ -1180,6 +1220,7 @@ function initTabular(){
     groupBy:        'country', // 'country' | 'region'
     rows:           [],     // generated per country × service×label combo
     deleted:        {},     // key -> true (combo removed for a country)
+    carrierPhase:   'idle', // 'idle' | 'refreshing' | 'review' — drives the carrier-refresh banner
   };
 }
 
@@ -1189,9 +1230,13 @@ function regionOf(code){
   return E_REGION_BY_CODE[code] || 'Other';
 }
 
-/* carriers that can serve a given service + label (service/label only — matches the mock catalog's coverage model) */
-function eAvailableCarriers(service, label){
-  return CARRIER_CATALOG.filter(c => (!service || c.services.includes(service)) && (!label || c.labels.includes(label)));
+/* country object (with region) for the carrier-service-selector lookup */
+function eCountryObj(code){ const c = COUNTRIES.find(x => x.code === code); return { ...c, region: regionOf(code) }; }
+
+/* carrier-service-selector(country × service × label) → carriers.
+   This is the authoritative, country-aware lookup the table relies on. */
+function eCarriersFor(code, service, label){
+  return CARRIER_CATALOG.filter(c => carrierServesCountry(c, eCountryObj(code), service, label));
 }
 
 /* selected services split: which need a label vs Self-post (label-less) */
@@ -1212,26 +1257,37 @@ function eComboKey(code, service, label){ return code + '|' + service + '|' + (l
 /* rebuild rows for the current country × combo grid, preserving edits & honoring deletions */
 function eDefaultContract(carrier){ return (MANAGED_CONTRACTS[carrier]||[])[0] || ''; }
 function makeERow(code, service, label){
-  const av = eAvailableCarriers(service, label);
+  const av = eCarriersFor(code, service, label);            // country-aware backend lookup
   const carrier = av.length ? av[0].id : null;
   return {
     id:'r'+(++_tabSeq), code, service, label,
     destType:null, dtwType:null, partner:null, addressId:null, // null destType = inherit global
     carrier,
     laneType:'managed', contract: eDefaultContract(carrier), // pre-filled like the carrier; fine-tune later
+    custom:false,                                            // true once service/label overridden per-lane
   };
 }
 function tabBuildRows(){
   const combos = eCombos();
   const byKey = {}; tabState.rows.forEach(r => { byKey[eComboKey(r.code, r.service, r.label)] = r; });
-  const next = [];
+  const next = [], used = {};
   COUNTRIES.forEach(c => {
     combos.forEach(cb => {
       const key = eComboKey(c.code, cb.service, cb.label);
-      if(tabState.deleted[key]) return;
+      if(tabState.deleted[key] || used[key]) return;
       next.push(byKey[key] || makeERow(c.code, cb.service, cb.label));
+      used[key] = true;
     });
   });
+  // preserve per-lane overrides (combos the user switched to that aren't in the global grid)
+  tabState.rows.forEach(r => {
+    if(!r.custom) return;
+    const key = eComboKey(r.code, r.service, r.label);
+    if(used[key] || tabState.deleted[key]) return;
+    next.push(r); used[key] = true;
+  });
+  // keep rows grouped by country (stable sort preserves combo order within a country)
+  next.sort((a,b) => COUNTRIES.findIndex(c=>c.code===a.code) - COUNTRIES.findIndex(c=>c.code===b.code));
   tabState.rows = next;
 }
 function tabDeleteCombo(id){
@@ -2671,6 +2727,38 @@ function copyJson(){
    ═════════════════════════════════════════════════ */
 function rerenderE(){ renderWizard(); }
 
+/* ─── carrier-service-selector refresh cycle ───
+   Changing service/label re-runs the backend lookup for every lane. We simulate the
+   round-trip so the user sees a fresh call happen, then flag the Carrier column for review. */
+function eRefreshCarriers(){
+  tabState.carrierPhase = 'refreshing';
+  rerenderE();
+  setTimeout(() => {
+    tabBuildRows();
+    // re-resolve each lane's carrier from the (country × service × label) lookup
+    tabState.rows.forEach(r => {
+      const av = eCarriersFor(r.code, r.service, r.label);
+      if(!av.some(c => c.id === r.carrier)){
+        r.carrier = av.length ? av[0].id : null;
+        if(r.laneType === 'managed') r.contract = eDefaultContract(r.carrier);
+      }
+    });
+    tabState.carrierPhase = 'review';
+    rerenderE();
+  }, 650);
+}
+/* called after a Q1/Q2 selection change — only refresh if the table was already populated */
+function eAfterSelectionChange(wasReady){
+  if(wasReady && eTableReady()) eRefreshCarriers();
+  else { tabState.carrierPhase = 'idle'; rerenderE(); }
+}
+/* scroll to + pulse the first serviceable carrier control */
+function eGotoCarriers(){
+  const cell = document.querySelector('.config-table.compact .carrier-cell select, .config-table.compact .carrier-cell .minichip');
+  const target = cell ? cell.closest('.carrier-cell') : document.querySelector('.config-table.compact th:last-child');
+  if(target){ target.scrollIntoView({block:'center', behavior:'smooth'}); }
+}
+
 function eServiceReady(){ return tabState.returnServices.length > 0; }
 function eLabelReady(){
   if(!eServiceReady()) return false;
@@ -2757,8 +2845,9 @@ function eCardService(locked){
   RETURN_SERVICES.forEach(s => {
     const on = tabState.returnServices.includes(s);
     g.appendChild(eChip(on, serviceIcon(s), s, ()=>{
+      const wasReady = eTableReady();
       tabState.returnServices = on ? tabState.returnServices.filter(x=>x!==s) : [...tabState.returnServices, s];
-      rerenderE();
+      eAfterSelectionChange(wasReady);
     }));
   });
   body.appendChild(g);
@@ -2782,8 +2871,9 @@ function eCardLabel(locked){
     RETURN_LABELS.forEach(l => {
       const on = tabState.returnLabels.includes(l);
       g.appendChild(eChip(on, labelIcon(l), l, ()=>{
+        const wasReady = eTableReady();
         tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
-        rerenderE();
+        eAfterSelectionChange(wasReady);
       }));
     });
     body.appendChild(g);
@@ -2978,8 +3068,11 @@ function eContractCell(r){
 
 /* one combo row */
 function eRow(r){
-  const tr = el('tr',{class:'lane-row'});
-  const noCarrier = eAvailableCarriers(r.service, r.label).length === 0;
+  const refreshing = tabState.carrierPhase === 'refreshing';
+  const av = eCarriersFor(r.code, r.service, r.label);     // carrier-service-selector lookup
+  const unavailable = !refreshing && av.length === 0;
+  const c = COUNTRIES.find(x => x.code === r.code);
+  const tr = el('tr',{class:'lane-row'+(unavailable?' unavail':'')});
 
   // Return service / label (static)
   tr.appendChild(el('td',{}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
@@ -3000,16 +3093,28 @@ function eRow(r){
   tr.appendChild(el('td',{}, eLaneToggle(r)));
   // Contract
   tr.appendChild(el('td',{}, eContractCell(r)));
-  // Carrier (last column)
+  // Carrier (last column) — the carrier-service-selector output
   const carrierCell = el('td',{class:'carrier-cell'});
-  if(noCarrier){
-    carrierCell.appendChild(el('span',{class:'no-carrier'}, el('span',{html:icon('warn')}), 'No carrier — remove'));
+  if(refreshing){
+    carrierCell.appendChild(el('span',{class:'carrier-skeleton'}, el('span',{class:'cs-bar'}), el('span',{class:'cs-dot'})));
+  } else if(unavailable){
+    carrierCell.appendChild(el('span',{class:'cell-dim'}, '—'));
   } else {
-    carrierCell.appendChild(eSelect(r.carrier, eAvailableCarriers(r.service, r.label).map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
+    carrierCell.appendChild(eSelect(r.carrier, av.map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
   }
   // per-combo delete (floats at row right on hover)
   carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
   tr.appendChild(carrierCell);
+
+  // unavailable → blurred row with a fix prompt overlay (placed in the first cell, spans the row)
+  if(unavailable){
+    tr.firstChild.appendChild(el('div',{class:'lane-unavailable-overlay'},
+      el('span',{class:'lua-ic', html:icon('warn')}),
+      el('span',{class:'lua-tx'}, 'No carrier ships ', el('b',{}, r.service + (r.label ? ' + ' + r.label : '')), ' from ', el('b',{}, c.name), ' — choose a different service or label for this country.'),
+      el('button',{class:'lua-btn', onclick:()=>openLaneEditModal(r.id)}, 'Change'),
+      el('button',{class:'lua-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})
+    ));
+  }
 
   return tr;
 }
@@ -3041,6 +3146,21 @@ function eCardTable(locked){
 
   if(locked){ card.appendChild(body); return card; }
 
+  // carrier-service-selector refresh banner
+  if(tabState.carrierPhase === 'refreshing'){
+    body.appendChild(el('div',{class:'carrier-refresh refreshing'},
+      el('span',{class:'cr-spinner'}),
+      el('span',{}, el('b',{}, 'Re-running carrier-service-selector'), ' — refreshing carriers for your updated service / label…')
+    ));
+  } else if(tabState.carrierPhase === 'review'){
+    body.appendChild(el('div',{class:'carrier-refresh review'},
+      el('span',{class:'cr-ic', html:icon('info')}),
+      el('span',{class:'cr-tx'}, 'Your service or label changed, so the carrier list was refreshed. Review the highlighted ', el('b',{}, 'Carrier'), ' column.'),
+      el('button',{class:'cr-go', onclick:()=>eGotoCarriers()}, 'Review carriers →'),
+      el('button',{class:'cr-x', title:'Dismiss', onclick:()=>{ tabState.carrierPhase='idle'; rerenderE(); }, html:icon('close')})
+    ));
+  }
+
   // group-by toggle
   body.appendChild(el('div',{class:'table-tools'},
     el('span',{class:'tt-label'}, 'Group by'),
@@ -3057,10 +3177,10 @@ function eCardTable(locked){
     return card;
   }
 
-  const table = el('table',{class:'config-table compact'});
+  const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')});
   table.appendChild(el('thead',{}, el('tr',{},
     el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
-    el('th',{},'Lane type'), el('th',{},'Contract'), el('th',{},'Carrier')
+    el('th',{},'Lane type'), el('th',{},'Contract'), el('th',{class:'th-carrier'},'Carrier')
   )));
   const tbody = el('tbody',{});
 
@@ -3094,7 +3214,9 @@ function openLaneEditModal(id){
   const r = tabState.rows.find(x => x.id === id); if(!r) return;
   const c = COUNTRIES.find(x => x.code === r.code);
   const eff = eEffectiveDest(r);
+  const origKey = eComboKey(r.code, r.service, r.label);
   const draft = {
+    service:  r.service, label: r.label,
     destType: eff.type || 'DTW',
     dtwType:  (eff.type==='DTW' ? eff.dtwType : null) || 'local',
     partner:  (eff.type==='DTP' ? eff.partner : null),
@@ -3107,8 +3229,43 @@ function openLaneEditModal(id){
 
   function section(title){ return el('div',{class:'mod-mini'}, title); }
 
+  // keep carrier consistent with the chosen service × label for this country
+  function reconcileCarrier(){
+    const av = eCarriersFor(r.code, draft.service, draft.label);
+    if(!av.some(cr => cr.id === draft.carrier)){
+      draft.carrier = av.length ? av[0].id : null;
+      if(draft.laneType === 'managed') draft.contract = eDefaultContract(draft.carrier);
+    }
+  }
+
   function renderBody(){
     bodyWrap.innerHTML = '';
+
+    // Return service (editable here so an unserviceable lane can be fixed per-country)
+    bodyWrap.appendChild(section('Return service'));
+    const srow = el('div',{class:'chip-row'});
+    RETURN_SERVICES.forEach(s => {
+      const has = eCarriersFor(r.code, s, s==='Self-post' ? null : draft.label).length > 0;
+      srow.appendChild(el('button',{class:'minichip'+(draft.service===s?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{
+        draft.service=s; if(s==='Self-post') draft.label=null; else if(!draft.label) draft.label=RETURN_LABELS[0];
+        reconcileCarrier(); renderBody();
+      }}, s));
+    });
+    bodyWrap.appendChild(srow);
+
+    // Return label (hidden for Self-post)
+    if(draft.service !== 'Self-post'){
+      bodyWrap.appendChild(section('Return label'));
+      const lrow = el('div',{class:'chip-row'});
+      RETURN_LABELS.forEach(l => {
+        const has = eCarriersFor(r.code, draft.service, l).length > 0;
+        lrow.appendChild(el('button',{class:'minichip'+(draft.label===l?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{
+          draft.label=l; reconcileCarrier(); renderBody();
+        }}, l));
+      });
+      bodyWrap.appendChild(lrow);
+    }
+
     // Destination choice
     bodyWrap.appendChild(section('Destination'));
     const destOpts = [
@@ -3148,11 +3305,11 @@ function openLaneEditModal(id){
       }
     }
 
-    // Carrier
+    // Carrier (country-aware output of carrier-service-selector)
     bodyWrap.appendChild(section('Carrier'));
-    const av = eAvailableCarriers(r.service, r.label);
+    const av = eCarriersFor(r.code, draft.service, draft.label);
     if(!av.length){
-      bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier offers '+r.service+(r.label?' + '+r.label:'')+'. Consider removing this lane.'));
+      bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier ships '+draft.service+(draft.label?' + '+draft.label:'')+' from '+c.name+'. Pick a different service or label above.'));
     } else {
       const crow = el('div',{class:'chip-row'});
       av.forEach(cr => crow.appendChild(el('button',{class:'minichip'+(draft.carrier===cr.id?' on':''), onclick:()=>{
@@ -3188,12 +3345,21 @@ function openLaneEditModal(id){
   card.appendChild(el('div',{class:'modal-actions'},
     el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
     el('button',{class:'btn btn-primary', onclick:()=>{
+      const comboChanged = draft.service !== r.service || draft.label !== r.label;
+      const newKey = eComboKey(r.code, draft.service, draft.label);
+      if(!draft.carrier){ hint.textContent='No carrier ships this service/label from '+c.name+'. Choose a different service or label.'; hint.classList.add('err'); return; }
+      if(comboChanged && newKey !== origKey && tabState.rows.some(x => x.id!==r.id && eComboKey(x.code,x.service,x.label)===newKey)){
+        hint.textContent='That service × label already exists for '+c.name+'.'; hint.classList.add('err'); return;
+      }
       if(draft.destType==='DTR' && !draft.addressId){ hint.textContent='Choose a client address for this lane.'; hint.classList.add('err'); return; }
       if(draft.destType==='DTW' && !draft.dtwType){ hint.textContent='Choose a warehouse type.'; hint.classList.add('err'); return; }
       if(draft.destType==='DTP' && !draft.partner){ hint.textContent='Choose a partner.'; hint.classList.add('err'); return; }
+      if(comboChanged){ r.service = draft.service; r.label = draft.label; r.custom = true; tabState.deleted[origKey] = true; /* don't let the global grid recreate the old combo */ }
       r.destType = draft.destType; r.dtwType = draft.dtwType; r.partner = draft.partner; r.addressId = draft.addressId;
       eSetCarrier(r, draft.carrier); r.laneType = draft.laneType; r.contract = draft.contract;
-      closeModal(ref.o); rerenderE();
+      closeModal(ref.o);
+      if(comboChanged){ tabState.carrierPhase = 'review'; }
+      rerenderE();
     }}, 'Save lane')
   ));
 
