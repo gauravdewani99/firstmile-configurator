@@ -135,7 +135,10 @@ a{color:inherit;text-decoration:none}
 .hero-glow{position:absolute;top:-70px;right:-50px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(219,39,119,.08),transparent 70%);pointer-events:none}
 .hero-badge{display:inline-flex;align-items:center;gap:7px;align-self:flex-start;padding:5px 12px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-size:11px;font-weight:800;letter-spacing:.4px}
 .hero-badge-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.18)}
-.hero-row{display:flex;align-items:flex-start;gap:18px}
+.hero-row{display:flex;align-items:center;gap:18px}
+.hero-row .variant-arrow{margin-left:auto;color:var(--dim);transition:color .15s}
+.hero-card:hover .hero-row .variant-arrow{color:var(--brand)}
+.hero-row .variant-arrow svg{width:18px;height:18px}
 .hero-icon{width:54px;height:54px;border-radius:15px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;background:#FEF2F8;color:#DB2777}
 .hero-info{display:flex;flex-direction:column;gap:6px;min-width:0}
 .hero-name{font-size:24px;font-weight:800;letter-spacing:-.5px;color:var(--text)}
@@ -1006,17 +1009,16 @@ body[data-view="wizard"] #view-landing{display:none}
         </span>
         <span class="hero-info">
           <span class="hero-name">Tabular</span>
-          <span class="hero-desc">Answer a few global questions — return service, label and destination — then fine-tune every lane in a pre-filled table, backed by the live carrier-service-selector.</span>
+          <span class="hero-desc">A few global questions, then fine-tune every lane in a pre-filled table.</span>
         </span>
+        <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
       </span>
-      <span class="hero-cta">Open configurator <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
     </button>
 
     <!-- Earlier versions: receding 3D stack -->
     <div class="legacy-section">
       <div class="legacy-head">
         <span class="legacy-title">Earlier versions</span>
-        <span class="legacy-note">Superseded by Tabular — still accessible</span>
       </div>
       <div class="legacy-stack">
         <button class="legacy-card" style="--depth:0" onclick="startVariant('D')">
