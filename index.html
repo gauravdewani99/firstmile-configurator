@@ -46,6 +46,7 @@ a{color:inherit;text-decoration:none}
 .meta-field{display:flex;align-items:center;gap:6px}
 .meta-field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
 .meta-field .meta-val{font-size:12px;font-weight:600;color:var(--text)}
+.meta-field .meta-flow{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-size:11px;font-weight:800;letter-spacing:.3px}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
 .header-back{
   display:inline-flex;align-items:center;gap:6px;
@@ -483,6 +484,122 @@ body[data-variant="E"] .wizard{max-width:1040px}
 .combo-warn svg{width:18px;height:18px;flex-shrink:0;color:var(--red)}
 .combo-warn b{font-weight:700}
 
+/* ─── Variant E v2: multi-select chips, address manager, grouped table, modals ─── */
+/* multi-select chips (Q1/Q2) */
+.mchip-group{display:flex;gap:8px;flex-wrap:wrap}
+.mchip{display:inline-flex;align-items:center;gap:9px;padding:9px 13px 9px 11px;border:1.5px solid var(--border);border-radius:11px;background:var(--card);transition:all .14s;color:var(--text)}
+.mchip:hover{border-color:#CBD5E1;background:#FAFBFC}
+.mchip.on{border-color:var(--brand);background:var(--brand-soft)}
+.mchip-ic{width:18px;height:18px;display:inline-flex;color:var(--brand-2);flex-shrink:0}
+.mchip-ic svg{width:18px;height:18px}
+.mchip-tx{font-size:13.5px;font-weight:600}
+.mchip-tick{width:15px;height:15px;display:inline-flex;align-items:center;justify-content:center;border-radius:5px;background:var(--brand);color:#fff;opacity:0;transform:scale(.6);transition:all .14s}
+.mchip-tick svg{width:10px;height:10px}
+.mchip.on .mchip-tick{opacity:1;transform:scale(1)}
+.sub-note{display:flex;align-items:center;gap:7px;margin-top:11px;font-size:12px;color:var(--muted)}
+.sub-note svg{width:14px;height:14px;flex-shrink:0;color:var(--dim)}
+/* destination option icon badge */
+.opt-ic .opt-ic-badge{width:30px;height:30px;border-radius:8px;background:var(--brand-soft);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:2px}
+.opt-ic .opt-ic-badge svg{width:17px;height:17px}
+.opt-ic.active .opt-ic-badge{background:#fff}
+
+/* address manager */
+.addr-strip{display:flex;gap:10px;flex-wrap:wrap}
+.addr-card{position:relative;display:flex;align-items:center;gap:10px;width:200px;padding:11px 12px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);text-align:left;transition:all .14s}
+.addr-card:hover{border-color:var(--brand-2);box-shadow:var(--shadow-1)}
+.addr-card.filled{border-color:var(--border)}
+.addr-icon{width:34px;height:34px;border-radius:9px;background:var(--brand-soft);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;line-height:1}
+.addr-icon .addr-pin{color:var(--brand-2);display:inline-flex}
+.addr-icon .addr-pin svg{width:17px;height:17px}
+.addr-meta{display:flex;flex-direction:column;min-width:0;flex:1}
+.addr-city{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.addr-co{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.addr-rm{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;color:var(--dim);opacity:0;transition:all .12s}
+.addr-rm svg{width:11px;height:11px}
+.addr-card:hover .addr-rm{opacity:1}
+.addr-rm:hover{background:var(--red-soft);color:var(--red)}
+.addr-add{display:flex;align-items:center;gap:9px;width:200px;padding:11px 12px;border:1.5px dashed var(--border);border-radius:12px;background:transparent;color:var(--muted);font-size:13px;font-weight:600;transition:all .14s}
+.addr-add:hover{border-color:var(--brand-2);color:var(--brand);background:var(--brand-soft)}
+.addr-add-ic{position:relative;width:34px;height:34px;border-radius:9px;background:var(--brand-soft);color:var(--brand-2);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.addr-add-ic svg{width:17px;height:17px}
+.addr-add-plus{position:absolute;right:-3px;bottom:-3px;width:15px;height:15px;border-radius:50%;background:var(--brand);color:#fff;display:inline-flex;align-items:center;justify-content:center;border:2px solid var(--card)}
+.addr-add-plus svg{width:9px;height:9px}
+
+/* table tools (group-by segmented toggle) */
+.table-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tt-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
+.seg{display:inline-flex;background:var(--brand-soft);border-radius:9px;padding:3px}
+.seg-opt{padding:5px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);transition:all .14s}
+.seg-opt.on{background:var(--card);color:var(--brand);box-shadow:var(--shadow-1)}
+
+/* compact grouped table */
+.config-table.compact{width:100%;table-layout:fixed}
+.config-table.compact th,.config-table.compact td{padding:9px 12px;font-size:12.5px;vertical-align:middle}
+.config-table.compact thead th{font-size:10px}
+.config-table.compact tbody tr.lane-row{position:relative}
+.config-table.compact tbody tr.lane-row:hover{background:#FAFBFC}
+/* column widths */
+.config-table.compact th:nth-child(1),.config-table.compact td:nth-child(1){width:14%}
+.config-table.compact th:nth-child(2),.config-table.compact td:nth-child(2){width:16%}
+.config-table.compact th:nth-child(3),.config-table.compact td:nth-child(3){width:22%}
+.config-table.compact th:nth-child(4),.config-table.compact td:nth-child(4){width:15%}
+.config-table.compact th:nth-child(5),.config-table.compact td:nth-child(5){width:18%}
+.config-table.compact th:nth-child(6),.config-table.compact td:nth-child(6){width:15%}
+/* group header rows */
+.grp-country td{background:#F8FAFC;border-bottom:1px solid var(--border)!important;padding:7px 12px!important}
+.grp-flag{font-size:20px;margin-right:9px;vertical-align:middle}
+.grp-name{font-size:13px;font-weight:700;color:var(--text);vertical-align:middle}
+.grp-count{font-size:10.5px;font-weight:700;color:var(--muted);background:var(--card);border:1px solid var(--border);padding:1px 8px;border-radius:999px;margin-left:9px;vertical-align:middle}
+.grp-region td{background:var(--brand);color:#fff;padding:6px 12px!important;font-size:10.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+.grp-region-ic{display:inline-flex;vertical-align:middle;margin-right:7px;opacity:.85}
+.grp-region-ic svg{width:13px;height:13px}
+/* static service/label cell */
+.cell-svc{display:inline-flex;align-items:center;gap:7px;font-weight:600;color:var(--text)}
+.cell-svc-ic{width:15px;height:15px;display:inline-flex;color:var(--brand-2);flex-shrink:0}
+.cell-svc-ic svg{width:15px;height:15px}
+.cell-dim{color:var(--dim);font-size:12px}
+/* destination cell */
+.dest-cell{position:relative}
+.dest-wrap{display:inline-flex;align-items:center;gap:9px}
+.dest-ic-slot{flex-shrink:0}
+.dest-ic{position:relative;width:28px;height:28px;border-radius:8px;background:var(--brand-soft);color:var(--brand);display:inline-flex;align-items:center;justify-content:center}
+.dest-ic svg{width:16px;height:16px}
+.dest-ic.partner{background:#FEF2F8;color:#DB2777}
+.dest-ic.clientwh{background:#ECFEFF;color:#0E7490}
+.dest-brand{position:absolute;right:-4px;bottom:-4px;width:15px;height:15px;border-radius:50%;background:#fff;border:1.5px solid var(--card);box-shadow:0 0 0 1px var(--border);object-fit:contain;padding:1px}
+.dest-badge{position:absolute;right:-5px;bottom:-5px;width:16px;height:16px;border-radius:50%;background:#0E7490;color:#fff;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--card)}
+.dest-badge svg{width:9px;height:9px}
+.dest-meta{display:flex;flex-direction:column;min-width:0}
+.dest-city{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dest-sub{font-size:10.5px;color:var(--muted)}
+.dest-edit{position:absolute;top:50%;right:8px;transform:translateY(-50%);width:24px;height:24px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;opacity:0;transition:all .12s}
+.dest-edit svg{width:13px;height:13px}
+.dest-cell:hover .dest-edit{opacity:1}
+.dest-edit:hover{border-color:var(--brand-2);color:var(--brand);background:var(--brand-soft)}
+/* lane-type toggle */
+.lt-toggle{display:inline-flex;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:2px}
+.lt-opt{padding:4px 10px;border-radius:6px;font-size:11.5px;font-weight:700;color:var(--muted);transition:all .12s}
+.lt-opt.on{background:var(--brand);color:#fff}
+.lt-toggle.lt-wide{padding:3px}
+.lt-toggle.lt-wide .lt-opt{padding:7px 18px;font-size:13px}
+/* carrier cell + per-combo delete */
+.carrier-cell{position:relative;padding-right:30px!important}
+.no-carrier{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--red);line-height:1.2}
+.no-carrier svg{width:13px;height:13px;flex-shrink:0}
+.row-del{position:absolute;top:50%;right:4px;transform:translateY(-50%);width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--dim);background:transparent;opacity:0;transition:all .12s}
+.row-del svg{width:13px;height:13px}
+.lane-row:hover .row-del{opacity:1}
+.row-del:hover{background:var(--red-soft);color:var(--red)}
+/* on-demand modal (address + lane edit) */
+.modal-card.modal-wide{width:min(520px,calc(100vw - 36px));max-height:88vh;overflow-y:auto}
+.modal-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--card);font-size:13.5px;font-weight:500;transition:border-color .15s,box-shadow .15s}
+.modal-select:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.mod-mini{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);margin:18px 0 9px}
+.chip-row{display:flex;gap:7px;flex-wrap:wrap}
+.minichip{padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);font-size:12.5px;font-weight:600;color:var(--text);transition:all .12s}
+.minichip:hover{border-color:#CBD5E1;background:#FAFBFC}
+.minichip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+
 /* question card */
 .q-card{
   background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
@@ -729,6 +846,10 @@ body[data-view="wizard"] #view-landing{display:none}
       <label>Variant</label>
       <span class="meta-val" id="meta-variant">—</span>
     </div>
+    <div class="meta-field">
+      <label>Flow type</label>
+      <span class="meta-val meta-flow" id="meta-flow">B2C</span>
+    </div>
   </div>
   <div class="header-right">
     <button class="header-back" onclick="goHome()">
@@ -943,8 +1064,38 @@ const ERC_WAREHOUSE = 'DE_ASC_Nettetal';
 
 const DTP_PARTNERS = ['Liquidation Hub','Refurbish Center','Repair Center','Disposition','Recycling','Donation'];
 const CONTRACT_CARRIERS = ['DHL','PostNL','PostItalia','FedEx']; // dynamic list (Q3, client-owned)
-const RETURN_SERVICES = ['Pickup','Drop-off','Self-post'];
+const RETURN_SERVICES = ['Drop-off','Pickup','Self-post'];
 const RETURN_LABELS   = ['Printed label','Paperless / QR code'];
+
+/* region lookup for the variant-E pickup countries (reuses PREF regions; GB added) */
+const E_REGION_BY_CODE = (() => {
+  const m = {};
+  COUNTRIES.forEach(c => { m[c.code] = (PREF_COUNTRY_BY_CODE[c.code] && PREF_COUNTRY_BY_CODE[c.code].region) || null; });
+  m['GB'] = 'United Kingdom'; // not in PREF regions
+  return m;
+})();
+const E_REGION_ORDER = ['European Union','United Kingdom','North America','Pacific'];
+
+/* dummy ReBound-managed contract ids per carrier (Variant E, lane type = Managed) */
+const MANAGED_CONTRACTS = {
+  DHL:        ['DHL-884420-EU','DHL-773011-NA','DHL-651299-PAC'],
+  PostNL:     ['POSTNL112344332','POSTNL234232','POSTNL908871'],
+  PostItalia: ['PI-IT-554120','PI-IT-554121'],
+  FedEx:      ['FDX-NA-220148','FDX-INTL-771902'],
+  GLS:        ['GLS-EU-410023','GLS-NA-410024'],
+  Evri:       ['EVRI-UK-330551','EVRI-EU-330552'],
+};
+
+/* countries selectable when entering a client-facility address (flag resolves reliably) */
+const ADDRESS_COUNTRIES = (() => {
+  const seen = {}, out = [];
+  [...COUNTRIES, ...PREF_COUNTRIES].forEach(c => {
+    if(seen[c.code]) return; seen[c.code] = true;
+    out.push({ code:c.code, name:c.name, flag:c.flag });
+  });
+  return out.sort((a,b) => a.name.localeCompare(b.name));
+})();
+const ADDRESS_COUNTRY_BY_CODE = Object.fromEntries(ADDRESS_COUNTRIES.map(c => [c.code, c]));
 
 /* consumer-facing carrier catalog (Q6) — which carriers offer which service+label, and where */
 const CARRIER_CATALOG = [
@@ -1016,45 +1167,89 @@ function prefSelectedCountries(){ return PREF_COUNTRIES.filter(c => prefState.pi
 
 /* ─── Variant E (Tabular) state ─── */
 let tabState = {};
-let _tabSeq = 0;
-function makeTabRow(code, primary){
-  return { id:'r'+(++_tabSeq), code, primary:!!primary, carrier:null, service:null, label:null, hasContract:false, accountNumber:'' };
-}
+let _tabSeq = 0, _addrSeq = 0;
 function initTabular(){
-  _tabSeq = 0;
+  _tabSeq = 0; _addrSeq = 0;
   tabState = {
-    returnService: null,   // Q1 — global
-    returnLabel:   null,    // Q2 — global
-    destination:   null,    // Q3 — global (DTW | DTR | DTP)
-    dtwType:       null,    // 'local' | 'ERC'
-    dtrAddress:    { line1:'', line2:'', line3:'', city:'', postal:'', country:'' },
-    dtpPartner:    null,
-    rows: COUNTRIES.map(c => makeTabRow(c.code, true)),  // one primary lane per country
+    returnServices: [],     // Q1 — global, multi-select
+    returnLabels:   [],     // Q2 — global, multi-select
+    destination:    null,   // Q3 — global default (DTW | DTR | DTP)
+    dtwType:        null,   // 'local' | 'ERC'
+    addresses:      [],     // [{id,line1,line2,line3,city,postal,countryCode}] — DTR
+    dtpPartner:     null,
+    groupBy:        'country', // 'country' | 'region'
+    rows:           [],     // generated per country × service×label combo
+    deleted:        {},     // key -> true (combo removed for a country)
   };
 }
-// carriers that can serve a given service + label (used for defaults, per-row options, and the no-carrier check)
+
+/* region of any country code (PREF regions, with GB fallback) */
+function regionOf(code){
+  if(PREF_COUNTRY_BY_CODE[code]) return PREF_COUNTRY_BY_CODE[code].region;
+  return E_REGION_BY_CODE[code] || 'Other';
+}
+
+/* carriers that can serve a given service + label (service/label only — matches the mock catalog's coverage model) */
 function eAvailableCarriers(service, label){
   return CARRIER_CATALOG.filter(c => (!service || c.services.includes(service)) && (!label || c.labels.includes(label)));
 }
-function eComboCovered(){ return eAvailableCarriers(tabState.returnService, tabState.returnLabel).length > 0; }
-function tabDefaultCarrier(){ const av = eAvailableCarriers(tabState.returnService, tabState.returnLabel); return av.length ? av[0].id : null; }
-// push the global answers down into PRIMARY rows only (duplicated rows stay as the user set them)
-function tabSyncRows(){
-  tabState.rows.forEach(r => {
-    if(r.primary){
-      r.service = tabState.returnService;
-      r.label   = tabState.returnLabel;
-      if(!r.carrier || !eAvailableCarriers(r.service, r.label).some(c=>c.id===r.carrier)) r.carrier = tabDefaultCarrier();
-    }
+
+/* selected services split: which need a label vs Self-post (label-less) */
+function eNonSelfServices(){ return tabState.returnServices.filter(s => s !== 'Self-post'); }
+function eHasSelfPost(){ return tabState.returnServices.includes('Self-post'); }
+
+/* the global service×label combos (country-independent), in stable display order */
+function eCombos(){
+  const combos = [];
+  RETURN_SERVICES.filter(s => s!=='Self-post' && tabState.returnServices.includes(s)).forEach(s => {
+    RETURN_LABELS.filter(l => tabState.returnLabels.includes(l)).forEach(l => combos.push({ service:s, label:l }));
   });
+  if(eHasSelfPost()) combos.push({ service:'Self-post', label:null }); // label-less
+  return combos;
 }
-function tabDuplicate(id){
-  const idx = tabState.rows.findIndex(r=>r.id===id);
-  if(idx<0) return;
-  tabState.rows.splice(idx+1, 0, makeTabRow(tabState.rows[idx].code, false)); // blank config — user must fill
-  rerenderE();
+function eComboKey(code, service, label){ return code + '|' + service + '|' + (label || '∅'); }
+
+/* rebuild rows for the current country × combo grid, preserving edits & honoring deletions */
+function eDefaultContract(carrier){ return (MANAGED_CONTRACTS[carrier]||[])[0] || ''; }
+function makeERow(code, service, label){
+  const av = eAvailableCarriers(service, label);
+  const carrier = av.length ? av[0].id : null;
+  return {
+    id:'r'+(++_tabSeq), code, service, label,
+    destType:null, dtwType:null, partner:null, addressId:null, // null destType = inherit global
+    carrier,
+    laneType:'managed', contract: eDefaultContract(carrier), // pre-filled like the carrier; fine-tune later
+  };
 }
-function tabRemove(id){ tabState.rows = tabState.rows.filter(r=>r.id!==id); rerenderE(); }
+function tabBuildRows(){
+  const combos = eCombos();
+  const byKey = {}; tabState.rows.forEach(r => { byKey[eComboKey(r.code, r.service, r.label)] = r; });
+  const next = [];
+  COUNTRIES.forEach(c => {
+    combos.forEach(cb => {
+      const key = eComboKey(c.code, cb.service, cb.label);
+      if(tabState.deleted[key]) return;
+      next.push(byKey[key] || makeERow(c.code, cb.service, cb.label));
+    });
+  });
+  tabState.rows = next;
+}
+function tabDeleteCombo(id){
+  const r = tabState.rows.find(x => x.id === id); if(!r) return;
+  tabState.deleted[eComboKey(r.code, r.service, r.label)] = true;
+  tabBuildRows(); rerenderE();
+}
+
+/* addresses (DTR) */
+function makeAddress(){ return { id:'a'+(++_addrSeq), line1:'', line2:'', line3:'', city:'', postal:'', countryCode:'' }; }
+function closestAddress(code){
+  const a = tabState.addresses.filter(x => x.city.trim() && x.countryCode);
+  if(!a.length) return null;
+  const exact = a.find(x => x.countryCode === code); if(exact) return exact;
+  const reg = regionOf(code);
+  const same = a.find(x => regionOf(x.countryCode) === reg); if(same) return same;
+  return a[0];
+}
 
 /* ─────────────────────────────────────────────────
    HELPERS
@@ -1087,9 +1282,37 @@ function icon(name){
     chevDown: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
     arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
     info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    // return services
+    dropoff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    pickup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="13" height="10" rx="1"/><path d="M14 9h4l3 3v4h-7z"/><circle cx="6" cy="18" r="1.8"/><circle cx="18" cy="18" r="1.8"/></svg>',
+    selfpost: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="11" rx="2"/><path d="M3 10l9 5 9-5"/><path d="M8 8V5a4 4 0 0 1 8 0v3"/></svg>',
+    // return labels
+    printed: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+    paperless: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="14" y2="17"/><line x1="17" y1="14" x2="21" y2="14"/><line x1="21" y1="17" x2="21" y2="21"/><line x1="14" y1="21" x2="17" y2="21"/></svg>',
+    // destinations
+    warehouse: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M3 21h18"/><rect x="8" y="13" width="8" height="8"/><path d="M8 17h8"/></svg>',
+    building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="6" x2="9" y2="6.01"/><line x1="15" y1="6" x2="15" y2="6.01"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/><line x1="9" y1="14" x2="9" y2="14.01"/><line x1="15" y1="14" x2="15" y2="14.01"/><path d="M9 22v-4h6v4"/></svg>',
+    partners: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    recycle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19H4.8a2 2 0 0 1-1.7-3l1.3-2.2"/><path d="M9.4 5.5l1.1-1.9a2 2 0 0 1 3.4 0l1.4 2.4"/><path d="M14.5 17.5h3.7a2 2 0 0 0 1.7-3l-1.1-1.9"/><polyline points="7.5 14.7 4.3 13.8 3.4 17"/><polyline points="9.7 5.2 9.4 8.6 12.8 8.4"/><polyline points="16.6 17.9 19.8 17 18.9 13.8"/></svg>',
+    // person / client (for composite icon)
+    client: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    // actions / misc
+    edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>',
+    address: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>',
+    globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+    flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
+    warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
   };
   return icons[name] || '';
 }
+
+/* service / label icon lookups (purpose-driven, minimal) */
+function serviceIcon(s){ return s==='Drop-off' ? icon('dropoff') : s==='Pickup' ? icon('pickup') : s==='Self-post' ? icon('selfpost') : ''; }
+function labelIcon(l){ return l==='Printed label' ? icon('printed') : icon('paperless'); }
+function partnerIcon(p){ return /recycl/i.test(p) ? icon('recycle') : icon('partners'); }
 
 function allLanesConfigured(){
   return Object.values(state.lanes).every(l => l.carrier && l.service && l.routing && (l.routing === 'SaaS' || l.accountNumber.trim()));
@@ -1190,6 +1413,8 @@ function setView(v){
   document.getElementById('meta-client').textContent = state.client || '—';
   const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
+  const flowEl = document.getElementById('meta-flow');
+  if(flowEl) flowEl.style.display = state.variant ? '' : 'none';
 }
 
 function goHome(){
@@ -2446,23 +2671,47 @@ function copyJson(){
    ═════════════════════════════════════════════════ */
 function rerenderE(){ renderWizard(); }
 
-function eServiceReady(){ return !!tabState.returnService; }
-function eLabelReady(){ return !!tabState.returnLabel; }
+function eServiceReady(){ return tabState.returnServices.length > 0; }
+function eLabelReady(){
+  if(!eServiceReady()) return false;
+  return eNonSelfServices().length === 0 ? true : tabState.returnLabels.length > 0; // self-post-only needs no label
+}
 function eDestReady(){
   if(!tabState.destination) return false;
   if(tabState.destination === 'DTW') return !!tabState.dtwType;
   if(tabState.destination === 'DTP') return !!tabState.dtpPartner;
-  if(tabState.destination === 'DTR'){ const a = tabState.dtrAddress; return !!(a.line1.trim() && a.city.trim() && a.country.trim()); }
+  if(tabState.destination === 'DTR') return tabState.addresses.some(a => a.city.trim() && a.countryCode);
   return true;
 }
 function eTableReady(){ return eServiceReady() && eLabelReady() && eDestReady(); }
 
-// short, human label for the destination column (depends on Q3 + follow-ups)
-function eDestCell(c){
-  if(tabState.destination === 'DTW') return tabState.dtwType === 'ERC' ? ERC_WAREHOUSE.split('_').slice(-1)[0] : c.wh.split('_').slice(-1)[0];
-  if(tabState.destination === 'DTR') return tabState.dtrAddress.city || 'Client facility';
-  if(tabState.destination === 'DTP') return tabState.dtpPartner || 'Partner';
-  return '—';
+// effective destination for a row: explicit per-row override, else the global Q3 answer
+function eEffectiveDest(r){
+  if(r.destType) return { type:r.destType, dtwType:r.dtwType, partner:r.partner, addressId:r.addressId };
+  return { type:tabState.destination, dtwType:tabState.dtwType, partner:tabState.dtpPartner, addressId:null };
+}
+
+// composite destination icons (warehouse base + corner mark) — consistent construction
+function reboundWarehouseIcon(){ return '<span class="dest-ic rebound">'+icon('warehouse')+'<img class="dest-brand" src="rebound-icon.png" alt=""></span>'; }
+function clientWarehouseIcon(){ return '<span class="dest-ic clientwh">'+icon('warehouse')+'<span class="dest-badge">'+icon('client')+'</span></span>'; }
+
+// destination cell content: {iconHtml, city, sub}
+function eDestCellInfo(r){
+  const d = eEffectiveDest(r);
+  const c = COUNTRIES.find(x => x.code === r.code);
+  if(d.type === 'DTW'){
+    const city = d.dtwType === 'ERC' ? ERC_WAREHOUSE.split('_').slice(-1)[0] : c.wh.split('_').slice(-1)[0];
+    return { iconHtml:reboundWarehouseIcon(), city, sub:'ReBound WH' };
+  }
+  if(d.type === 'DTR'){
+    const addr = d.addressId ? tabState.addresses.find(a => a.id === d.addressId) : closestAddress(r.code);
+    return { iconHtml:clientWarehouseIcon(), city:(addr && addr.city) ? addr.city : 'Client facility', sub:'Client facility' };
+  }
+  if(d.type === 'DTP'){
+    const p = d.partner || tabState.dtpPartner || 'Partner';
+    return { iconHtml:'<span class="dest-ic partner">'+partnerIcon(p)+'</span>', city:p, sub:'ReBound partner' };
+  }
+  return { iconHtml:'', city:'—', sub:'' };
 }
 
 function renderVariantE(root){
@@ -2491,28 +2740,57 @@ function eCard(num, title, answered, locked){
   );
 }
 
-/* Q1 — return service */
+/* multi-select chip */
+function eChip(on, iconHtml, text, onToggle){
+  return el('button',{class:'mchip'+(on?' on':''), onclick:onToggle},
+    el('span',{class:'mchip-ic', html:iconHtml}),
+    el('span',{class:'mchip-tx'}, text),
+    el('span',{class:'mchip-tick', html: on ? svgCheck() : ''})
+  );
+}
+
+/* Q1 — return service (multi-select) */
 function eCardService(locked){
   const card = eCard(1, 'Which return service would you like?', eServiceReady(), locked);
   const body = el('div',{class:'q-body'});
-  const g = el('div',{class:'radio-group'});
-  RETURN_SERVICES.forEach(s => g.appendChild(el('button',{class:'radio'+(tabState.returnService===s?' active':''), onclick:()=>{
-    tabState.returnService = s; if(eTableReady()) tabSyncRows(); rerenderE();
-  }}, s)));
+  const g = el('div',{class:'mchip-group'});
+  RETURN_SERVICES.forEach(s => {
+    const on = tabState.returnServices.includes(s);
+    g.appendChild(eChip(on, serviceIcon(s), s, ()=>{
+      tabState.returnServices = on ? tabState.returnServices.filter(x=>x!==s) : [...tabState.returnServices, s];
+      rerenderE();
+    }));
+  });
   body.appendChild(g);
+  body.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('info')}), 'Select one or more — each choice becomes its own lane in the table below.'));
   card.appendChild(body);
   return card;
 }
 
-/* Q2 — return label */
+/* Q2 — return label (multi-select; N/A for Self-post) */
 function eCardLabel(locked){
   const card = eCard(2, 'Which return label option would you like?', eLabelReady(), locked);
   const body = el('div',{class:'q-body'});
-  const g = el('div',{class:'radio-group'});
-  RETURN_LABELS.forEach(s => g.appendChild(el('button',{class:'radio'+(tabState.returnLabel===s?' active':''), onclick:()=>{
-    tabState.returnLabel = s; if(eTableReady()) tabSyncRows(); rerenderE();
-  }}, s)));
-  body.appendChild(g);
+  const onlySelf = eHasSelfPost() && eNonSelfServices().length === 0;
+  if(onlySelf){
+    body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
+      el('span',{html:icon('info')}),
+      el('span',{html:'Label type is <b>not applicable</b> for Self-post — the consumer arranges their own label.'})
+    ));
+  } else {
+    const g = el('div',{class:'mchip-group'});
+    RETURN_LABELS.forEach(l => {
+      const on = tabState.returnLabels.includes(l);
+      g.appendChild(eChip(on, labelIcon(l), l, ()=>{
+        tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
+        rerenderE();
+      }));
+    });
+    body.appendChild(g);
+    if(eHasSelfPost()){
+      body.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('info')}), 'Ignored for Self-post lanes — they don’t use a return label.'));
+    }
+  }
   card.appendChild(body);
   return card;
 }
@@ -2522,18 +2800,19 @@ function eCardDestination(locked){
   const card = eCard(3, 'Where do you want to send the return parcel?', eDestReady(), locked);
   const body = el('div',{class:'q-body'});
   const opts = [
-    { v:'DTW', name:'ReBound Warehouse', code:'DTW' },
-    { v:'DTR', name:'Client facility or Warehouse', code:'DTR' },
-    { v:'DTP', name:'ReBound Partners', code:'DTP' },
+    { v:'DTW', name:'ReBound Warehouse', code:'DTW', ic:'warehouse' },
+    { v:'DTR', name:'Client facility or Warehouse', code:'DTR', ic:'building' },
+    { v:'DTP', name:'ReBound Partners', code:'DTP', ic:'partners' },
   ];
   const list = el('div',{class:'opt-list'});
   opts.forEach(o => {
-    list.appendChild(el('button',{class:'opt'+(tabState.destination===o.v?' active':''), onclick:()=>{
+    list.appendChild(el('button',{class:'opt opt-ic'+(tabState.destination===o.v?' active':''), onclick:()=>{
       tabState.destination = o.v;
       if(o.v !== 'DTW') tabState.dtwType = null;
       rerenderE();
     }},
       el('span',{class:'opt-radio'}),
+      el('span',{class:'opt-ic-badge', html:icon(o.ic)}),
       el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, o.name, el('span',{class:'opt-code'}, o.code)))
     ));
   });
@@ -2559,10 +2838,11 @@ function eCardDestination(locked){
     }
   }
 
-  // DTR → address form
+  // DTR → multiple client-facility addresses
   if(tabState.destination === 'DTR'){
-    body.appendChild(el('div',{class:'q-mini-label'}, 'Destination address'));
-    body.appendChild(eAddressForm());
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Client facility addresses'));
+    body.appendChild(eAddressManager());
+    body.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('info')}), 'Add one or more. Each lane uses the address closest to its country.'));
   }
 
   // DTP → choose a partner
@@ -2570,8 +2850,9 @@ function eCardDestination(locked){
     body.appendChild(el('div',{class:'q-mini-label'}, 'Choose a ReBound partner'));
     const plist = el('div',{class:'opt-list'});
     DTP_PARTNERS.forEach(p => {
-      plist.appendChild(el('button',{class:'opt'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
+      plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
         el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-ic-badge', html:partnerIcon(p)}),
         el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
       ));
     });
@@ -2582,20 +2863,76 @@ function eCardDestination(locked){
   return card;
 }
 
-function eAddressForm(){
-  const a = tabState.dtrAddress;
+/* ─── address manager (DTR) — squared cards + add button ─── */
+function eAddressManager(){
+  const wrap = el('div',{class:'addr-strip'});
+  tabState.addresses.forEach(a => {
+    const ac = ADDRESS_COUNTRY_BY_CODE[a.countryCode];
+    const filled = a.city.trim() && a.countryCode;
+    wrap.appendChild(el('button',{class:'addr-card'+(filled?' filled':''), onclick:()=>openAddressModal(a.id)},
+      el('span',{class:'addr-icon'}, filled && ac ? el('span',{class:'addr-flag'}, ac.flag) : el('span',{class:'addr-pin', html:icon('address')})),
+      el('span',{class:'addr-meta'},
+        el('span',{class:'addr-city'}, filled ? (a.city || '—') : 'Incomplete'),
+        el('span',{class:'addr-co'}, filled && ac ? ac.name : 'Tap to complete')
+      ),
+      el('span',{class:'addr-rm', title:'Remove address', html:icon('close'), onclick:(e)=>{ e.stopPropagation(); tabState.addresses = tabState.addresses.filter(x=>x.id!==a.id); rerenderE(); }})
+    ));
+  });
+  wrap.appendChild(el('button',{class:'addr-add', onclick:()=>openAddressModal(null)},
+    el('span',{class:'addr-add-ic', html:icon('address')+'<span class="addr-add-plus">'+icon('plus')+'</span>'}),
+    el('span',{class:'addr-add-tx'}, 'Add address')
+  ));
+  return wrap;
+}
+
+/* ─── lightweight modal plumbing (overlay built on demand, removed on close) ─── */
+function openModal(cardNode){
+  const overlay = el('div',{class:'modal-overlay app-modal'});
+  overlay.appendChild(cardNode);
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeModal(overlay); });
+  document.body.appendChild(overlay);
+  requestAnimationFrame(()=> overlay.classList.add('open'));
+  return overlay;
+}
+function closeModal(overlay){ overlay.classList.remove('open'); setTimeout(()=> overlay.remove(), 200); }
+
+/* address add/edit modal */
+function openAddressModal(id){
+  const editing = id ? tabState.addresses.find(a=>a.id===id) : null;
+  const draft = editing ? {...editing} : makeAddress();
+  const ref = {};
+  const card = el('div',{class:'modal-card modal-wide'});
+  card.appendChild(el('div',{class:'modal-title'}, editing ? 'Edit address' : 'Add client facility address'));
+  card.appendChild(el('div',{class:'modal-sub'}, 'Returns sent to a client facility use the closest of these addresses per country.'));
   const grid = el('div',{class:'form-grid'});
-  const mk = (key,label,full)=> el('div',{class:'fg'+(full?' fg-full':''), style: full?{gridColumn:'1 / -1'}:undefined},
+  const mk = (key,label,full,ph)=> el('div',{class:'fg'+(full?' fg-full':''), style: full?{gridColumn:'1 / -1'}:undefined},
     el('label',{}, label),
-    el('input',{type:'text', value:a[key], placeholder:label, oninput:(e)=>{ a[key]=e.target.value; }, onchange:()=>rerenderE()})
+    el('input',{type:'text', value:draft[key]||'', placeholder:ph||label, oninput:e=>{ draft[key]=e.target.value; }})
   );
   grid.appendChild(mk('line1','Address line 1', true));
-  grid.appendChild(mk('line2','Address line 2', true));
-  grid.appendChild(mk('line3','Address line 3', true));
+  grid.appendChild(mk('line2','Address line 2 (optional)', true));
   grid.appendChild(mk('city','City'));
   grid.appendChild(mk('postal','Postal code'));
-  grid.appendChild(mk('country','Country', true));
-  return grid;
+  const coWrap = el('div',{class:'fg fg-full', style:{gridColumn:'1 / -1'}}, el('label',{}, 'Country'));
+  const sel = el('select',{class:'modal-select', onchange:e=>{ draft.countryCode=e.target.value; }});
+  sel.appendChild(el('option',{value:''}, 'Select country…'));
+  ADDRESS_COUNTRIES.forEach(c => { const o = el('option',{value:c.code}, c.flag+'  '+c.name); if(draft.countryCode===c.code) o.selected=true; sel.appendChild(o); });
+  coWrap.appendChild(sel);
+  grid.appendChild(coWrap);
+  card.appendChild(grid);
+  const hint = el('div',{class:'modal-hint'});
+  card.appendChild(hint);
+  card.appendChild(el('div',{class:'modal-actions'},
+    el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
+    el('button',{class:'btn btn-primary', onclick:()=>{
+      if(!draft.line1.trim() || !draft.city.trim() || !draft.countryCode){
+        hint.textContent = 'Address line 1, city and country are required.'; hint.classList.add('err'); return;
+      }
+      if(editing) Object.assign(editing, draft); else tabState.addresses.push(draft);
+      closeModal(ref.o); rerenderE();
+    }}, editing ? 'Save address' : 'Add address')
+  ));
+  ref.o = openModal(card);
 }
 
 /* helper: build a <select> with a placeholder + red boundary when empty */
@@ -2607,9 +2944,92 @@ function eSelect(value, options, onChange){
   return sel;
 }
 
-/* Table — pre-filled lanes, per-row overrides, contract → SaaS + account #, duplicable rows */
+/* set a row's carrier, re-defaulting the managed contract to the new carrier's first */
+function eSetCarrier(r, v){
+  r.carrier = v;
+  if(r.laneType === 'managed' && !(MANAGED_CONTRACTS[v]||[]).includes(r.contract)) r.contract = eDefaultContract(v);
+}
+function eSetLaneType(r, lt){
+  if(r.laneType === lt) return;
+  r.laneType = lt;
+  r.contract = lt === 'managed' ? eDefaultContract(r.carrier) : ''; // SaaS = blank free-text (user fills)
+  rerenderE();
+}
+
+/* lane-type toggle (Managed | SaaS) */
+function eLaneToggle(r){
+  return el('div',{class:'lt-toggle'},
+    el('button',{class:'lt-opt'+(r.laneType==='managed'?' on':''), onclick:()=>eSetLaneType(r,'managed')}, 'Managed'),
+    el('button',{class:'lt-opt'+(r.laneType==='saas'?' on':''), onclick:()=>eSetLaneType(r,'saas')}, 'SaaS')
+  );
+}
+
+/* contract cell — managed → dropdown of ReBound contracts; saas → free text */
+function eContractCell(r){
+  if(r.laneType === 'managed'){
+    const opts = (MANAGED_CONTRACTS[r.carrier]||[]).map(x => ({value:x, text:x}));
+    if(!opts.length) return el('span',{class:'cell-dim'}, r.carrier ? 'No contracts' : '—');
+    return eSelect(r.contract || null, opts, v => { r.contract = v || ''; rerenderE(); });
+  }
+  return el('input',{type:'text', class:'account-input'+(r.contract.trim()?'':' need-fill'),
+    value:r.contract, placeholder:'SaaS account / contract',
+    oninput:(e)=>{ r.contract = e.target.value; e.target.classList.toggle('need-fill', !e.target.value.trim()); }});
+}
+
+/* one combo row */
+function eRow(r){
+  const tr = el('tr',{class:'lane-row'});
+  const noCarrier = eAvailableCarriers(r.service, r.label).length === 0;
+
+  // Return service / label (static)
+  tr.appendChild(el('td',{}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
+  tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
+
+  // Destination (composite icon + city, edit pencil on hover)
+  const di = eDestCellInfo(r);
+  const destCell = el('td',{class:'dest-cell'},
+    el('span',{class:'dest-wrap'},
+      el('span',{class:'dest-ic-slot', html:di.iconHtml}),
+      el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub))
+    ),
+    el('button',{class:'dest-edit', title:'Edit this lane', onclick:()=>openLaneEditModal(r.id), html:icon('edit')})
+  );
+  tr.appendChild(destCell);
+
+  // Lane type toggle
+  tr.appendChild(el('td',{}, eLaneToggle(r)));
+  // Contract
+  tr.appendChild(el('td',{}, eContractCell(r)));
+  // Carrier (last column)
+  const carrierCell = el('td',{class:'carrier-cell'});
+  if(noCarrier){
+    carrierCell.appendChild(el('span',{class:'no-carrier'}, el('span',{html:icon('warn')}), 'No carrier — remove'));
+  } else {
+    carrierCell.appendChild(eSelect(r.carrier, eAvailableCarriers(r.service, r.label).map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
+  }
+  // per-combo delete (floats at row right on hover)
+  carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+  tr.appendChild(carrierCell);
+
+  return tr;
+}
+
+/* append a country group (header + its combo rows) */
+function eAppendCountryGroup(tbody, code, rows){
+  const c = COUNTRIES.find(x => x.code === code);
+  tbody.appendChild(el('tr',{class:'grp-country'},
+    el('td',{colspan:6},
+      el('span',{class:'grp-flag'}, c.flag),
+      el('span',{class:'grp-name'}, c.name),
+      el('span',{class:'grp-count'}, rows.length + (rows.length===1?' lane':' lanes'))
+    )
+  ));
+  rows.forEach(r => tbody.appendChild(eRow(r)));
+}
+
+/* Table — grouped, compact, no horizontal scroll */
 function eCardTable(locked){
-  if(!locked) tabSyncRows();
+  if(!locked) tabBuildRows();
 
   const card = el('div',{class:'q-card'+(locked?' locked':'')},
     el('div',{class:'q-card-head'},
@@ -2619,94 +3039,166 @@ function eCardTable(locked){
   );
   const body = el('div',{class:'q-body'});
 
-  // No carrier exists for the chosen service × label → user must change one of them
-  if(!locked && !eComboCovered()){
-    body.appendChild(el('div',{class:'combo-warn'},
-      el('span',{html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'}),
-      el('span',{html:`No carrier offers <b>${tabState.returnService}</b> with a <b>${tabState.returnLabel}</b>. Change the return service or label above to continue.`})
-    ));
+  if(locked){ card.appendChild(body); return card; }
+
+  // group-by toggle
+  body.appendChild(el('div',{class:'table-tools'},
+    el('span',{class:'tt-label'}, 'Group by'),
+    el('div',{class:'seg'},
+      el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
+      el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
+    )
+  ));
+
+  if(!tabState.rows.length){
+    body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
+      el('span',{html:icon('info')}), el('span',{html:'No lanes left. Adjust the service or label selections above to repopulate the table.'})));
     card.appendChild(body);
     return card;
   }
 
-  const showAccount = tabState.rows.some(r => r.hasContract);
-
-  const tableWrap = el('div',{class:'table-scroll-wrap',style:{overflowX:'auto'}});
-  const table = el('table',{class:'config-table'});
-  const headRow = el('tr',{},
-    el('th',{},'Country'), el('th',{},'Origin'), el('th',{},'Destination'),
-    el('th',{},'Carrier'), el('th',{},'Return service'), el('th',{},'Return label'),
-    el('th',{},'Lane type'), el('th',{},'Contract?')
-  );
-  if(showAccount) headRow.appendChild(el('th',{},'Account #'));
-  headRow.appendChild(el('th',{},''));
-  table.appendChild(el('thead',{}, headRow));
-
+  const table = el('table',{class:'config-table compact'});
+  table.appendChild(el('thead',{}, el('tr',{},
+    el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
+    el('th',{},'Lane type'), el('th',{},'Contract'), el('th',{},'Carrier')
+  )));
   const tbody = el('tbody',{});
-  tabState.rows.forEach(r => {
-    const c = COUNTRIES.find(x => x.code === r.code);
-    const tr = el('tr',{});
 
-    // Country
-    tr.appendChild(el('td',{}, el('span',{class:'cell-flag'}, c.flag), el('strong',{}, c.name)));
-    // Origin / Destination (split lane)
-    tr.appendChild(el('td',{}, el('span',{class:'cell-lane'}, el('span',{}, c.wh.split('_').slice(-1)[0]))));
-    tr.appendChild(el('td',{}, el('span',{class:'cell-lane'}, el('span',{}, eDestCell(c)))));
+  // rows grouped by country, in COUNTRIES order
+  const rowsByCode = {};
+  tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
+  const codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
 
-    // Carrier — options limited to those serving this row's service+label
-    const carrierOpts = eAvailableCarriers(r.service, r.label).map(cr => ({value:cr.id, text:cr.name}));
-    tr.appendChild(el('td',{}, eSelect(r.carrier, carrierOpts, (v)=>{ r.carrier = v; rerenderE(); })));
+  if(tabState.groupBy === 'region'){
+    const regions = [...E_REGION_ORDER, ...codes.map(c=>regionOf(c)).filter(r=>!E_REGION_ORDER.includes(r))];
+    const seen = {};
+    regions.forEach(region => {
+      if(seen[region]) return; seen[region] = true;
+      const inRegion = codes.filter(code => regionOf(code) === region);
+      if(!inRegion.length) return;
+      tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:6}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
+      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code]));
+    });
+  } else {
+    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code]));
+  }
 
-    // Return service — clears carrier if it no longer serves the new combo
-    tr.appendChild(el('td',{}, eSelect(r.service, RETURN_SERVICES.map(s=>({value:s,text:s})), (v)=>{
-      r.service = v; if(r.carrier && !eAvailableCarriers(r.service, r.label).some(x=>x.id===r.carrier)) r.carrier=null; rerenderE();
-    })));
-    // Return label
-    tr.appendChild(el('td',{}, eSelect(r.label, RETURN_LABELS.map(s=>({value:s,text:s})), (v)=>{
-      r.label = v; if(r.carrier && !eAvailableCarriers(r.service, r.label).some(x=>x.id===r.carrier)) r.carrier=null; rerenderE();
-    })));
-
-    // Lane type (derived, uneditable)
-    const lt = r.hasContract ? 'SaaS' : 'Managed';
-    tr.appendChild(el('td',{}, el('span',{class:'lane-badge '+(r.hasContract?'saas':'managed')}, lt)));
-
-    // Contract with carrier? (checkbox)
-    tr.appendChild(el('td',{}, el('span',{class:'tab-check'+(r.hasContract?' on':''), html:r.hasContract?svgCheck():'', onclick:()=>{
-      r.hasContract = !r.hasContract; if(!r.hasContract) r.accountNumber=''; rerenderE();
-    }})));
-
-    // Account # (dynamic column)
-    if(showAccount){
-      const acctCell = el('td',{});
-      if(r.hasContract){
-        acctCell.appendChild(el('input',{type:'text', class:'account-input'+(r.accountNumber.trim()?'':' need-fill'),
-          value:r.accountNumber, placeholder:'Account #',
-          oninput:(e)=>{ r.accountNumber=e.target.value; e.target.classList.toggle('need-fill', !e.target.value.trim()); }}));
-      } else {
-        acctCell.appendChild(el('span',{style:{color:'var(--dim)'}}, '—'));
-      }
-      tr.appendChild(acctCell);
-    }
-
-    // Row actions: duplicate (+) always, remove (×) on duplicated rows
-    const actCell = el('td',{});
-    const act = el('div',{class:'row-act'});
-    act.appendChild(el('button',{class:'dup', title:'Duplicate lane', onclick:()=>tabDuplicate(r.id),
-      html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>'}));
-    if(!r.primary){
-      act.appendChild(el('button',{class:'rm', title:'Remove lane', onclick:()=>tabRemove(r.id),
-        html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'}));
-    }
-    actCell.appendChild(act);
-    tr.appendChild(actCell);
-
-    tbody.appendChild(tr);
-  });
   table.appendChild(tbody);
-  tableWrap.appendChild(table);
-  body.appendChild(tableWrap);
+  body.appendChild(table);
   card.appendChild(body);
   return card;
+}
+
+/* ─── per-row lane edit modal (req 6.9) ─── */
+function openLaneEditModal(id){
+  const r = tabState.rows.find(x => x.id === id); if(!r) return;
+  const c = COUNTRIES.find(x => x.code === r.code);
+  const eff = eEffectiveDest(r);
+  const draft = {
+    destType: eff.type || 'DTW',
+    dtwType:  (eff.type==='DTW' ? eff.dtwType : null) || 'local',
+    partner:  (eff.type==='DTP' ? eff.partner : null),
+    addressId:(eff.type==='DTR' ? (eff.addressId || (closestAddress(r.code)||{}).id) : null) || null,
+    carrier:  r.carrier, laneType:r.laneType, contract:r.contract,
+  };
+  const ref = {};
+  const card = el('div',{class:'modal-card modal-wide'});
+  const bodyWrap = el('div',{});
+
+  function section(title){ return el('div',{class:'mod-mini'}, title); }
+
+  function renderBody(){
+    bodyWrap.innerHTML = '';
+    // Destination choice
+    bodyWrap.appendChild(section('Destination'));
+    const destOpts = [
+      { v:'DTW', name:'ReBound Warehouse', ic:'warehouse' },
+      { v:'DTR', name:'Client facility', ic:'building' },
+      { v:'DTP', name:'ReBound partner', ic:'partners' },
+    ];
+    const dlist = el('div',{class:'opt-list'});
+    destOpts.forEach(o => {
+      dlist.appendChild(el('button',{class:'opt opt-ic'+(draft.destType===o.v?' active':''), onclick:()=>{ draft.destType=o.v; renderBody(); }},
+        el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-ic-badge', html:icon(o.ic)}),
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, o.name))
+      ));
+    });
+    bodyWrap.appendChild(dlist);
+
+    // Destination sub-options
+    if(draft.destType === 'DTW'){
+      const sub = el('div',{class:'chip-row'});
+      [['local','Local'],['ERC','ERC']].forEach(([v,n])=> sub.appendChild(el('button',{class:'minichip'+(draft.dtwType===v?' on':''), onclick:()=>{ draft.dtwType=v; renderBody(); }}, n)));
+      bodyWrap.appendChild(sub);
+    } else if(draft.destType === 'DTP'){
+      const sub = el('div',{class:'chip-row'});
+      DTP_PARTNERS.forEach(p => sub.appendChild(el('button',{class:'minichip'+(draft.partner===p?' on':''), onclick:()=>{ draft.partner=p; renderBody(); }}, p)));
+      bodyWrap.appendChild(sub);
+    } else if(draft.destType === 'DTR'){
+      if(!tabState.addresses.length){
+        bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No client addresses yet — add one in question 3 first.'));
+      } else {
+        const sub = el('div',{class:'chip-row'});
+        tabState.addresses.filter(a=>a.city.trim()&&a.countryCode).forEach(a => {
+          const ac = ADDRESS_COUNTRY_BY_CODE[a.countryCode];
+          sub.appendChild(el('button',{class:'minichip'+(draft.addressId===a.id?' on':''), onclick:()=>{ draft.addressId=a.id; renderBody(); }}, (ac?ac.flag+' ':'')+(a.city||'—')));
+        });
+        bodyWrap.appendChild(sub);
+      }
+    }
+
+    // Carrier
+    bodyWrap.appendChild(section('Carrier'));
+    const av = eAvailableCarriers(r.service, r.label);
+    if(!av.length){
+      bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier offers '+r.service+(r.label?' + '+r.label:'')+'. Consider removing this lane.'));
+    } else {
+      const crow = el('div',{class:'chip-row'});
+      av.forEach(cr => crow.appendChild(el('button',{class:'minichip'+(draft.carrier===cr.id?' on':''), onclick:()=>{
+        draft.carrier=cr.id; if(draft.laneType==='managed' && !(MANAGED_CONTRACTS[cr.id]||[]).includes(draft.contract)) draft.contract=eDefaultContract(cr.id);
+        renderBody();
+      }}, cr.name)));
+      bodyWrap.appendChild(crow);
+    }
+
+    // Lane type
+    bodyWrap.appendChild(section('Lane type'));
+    bodyWrap.appendChild(el('div',{class:'lt-toggle lt-wide'},
+      el('button',{class:'lt-opt'+(draft.laneType==='managed'?' on':''), onclick:()=>{ if(draft.laneType!=='managed'){ draft.laneType='managed'; draft.contract=eDefaultContract(draft.carrier); renderBody(); } }}, 'Managed'),
+      el('button',{class:'lt-opt'+(draft.laneType==='saas'?' on':''), onclick:()=>{ if(draft.laneType!=='saas'){ draft.laneType='saas'; draft.contract=''; renderBody(); } }}, 'SaaS')
+    ));
+
+    // Contract
+    bodyWrap.appendChild(section('Contract'));
+    if(draft.laneType === 'managed'){
+      const opts = (MANAGED_CONTRACTS[draft.carrier]||[]).map(x=>({value:x,text:x}));
+      if(!opts.length) bodyWrap.appendChild(el('div',{class:'sub-note'}, 'No managed contracts for this carrier.'));
+      else bodyWrap.appendChild(eSelect(draft.contract||null, opts, v=>{ draft.contract=v||''; }));
+    } else {
+      bodyWrap.appendChild(el('input',{type:'text', class:'modal-input', value:draft.contract, placeholder:'SaaS account / contract reference', oninput:e=>{ draft.contract=e.target.value; }}));
+    }
+  }
+
+  card.appendChild(el('div',{class:'modal-title'}, c.flag+' '+c.name+' lane'));
+  card.appendChild(el('div',{class:'modal-sub'}, r.service + (r.label ? ' · '+r.label : ' · no label') + ' — adjust where this lane goes and how it ships.'));
+  card.appendChild(bodyWrap);
+  const hint = el('div',{class:'modal-hint'});
+  card.appendChild(hint);
+  card.appendChild(el('div',{class:'modal-actions'},
+    el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
+    el('button',{class:'btn btn-primary', onclick:()=>{
+      if(draft.destType==='DTR' && !draft.addressId){ hint.textContent='Choose a client address for this lane.'; hint.classList.add('err'); return; }
+      if(draft.destType==='DTW' && !draft.dtwType){ hint.textContent='Choose a warehouse type.'; hint.classList.add('err'); return; }
+      if(draft.destType==='DTP' && !draft.partner){ hint.textContent='Choose a partner.'; hint.classList.add('err'); return; }
+      r.destType = draft.destType; r.dtwType = draft.dtwType; r.partner = draft.partner; r.addressId = draft.addressId;
+      eSetCarrier(r, draft.carrier); r.laneType = draft.laneType; r.contract = draft.contract;
+      closeModal(ref.o); rerenderE();
+    }}, 'Save lane')
+  ));
+
+  renderBody();
+  ref.o = openModal(card);
 }
 
 /* ─────────────────────────────────────────────────
