@@ -845,7 +845,7 @@ body[data-view="wizard"] #view-landing{display:none}
   <textarea id="fb-text" placeholder="What could be better?"></textarea>
   <div class="fb-foot">
     <span class="fb-msg" id="fb-msg"></span>
-    <button class="btn btn-primary" onclick="sendFb()" style="font-size:11.5px;padding:6px 14px">Send</button>
+    <button class="btn btn-primary" id="fb-send" onclick="sendFb()" style="font-size:11.5px;padding:6px 14px">Send</button>
   </div>
 </div>
 
@@ -2720,26 +2720,57 @@ function toggleFb(){
   }
 }
 
-function sendFb(){
-  const ta = document.getElementById('fb-text');
-  const msg = document.getElementById('fb-msg');
-  const text = ta.value.trim();
-  if(!text) return;
-  const payload = { text, client: state.client, variant: state.variant, when: new Date().toISOString() };
+function stashFbLocally(payload){
+  // offline fallback so feedback is never silently lost
   try{
     const key = 'firstmile-config-feedback';
     const list = JSON.parse(localStorage.getItem(key) || '[]');
     list.push(payload);
     localStorage.setItem(key, JSON.stringify(list));
   }catch(e){}
-  ta.value = '';
-  msg.textContent = '✓ Feedback saved. Thank you!';
-  msg.style.color = 'var(--green)';
+}
+
+async function sendFb(){
+  const ta = document.getElementById('fb-text');
+  const msg = document.getElementById('fb-msg');
+  const btn = document.getElementById('fb-send');
+  const text = ta.value.trim();
+  if(!text) return;
+  const payload = { text, client: state.client, variant: state.variant, when: new Date().toISOString() };
+
+  if(btn) btn.disabled = true;
+  msg.textContent = 'Sending…';
+  msg.style.color = 'var(--muted)';
+  msg.classList.add('show');
+
+  let ok = false;
+  try{
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    ok = res.ok;
+  }catch(e){ ok = false; }
+
+  if(btn) btn.disabled = false;
+
+  if(ok){
+    ta.value = '';
+    msg.textContent = '✓ Feedback sent. Thank you!';
+    msg.style.color = 'var(--green)';
+  }else{
+    // couldn't reach the backend — keep it locally and tell the user honestly
+    stashFbLocally(payload);
+    ta.value = '';
+    msg.textContent = '✓ Saved offline — we’ll have it on your next visit.';
+    msg.style.color = 'var(--green)';
+  }
   msg.classList.add('show');
   setTimeout(() => {
     msg.classList.remove('show');
     document.getElementById('fb-pop').classList.remove('open');
-  }, 1800);
+  }, 2200);
 }
 
 document.addEventListener('click', e => {
