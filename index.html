@@ -761,6 +761,49 @@ tr.lane-row.unavail:hover{background:transparent}
 .toast-x svg{width:12px;height:12px}
 .toast-x:hover{background:var(--border-soft);color:var(--text)}
 
+/* ─── Routing Rules ─── */
+.rule-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.rule-card{border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;background:#fff;display:flex;align-items:flex-start;gap:12px}
+.rule-card-body{flex:1;min-width:0}
+.rule-card-name{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:5px}
+.rule-card-tags{display:flex;flex-wrap:wrap;gap:5px}
+.rule-card-tag{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:10px;background:var(--border-soft);color:var(--muted)}
+.rule-card-tag.dest{background:#EFF6FF;color:#2563EB}
+.rule-card-tag.carrier{background:#FDF4FF;color:#9333EA}
+.rule-card-tag.country{background:#F0FDF4;color:#16A34A}
+.rule-card-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border:1.5px dashed var(--border);border-radius:10px;background:#FAFBFC;font:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:border-color .14s,color .14s,background .14s;width:100%}
+.rule-card-btn:hover{border-color:var(--brand-2);color:var(--brand);background:var(--brand-soft)}
+.rule-card-btn svg{width:15px;height:15px}
+.rule-del{margin-left:auto;flex-shrink:0;padding:6px;border:none;background:none;cursor:pointer;color:var(--muted);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:color .12s,background .12s}
+.rule-del:hover{color:var(--red);background:#FEF2F2}
+.rule-del svg{width:14px;height:14px}
+/* rule modal */
+.rule-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:flex;align-items:flex-start;justify-content:flex-end}
+.rule-modal{width:520px;max-width:100vw;height:100vh;overflow-y:auto;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.12);display:flex;flex-direction:column}
+.rule-modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:#fff;z-index:1}
+.rule-modal-title{font-size:16px;font-weight:700;color:var(--text);flex:1}
+.rule-modal-body{padding:24px;display:flex;flex-direction:column;gap:18px;flex:1}
+.rule-modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;position:sticky;bottom:0;background:#fff}
+.rule-field{display:flex;flex-direction:column;gap:6px}
+.rule-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
+.rule-field input,.rule-field select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13.5px;color:var(--text);background:#fff;outline:none;transition:border-color .14s}
+.rule-field input:focus,.rule-field select:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.1)}
+.rule-field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rule-section-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);margin-bottom:2px}
+.carrier-grid{display:flex;flex-direction:column;gap:6px}
+.carrier-row{border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.carrier-row-head{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#FAFBFC;font-size:13px;font-weight:600;color:var(--text)}
+.carrier-row-services{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px 10px 36px;border-top:1px solid var(--border-soft)}
+.carrier-svc-chip{padding:4px 12px;border:1.5px solid var(--border);border-radius:999px;font:inherit;font-size:11.5px;font-weight:500;color:var(--muted);background:#fff;cursor:pointer;transition:border-color .12s,background .12s,color .12s}
+.carrier-svc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+.country-multi{display:flex;flex-wrap:wrap;gap:5px;max-height:140px;overflow-y:auto;padding:8px;border:1.5px solid var(--border);border-radius:8px;background:#fff}
+.country-chip{padding:3px 10px;border:1.5px solid var(--border);border-radius:999px;font:inherit;font-size:11.5px;color:var(--muted);background:#fff;cursor:pointer;transition:border-color .12s,background .12s,color .12s}
+.country-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+.rule-save-btn{flex:1;padding:11px;border:none;border-radius:8px;background:var(--brand);color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .14s}
+.rule-save-btn:hover{background:var(--brand-2)}
+.rule-cancel-btn{padding:11px 18px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:border-color .14s,color .14s}
+.rule-cancel-btn:hover{border-color:var(--brand-2);color:var(--brand)}
+
 /* question card */
 .q-card{
   background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
@@ -1326,6 +1369,20 @@ const CONTRACT_CARRIERS = ['DHL','PostNL','PostItalia','FedEx']; // dynamic list
 const RETURN_SERVICES = ['Drop-off','Pickup','Self-post'];
 const RETURN_LABELS   = ['Printed label','Paperless / QR code'];
 
+const ROUTING_CARRIERS = [
+  { id:'DHL',        name:'DHL',            services:['Pickup','Drop-off'] },
+  { id:'PostNL',     name:'PostNL',         services:['Pickup','Drop-off'] },
+  { id:'DPD',        name:'DPD',            services:['Pickup','Drop-off'] },
+  { id:'Evri',       name:'Evri',           services:['Pickup','Drop-off'] },
+  { id:'InPost',     name:'InPost',         services:['Locker Drop-off'] },
+  { id:'PostItalia', name:'Poste Italiane', services:['Pickup','Drop-off'] },
+  { id:'UPS',        name:'UPS',            services:['Pickup','Drop-off'] },
+  { id:'GLS',        name:'GLS',            services:['Pickup','Drop-off'] },
+  { id:'Hermes',     name:'Hermes',         services:['Pickup','Drop-off'] },
+];
+const ROUTING_RETURN_REASONS = ['Wrong item','Damaged','Changed mind','Too large','Too small','Quality issue','Other'];
+const ROUTING_PRODUCT_CATEGORIES = ['Apparel','Shoes','Electronics','Accessories','Furniture','Toners','High-value','Other'];
+
 /* region lookup for the variant-E pickup countries (reuses PREF regions; GB added) */
 const E_REGION_BY_CODE = (() => {
   const m = {};
@@ -1637,6 +1694,7 @@ function initTabular(){
     rows:           [],     // generated per country × service×label combo
     deleted:        {},     // key -> true (combo removed for a country)
     carrierPhase:   'idle', // 'idle' | 'refreshing' | 'review' — drives the carrier-refresh banner
+    routingRules:   [],    // [{id,name,productCategory,returnReason,sku,ean,minValue,maxValue,countries:[],carrierServices:[{carrierId,service}],destination}]
   };
 }
 
@@ -3329,6 +3387,7 @@ function eNav(){
     { id:'sec-label',   n:2, label:'Label Option',         done:eLabelReady(),   locked:!eServiceReady() },
     { id:'sec-dest',    n:3, label:'First Mile Destination',done:eDestReady(),    locked:!eLabelReady() },
     { id:'sec-review',  n:4, label:'Lane Review',          done:false,           locked:!eDestReady() },
+    { id:'sec-rules',   n:5, label:'Routing Rules',        done:false,           locked:false },
   ];
   const activeId = (steps.find(s => !s.locked && !s.done) || steps[steps.length-1]).id;
   const nav = el('div',{class:'e-nav'});
@@ -3341,6 +3400,158 @@ function eNav(){
     if(i < steps.length-1) nav.appendChild(el('div',{class:'e-nav-rail'}));
   });
   return nav;
+}
+
+/* ─── Routing Rules ─── */
+let _ruleSeq = 0;
+
+function eCardRules(){
+  const card = el('div',{class:'q-card answered'});
+  card.appendChild(el('div',{class:'q-card-head'},
+    el('div',{class:'q-num'}, el('span',{html:icon('flag')})),
+    el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Custom Routing Rules'),
+      el('div',{class:'q-subtitle'}, 'Override default routing for specific products, countries, or conditions'))
+  ));
+  const body = el('div',{class:'q-body'});
+
+  if(tabState.routingRules.length){
+    const list = el('div',{class:'rule-list'});
+    tabState.routingRules.forEach(rule => {
+      const tags = el('div',{class:'rule-card-tags'});
+      if(rule.productCategory) tags.appendChild(el('span',{class:'rule-card-tag'}, rule.productCategory));
+      if(rule.returnReason)    tags.appendChild(el('span',{class:'rule-card-tag'}, rule.returnReason));
+      if(rule.countries && rule.countries.length) rule.countries.slice(0,3).forEach(c => tags.appendChild(el('span',{class:'rule-card-tag country'}, c)));
+      if(rule.countries && rule.countries.length > 3) tags.appendChild(el('span',{class:'rule-card-tag country'}, '+'+( rule.countries.length-3)+' more'));
+      if(rule.carrierServices && rule.carrierServices.length) rule.carrierServices.forEach(cs => tags.appendChild(el('span',{class:'rule-card-tag carrier'}, cs.carrierId+' · '+cs.service)));
+      if(rule.destination) tags.appendChild(el('span',{class:'rule-card-tag dest'}, rule.destination));
+      list.appendChild(el('div',{class:'rule-card'},
+        el('div',{class:'rule-card-body'},
+          el('div',{class:'rule-card-name'}, rule.name || 'Unnamed Rule'),
+          tags
+        ),
+        el('button',{class:'rule-del', title:'Delete rule', html:icon('trash'), onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})
+      ));
+    });
+    body.appendChild(list);
+  }
+
+  body.appendChild(el('button',{class:'rule-card-btn', onclick:()=>openRuleModal(null)},
+    el('span',{html:icon('plus')}), 'Add Routing Rule'
+  ));
+
+  card.appendChild(body);
+  return card;
+}
+
+function openRuleModal(existingRule){
+  const draft = existingRule ? {...existingRule, countries:[...existingRule.countries], carrierServices:[...existingRule.carrierServices]} : {
+    id: ++_ruleSeq,
+    name:'', productCategory:'', returnReason:'', sku:'', ean:'',
+    minValue:'', maxValue:'', countries:[], carrierServices:[], destination:''
+  };
+
+  const overlay = el('div',{class:'rule-modal-overlay'});
+  const modal = el('div',{class:'rule-modal'});
+
+  const head = el('div',{class:'rule-modal-head'});
+  head.appendChild(el('div',{class:'rule-modal-title'}, existingRule ? 'Edit Rule' : 'Add Routing Rule'));
+  head.appendChild(el('button',{class:'addr-rm', html:icon('close'), onclick:()=>overlay.remove()}));
+  modal.appendChild(head);
+
+  const body = el('div',{class:'rule-modal-body'});
+
+  body.appendChild(ruleField('Rule Name', el('input',{type:'text', placeholder:'e.g. High Value Returns', value:draft.name,
+    oninput:e=>draft.name=e.target.value})));
+
+  const catSel = el('select');
+  catSel.appendChild(el('option',{value:''},'Select category'));
+  ROUTING_PRODUCT_CATEGORIES.forEach(c=>catSel.appendChild(el('option',{value:c, selected:draft.productCategory===c},c)));
+  catSel.addEventListener('change',e=>draft.productCategory=e.target.value);
+  const rrSel = el('select');
+  rrSel.appendChild(el('option',{value:''},'Select reason'));
+  ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r, selected:draft.returnReason===r},r)));
+  rrSel.addEventListener('change',e=>draft.returnReason=e.target.value);
+  body.appendChild(el('div',{class:'rule-field-row'},
+    ruleField('Product Category (Optional)', catSel),
+    ruleField('Return Reason (Optional)', rrSel)
+  ));
+
+  body.appendChild(el('div',{class:'rule-field-row'},
+    ruleField('SKU (Optional)', el('input',{type:'text',placeholder:'e.g. SKU-12345',value:draft.sku, oninput:e=>draft.sku=e.target.value})),
+    ruleField('EAN (Optional)', el('input',{type:'text',placeholder:'e.g. 1234567890123',value:draft.ean, oninput:e=>draft.ean=e.target.value}))
+  ));
+
+  body.appendChild(el('div',{class:'rule-field-row'},
+    ruleField('Min Value (Optional)', el('input',{type:'number',placeholder:'e.g. 0',value:draft.minValue, oninput:e=>draft.minValue=e.target.value})),
+    ruleField('Max Value (Optional)', el('input',{type:'number',placeholder:'e.g. 500',value:draft.maxValue, oninput:e=>draft.maxValue=e.target.value}))
+  ));
+
+  body.appendChild(ruleField('Country (Optional)',
+    (()=>{
+      const wrap = el('div',{class:'country-multi'});
+      COUNTRIES.forEach(c => {
+        const chip = el('button',{class:'country-chip'+(draft.countries.includes(c.code)?' on':''), type:'button', onclick:()=>{
+          if(draft.countries.includes(c.code)) draft.countries=draft.countries.filter(x=>x!==c.code);
+          else draft.countries.push(c.code);
+          chip.classList.toggle('on', draft.countries.includes(c.code));
+        }}, (c.flag?c.flag+' ':'')+c.code);
+        wrap.appendChild(chip);
+      });
+      return wrap;
+    })()
+  ));
+
+  body.appendChild(el('div',{class:'rule-section-label'}, 'Carrier & Service'));
+  const carrierGrid = el('div',{class:'carrier-grid'});
+  ROUTING_CARRIERS.forEach(cr => {
+    const row = el('div',{class:'carrier-row'});
+    const rowHead = el('div',{class:'carrier-row-head'}, cr.name);
+    row.appendChild(rowHead);
+    const svcs = el('div',{class:'carrier-row-services'});
+    cr.services.forEach(svc => {
+      const isOn = ()=>draft.carrierServices.some(cs=>cs.carrierId===cr.id&&cs.service===svc);
+      const chip = el('button',{class:'carrier-svc-chip'+(isOn()?' on':''), type:'button', onclick:()=>{
+        if(isOn()) draft.carrierServices=draft.carrierServices.filter(cs=>!(cs.carrierId===cr.id&&cs.service===svc));
+        else draft.carrierServices.push({carrierId:cr.id, service:svc});
+        chip.classList.toggle('on', isOn());
+      }}, svc);
+      svcs.appendChild(chip);
+    });
+    row.appendChild(svcs);
+    carrierGrid.appendChild(row);
+  });
+  body.appendChild(carrierGrid);
+
+  const destSel = el('select');
+  destSel.appendChild(el('option',{value:''},'Select destination'));
+  [['DTW','ReBound Warehouse (DTW)'],['DTR','Client Facility / Warehouse (DTR)'],['DTP','ReBound Partners (DTP)']].forEach(([v,n])=>
+    destSel.appendChild(el('option',{value:v, selected:draft.destination===v},n)));
+  destSel.addEventListener('change',e=>draft.destination=e.target.value);
+  body.appendChild(ruleField('Destination', destSel));
+
+  modal.appendChild(body);
+
+  const footer = el('div',{class:'rule-modal-footer'});
+  footer.appendChild(el('button',{class:'rule-cancel-btn', onclick:()=>overlay.remove()}, 'Cancel'));
+  footer.appendChild(el('button',{class:'rule-save-btn', onclick:()=>{
+    if(!draft.name.trim()){ alert('Please enter a rule name.'); return; }
+    if(existingRule){
+      const idx = tabState.routingRules.findIndex(r=>r.id===existingRule.id);
+      if(idx>=0) tabState.routingRules[idx]=draft;
+    } else {
+      tabState.routingRules.push(draft);
+    }
+    overlay.remove();
+    rerenderE();
+  }}, 'Save Rule'));
+  modal.appendChild(footer);
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
+function ruleField(label, input){
+  return el('div',{class:'rule-field'}, el('label',{},label), input);
 }
 
 function renderVariantE(root){
@@ -3357,7 +3568,8 @@ function renderVariantE(root){
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
   const dst = eCardDestination(!eLabelReady());     dst.id = 'sec-dest';
   const rev = eCardTable(!eDestReady());            rev.id = 'sec-review';
-  main.appendChild(svc); main.appendChild(lbl); main.appendChild(dst); main.appendChild(rev);
+  const rls = eCardRules();                         rls.id = 'sec-rules';
+  main.appendChild(svc); main.appendChild(lbl); main.appendChild(dst); main.appendChild(rev); main.appendChild(rls);
   layout.appendChild(main);
 
   root.appendChild(layout);
