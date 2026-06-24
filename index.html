@@ -619,12 +619,13 @@ body[data-variant="F"] .wizard{max-width:1280px}
 .config-table.compact tbody tr.lane-row:hover{background:#FAFBFC}
 .config-table.compact select{width:100%;max-width:100%}
 /* column widths */
-.config-table.compact th:nth-child(1),.config-table.compact td:nth-child(1){width:13%}
-.config-table.compact th:nth-child(2),.config-table.compact td:nth-child(2){width:15%}
-.config-table.compact th:nth-child(3),.config-table.compact td:nth-child(3){width:23%}
-.config-table.compact th:nth-child(4),.config-table.compact td:nth-child(4){width:14%}
-.config-table.compact th:nth-child(5),.config-table.compact td:nth-child(5){width:17%}
-.config-table.compact th:nth-child(6),.config-table.compact td:nth-child(6){width:18%}
+.config-table.compact th:nth-child(1),.config-table.compact td:nth-child(1){width:11%}
+.config-table.compact th:nth-child(2),.config-table.compact td:nth-child(2){width:12%}
+.config-table.compact th:nth-child(3),.config-table.compact td:nth-child(3){width:17%}
+.config-table.compact th:nth-child(4),.config-table.compact td:nth-child(4){width:10%}
+.config-table.compact th:nth-child(5),.config-table.compact td:nth-child(5){width:12%}
+.config-table.compact th:nth-child(6),.config-table.compact td:nth-child(6){width:13%}
+.config-table.compact th:nth-child(7),.config-table.compact td:nth-child(7){width:25%}
 /* group header rows */
 .config-table .grp-country td{background:#F8FAFC;border-bottom:1px solid var(--border);padding:8px 14px}
 .grp-flag{font-size:21px;margin-right:10px;vertical-align:middle}
@@ -1230,6 +1231,122 @@ const ADDRESS_COUNTRIES = (() => {
 const ADDRESS_COUNTRY_BY_CODE = Object.fromEntries(ADDRESS_COUNTRIES.map(c => [c.code, c]));
 
 /* consumer-facing carrier catalog (Q6) — which carriers offer which service+label, and where */
+/* Postal products lookup: country → carrier → [{id, name}] (from Unicorn list, enabled only) */
+const POSTAL_PRODUCTS = {
+  'DE': {
+    'DHL': [
+      {id:6566,name:'DE DHL Retoure Label Pick Up (IN DEV)'},{id:6561,name:'DE DHL Retoure Label Drop Off'},
+      {id:6560,name:'DE DHL Retoure Paperless Drop Off'},{id:6432,name:'DE DHL Connect Paperless Drop Off RS'},
+      {id:6431,name:'DHL DE Connect Label Drop Off RS'},{id:6355,name:'DE DHL Connect Paperless Drop Off'},
+      {id:6247,name:'DE DHL Express ROW Label Pickup'},{id:6228,name:'DE DHL Retoure Label Drop Off RS'},
+      {id:6174,name:'DE DHL Retoure Label pick-up'},{id:6081,name:'DE DHL Retoure Paperless Drop Off RK'},
+      {id:5924,name:'DE DHL Retoure Label Drop Off RK'},{id:5916,name:'DE DHL Retoure Paperless Drop Off RS'},
+      {id:5887,name:'DHL DE Retoure Toners'},{id:5770,name:'DHL DE Connect Label drop off'},
+      {id:5570,name:'DE Retoure Michael Kors drop-off'},{id:5510,name:'DE Retoure Camper drop-off'},
+      {id:5470,name:'DE Retoure Canon Warranty (direct Giessen)'},{id:5390,name:'DE Retoure Allbirds drop-off'},
+      {id:5343,name:'DE Retoure Trendyol drop-off'},{id:5341,name:'DE Retoure Columbia drop-off'},
+      {id:5340,name:'DE Retoure Toms drop-off'},{id:5336,name:'DHL Paperless'},
+      {id:5300,name:'DE Retoure Calzedonia drop-off'},{id:5221,name:'DE Retoure Salsa Jeans'},
+      {id:5200,name:'DE Retoure Tradeinn'},{id:5191,name:'DE Retoure Hummel'},
+      {id:5124,name:'DE Retoure PH Drop-off'},{id:5115,name:'DE Retoure Olympus'},
+      {id:5082,name:'DE Retoure Ridestore'},{id:5031,name:'DE Retoure Polar'},
+      {id:4771,name:'DE Retoure Canon Warranty (direct)'},{id:4500,name:'DE Retoure New Look'},
+      {id:4340,name:'DE Retoure WEEE'},{id:4212,name:'DE Retoure Superdry'},
+      {id:4211,name:'DE Retoure Crocs'},{id:4210,name:'DE Retoure Nike'},
+      {id:3750,name:'DE Retoure SCEE'},{id:3740,name:'DE Retoure TomTom'},
+      {id:3640,name:'DE Retoure EMC Preprinted'},{id:3065,name:'DE Retoure Ecommerce'},
+      {id:3060,name:'DE Retoure HP'},{id:2630,name:'DE Electroreturn'},
+      {id:2592,name:'Retoure (DE) New'},{id:2588,name:'DE Retoure TNT Fashion/A&F'},
+      {id:2461,name:'DE Retoure Nikon (Flexible Addressing)'},{id:2314,name:'DE (Send-in) Mass RMA'},
+      {id:1891,name:'DE DHL Pick-up'},{id:1690,name:'DE Retoure Extra Barcodes'},
+      {id:1652,name:'DE Retoure Canon / HP'},{id:1561,name:'DE Retoure Brother'},{id:3,name:'DE Retoure'},
+    ],
+    'PostNL': [{id:1223,name:'DE PostNL IBRS'}],
+    'GLS': [{id:6218,name:'DE GLS Label Drop Off RN'},{id:6217,name:'DE GLS Label Drop Off RK'}],
+    'Evri': [
+      {id:6398,name:'DE Hermes Label Drop Off RS'},{id:6341,name:'DE Hermes Paperless Drop Off RS'},
+      {id:6171,name:'DE Hermes Paperless Drop Off RK'},{id:6170,name:'DE Hermes Label Drop Off RK'},
+      {id:5503,name:'DE Hermes label drop-off'},{id:5502,name:'DE Hermes paperless drop-off'},
+      {id:5116,name:'DE HERMES Retoure'},
+    ],
+  },
+  'GB': {
+    'DHL': [
+      {id:5061,name:'GB DHL International RECARE CZ (Outbound)'},{id:4381,name:'UK DHL International Canon DE (Outbound)'},
+      {id:4003,name:'GB DHL Europaket Canon DE (outbound)'},{id:3822,name:'GB DHL WeltPaket Canon DE (Outbound)'},
+    ],
+    'PostNL': [{id:1221,name:'GB PostNL IBRS'}],
+    'Evri': [
+      {id:6282,name:'GB EVRi Label pick-up RS'},{id:6281,name:'GB EVRi Label Drop Off RS'},
+      {id:6280,name:'GB EVRi Paperless Drop Off RS'},{id:6040,name:'GB EVRi Paperless Drop Off RK'},
+      {id:6039,name:'GB EVRi Label Drop Off RK'},{id:5918,name:'EVRi - paperless - Lounge'},
+      {id:5832,name:'GB EVRi Label pick-up RK'},{id:5652,name:'EVRi home collection'},
+      {id:5651,name:'EVRi label drop-off'},{id:5642,name:'EVRi paperless drop-off'},
+      {id:4851,name:'Hermes Returns UK / MP range'},
+    ],
+  },
+  'FR': {
+    'DHL': [
+      {id:5818,name:'DHL FR Connect Label drop off'},{id:5060,name:'FR DHL International RECARE CZ (Outbound)'},
+      {id:4000,name:'FR DHL Europaket Canon DE (outbound)'},{id:3824,name:'FR DHL WeltPaket Canon DE (Outbound)'},
+    ],
+    'PostNL': [{id:1222,name:'FR Post NL IBRS'}],
+  },
+  'AU': {},
+  'US': {
+    'FedEx': [
+      {id:6482,name:'US FedEx Ground Paperless Drop Off (In Dev)'},{id:5142,name:'US FedEx Ground Label Drop Off (In Dev)'},
+    ],
+  },
+  'SE': {
+    'DHL': [
+      {id:5896,name:'DHL SE Connect Label drop off'},{id:5069,name:'SE DHL International RECARE CZ (Outbound)'},
+      {id:3995,name:'SE DHL Europaket Canon DE (outbound)'},{id:3814,name:'SE DHL WeltPaket Canon DE (Outbound)'},
+    ],
+    'PostNL': [{id:1225,name:'SE PostNL IBRS'}],
+  },
+  'ES': {
+    'DHL': [
+      {id:5983,name:'DHL ES Connect Paperless drop off'},{id:5820,name:'DHL ES Connect Label drop off'},
+      {id:5058,name:'ES DHL International RECARE CZ (Outbound)'},{id:4011,name:'ES DHL Europaket Canon DE (outbound)'},
+      {id:3811,name:'ES DHL WeltPaket Canon DE (Outbound)'},
+    ],
+    'PostNL': [{id:1230,name:'ES PostNL IBRS'}],
+  },
+  'PT': {
+    'DHL': [
+      {id:6337,name:'PT DHL Connect Paperless Drop Off RS'},{id:5984,name:'DHL PT Connect Paperless drop off'},
+      {id:5822,name:'DHL PT Connect Label drop off'},{id:3999,name:'PT DHL Europaket Canon DE (outbound)'},
+      {id:3815,name:'PT DHL WeltPaket Canon DE (Outbound)'},
+    ],
+    'PostNL': [{id:2662,name:'PT PostNL IBRS'}],
+  },
+  'IE': {
+    'DHL': [
+      {id:4004,name:'IE DHL Europaket Canon DE (outbound)'},{id:3821,name:'IE DHL WeltPaket Canon DE (Outbound)'},
+    ],
+    'PostNL': [{id:1231,name:'IE PostNL IBRS'}],
+  },
+  'IT': {
+    'DHL': [
+      {id:5821,name:'DHL IT Connect Label drop off'},{id:5063,name:'IT DHL International RECARE CZ (Outbound)'},
+      {id:3998,name:'IT DHL Europaket Canon DE (outbound)'},{id:3851,name:'IT DHL WeltPaket Canon DE (Outbound)'},
+    ],
+    'PostItalia': [
+      {id:6444,name:'IT Poste Italiane paperless drop-off C RS'},{id:6443,name:'IT Poste Italiane label drop-off RS'},
+      {id:6068,name:'IT Poste Italiane label drop-off RK'},{id:5640,name:'IT Poste Italiane Pick-Up C'},
+      {id:5541,name:'IT Poste Italiane paperless drop-off C'},{id:5540,name:'IT Poste Italiane drop-off C'},
+      {id:5130,name:'IT CronoReverse (Drop off A6)'},{id:4452,name:'IT SDA Pick-up (A6)'},
+      {id:4370,name:'IT CronoReverse (Drop off)'},{id:3080,name:'IT Raccomandata Reverse Extra Barcodes'},
+      {id:2812,name:'IT Raccomandata Reverse'},{id:2650,name:'IT ChronoReverse Amazon NEW'},
+      {id:1750,name:'IT SDA Pick-up'},
+    ],
+  },
+};
+function postalProductsFor(code, carrierId){
+  return (POSTAL_PRODUCTS[code] && POSTAL_PRODUCTS[code][carrierId]) || [];
+}
+
 const CARRIER_CATALOG = [
   { id:'DHL',        name:'DHL',            badge:'cb-dhl',        services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America','Pacific'] },
   { id:'PostNL',     name:'PostNL',         badge:'cb-postnl',     services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union'] },
@@ -1355,8 +1472,9 @@ function makeERow(code, service, label){
     id:'r'+(++_tabSeq), code, service, label,
     destType:null, dtwType:null, partner:null, addressId:null, // null destType = inherit global
     carrier,
-    laneType:'managed', contract: eDefaultContract(carrier), // pre-filled like the carrier; fine-tune later
-    custom:false,                                            // true once service/label overridden per-lane
+    laneType:'managed', contract: eDefaultContract(carrier),
+    postalProduct: null,
+    custom:false,
   };
 }
 function tabBuildRows(){
@@ -2832,6 +2950,7 @@ function buildTabJson(){
         laneType: r.laneType,
         carrier: r.carrier,
         contract: r.contract || null,
+        postalProduct: r.postalProduct || null,
         serviceable: eCarriersFor(r.code, r.service, r.label).length > 0,
       };
     }),
@@ -3294,6 +3413,17 @@ function eRow(r){
   carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
   tr.appendChild(carrierCell);
 
+  // Postal Product (last column) — legacy field, filtered by country × carrier
+  const ppCell = el('td',{});
+  const ppProducts = postalProductsFor(r.code, r.carrier);
+  if(unavailable || !r.carrier || !ppProducts.length){
+    ppCell.appendChild(el('span',{class:'cell-dim'}, ppProducts.length === 0 && r.carrier ? 'None available' : '—'));
+  } else {
+    const ppOpts = [{value:'',text:'— select —'}, ...ppProducts.map(p=>({value:String(p.id), text:p.id+' - '+p.name}))];
+    ppCell.appendChild(eSelect(r.postalProduct || '', ppOpts, v=>{ r.postalProduct = v || null; rerenderE(); }));
+  }
+  tr.appendChild(ppCell);
+
   // unavailable → blurred row with a fix prompt overlay (placed in the first cell, spans the row)
   if(unavailable){
     tr.firstChild.appendChild(el('div',{class:'lane-unavailable-overlay'},
@@ -3311,7 +3441,7 @@ function eRow(r){
 function eAppendCountryGroup(tbody, code, rows){
   const c = COUNTRIES.find(x => x.code === code);
   tbody.appendChild(el('tr',{class:'grp-country'},
-    el('td',{colspan:6},
+    el('td',{colspan:7},
       el('span',{class:'grp-flag'}, c.flag),
       el('span',{class:'grp-name'}, c.name),
       el('span',{class:'grp-count'}, rows.length + (rows.length===1?' lane':' lanes'))
@@ -3368,7 +3498,8 @@ function eCardTable(locked){
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')});
   table.appendChild(el('thead',{}, el('tr',{},
     el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
-    el('th',{},'Lane type'), el('th',{},'Contract'), el('th',{class:'th-carrier'},'Carrier')
+    el('th',{},'Lane type'), el('th',{},'Contract'), el('th',{class:'th-carrier'},'Carrier'),
+    el('th',{},'Postal Product')
   )));
   const tbody = el('tbody',{});
 
@@ -3384,7 +3515,7 @@ function eCardTable(locked){
       if(seen[region]) return; seen[region] = true;
       const inRegion = codes.filter(code => regionOf(code) === region);
       if(!inRegion.length) return;
-      tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:6}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
+      tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:7}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
       inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code]));
     });
   } else {
