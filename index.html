@@ -3535,43 +3535,65 @@ function buildRuleCountrySelect(draft, containerForClose){
   return wrapper;
 }
 
-function buildRuleCarrierPicker(draft){
-  const wrap=el('div',{class:'rule-carrier-wrap'});
-  const addedList=el('div',{class:'rule-cs-list'});
+function buildCarrierMultiSelect(obj, compact){
+  // obj must have .carrierServices = [{carrierId, service}]
+  if(!obj.carrierServices) obj.carrierServices=[];
+  const getIds=()=>obj.carrierServices.map(cs=>cs.carrierId);
 
-  const redrawAdded=()=>{
-    addedList.innerHTML='';
-    draft.carrierServices.forEach((cs,i)=>{
-      const cr=ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
-      addedList.appendChild(el('div',{class:'rule-cs-pill'},
-        el('span',{},(cr?cr.name:cs.carrierId)),
-        el('button',{class:'rule-cs-rm',onclick:()=>{ draft.carrierServices.splice(i,1); redrawAdded(); carrierSel.querySelector('[value="'+cs.carrierId+'"]').disabled=false; }},'×')
-      ));
+  const wrapper=el('div',{class:'rule-multisel-wrap'});
+  const trigger=el('div',{class:'rule-multisel-trigger',style:compact?'min-height:34px;padding:4px 8px;font-size:12px':''});
+  const dropdown=el('div',{class:'rule-multisel-dropdown',style:'display:none;z-index:400'});
+  const searchInp=el('input',{type:'text',class:'rule-multisel-search',placeholder:'Search carriers…',style:compact?'font-size:12px;padding:6px 10px':''});
+
+  const updateTrigger=()=>{
+    trigger.innerHTML='';
+    const ids=getIds();
+    if(!ids.length){
+      trigger.appendChild(el('span',{class:'rule-multisel-placeholder',style:compact?'font-size:12px':''},'Any carrier'));
+    } else {
+      ids.slice(0,2).forEach(id=>{
+        const cr=ROUTING_CARRIERS.find(x=>x.id===id);
+        trigger.appendChild(el('span',{class:'rule-cs-tag'},cr?cr.name:id));
+      });
+      if(ids.length>2) trigger.appendChild(el('span',{class:'rule-cs-tag more'},'+' +(ids.length-2)));
+    }
+    trigger.appendChild(el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'}));
+  };
+  updateTrigger();
+
+  const renderList=(filter)=>{
+    dropdown.innerHTML='';
+    dropdown.appendChild(searchInp);
+    const allBtn=el('div',{class:'rule-multisel-opt'+(getIds().length===0?' sel':''),style:compact?'font-size:12px':''});
+    allBtn.appendChild(el('span',{class:'rule-multisel-check'},getIds().length===0?'✓':''));
+    allBtn.appendChild(el('span',{},'Any carrier'));
+    allBtn.onclick=()=>{ obj.carrierServices=[]; renderList(searchInp.value); updateTrigger(); };
+    dropdown.appendChild(allBtn);
+    ROUTING_CARRIERS.filter(cr=>!filter||cr.name.toLowerCase().includes(filter.toLowerCase())||cr.countries.toLowerCase().includes(filter.toLowerCase())).forEach(cr=>{
+      const on=getIds().includes(cr.id);
+      const opt=el('div',{class:'rule-multisel-opt'+(on?' sel':''),style:compact?'font-size:12px':''});
+      opt.appendChild(el('span',{class:'rule-multisel-check'},on?'✓':''));
+      opt.appendChild(el('span',{},cr.name+' — '+cr.countries));
+      opt.onclick=()=>{
+        if(on) obj.carrierServices=obj.carrierServices.filter(cs=>cs.carrierId!==cr.id);
+        else obj.carrierServices.push({carrierId:cr.id,service:''});
+        renderList(searchInp.value); updateTrigger();
+      };
+      dropdown.appendChild(opt);
     });
   };
-  redrawAdded();
+  renderList('');
+  searchInp.oninput=e=>renderList(e.target.value);
 
-  const carrierSel=el('select',{class:'rule-carrier-sel',style:'width:100%'});
-  carrierSel.appendChild(el('option',{value:''},'Select carrier…'));
-  ROUTING_CARRIERS.forEach(cr=>{
-    const already=draft.carrierServices.some(cs=>cs.carrierId===cr.id);
-    carrierSel.appendChild(el('option',{value:cr.id,disabled:already},cr.name+' ('+cr.countries+')'));
-  });
-
-  carrierSel.addEventListener('change',()=>{
-    if(!carrierSel.value) return;
-    if(!draft.carrierServices.some(cs=>cs.carrierId===carrierSel.value)){
-      draft.carrierServices.push({carrierId:carrierSel.value,service:''});
-      carrierSel.querySelector('[value="'+carrierSel.value+'"]').disabled=true;
-    }
-    carrierSel.value='';
-    redrawAdded();
-  });
-
-  wrap.appendChild(carrierSel);
-  wrap.appendChild(addedList);
-  return wrap;
+  let open=false;
+  trigger.onclick=(e)=>{ e.stopPropagation(); open=!open; dropdown.style.display=open?'block':'none'; if(open) setTimeout(()=>searchInp.focus(),50); };
+  wrapper.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('click',()=>{ open=false; dropdown.style.display='none'; });
+  wrapper.appendChild(trigger); wrapper.appendChild(dropdown);
+  return wrapper;
 }
+
+function buildRuleCarrierPicker(draft){ return buildCarrierMultiSelect(draft, false); }
 
 function buildRuleInlineForm(draft, onSave, onCancel){
   const form=el('div',{class:'rule-inline-form'});
@@ -3689,35 +3711,7 @@ function makeRuleCountryCell(rule){
 
 function makeRuleCarrierCell(rule){
   if(!rule.carrierServices) rule.carrierServices=[];
-  const wrap=el('div',{style:'display:flex;flex-direction:column;gap:4px'});
-  const pills=el('div',{class:'rule-cs-list'});
-  const redraw=()=>{
-    pills.innerHTML='';
-    rule.carrierServices.forEach((cs,i)=>{
-      const cr=ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
-      pills.appendChild(el('div',{class:'rule-cs-pill',style:'font-size:11px'},
-        el('span',{},(cr?cr.name:cs.carrierId)),
-        el('button',{class:'rule-cs-rm',onclick:()=>{ rule.carrierServices.splice(i,1); redraw(); sel.querySelector('[value="'+cs.carrierId+'"]').disabled=false; }},'×')
-      ));
-    });
-  };
-  const sel=el('select',{style:'width:100%;padding:4px 6px;font-size:12px;border:1.5px solid var(--border);border-radius:6px;background:#fff'});
-  sel.appendChild(el('option',{value:''},'Add carrier…'));
-  ROUTING_CARRIERS.forEach(cr=>{
-    const already=rule.carrierServices.some(cs=>cs.carrierId===cr.id);
-    sel.appendChild(el('option',{value:cr.id,disabled:already},cr.name));
-  });
-  sel.addEventListener('change',()=>{
-    if(!sel.value) return;
-    if(!rule.carrierServices.some(cs=>cs.carrierId===sel.value)){
-      rule.carrierServices.push({carrierId:sel.value,service:''});
-      sel.querySelector('[value="'+sel.value+'"]').disabled=true;
-    }
-    sel.value=''; redraw();
-  });
-  redraw();
-  wrap.appendChild(sel); wrap.appendChild(pills);
-  return wrap;
+  return buildCarrierMultiSelect(rule, true);
 }
 
 function buildRulesTabularSection(){
