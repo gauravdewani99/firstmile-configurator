@@ -3716,13 +3716,13 @@ function eCardRules(){
   const thead=el('thead');
   thead.appendChild(el('tr',{},
     el('th',{},'Rule Name'),
+    el('th',{},'Country'),
     el('th',{},'Product Category'),
     el('th',{},'Return Reason'),
     el('th',{},'SKU'),
     el('th',{},'EAN'),
     el('th',{},'Value Min'),
     el('th',{},'Value Max'),
-    el('th',{},'Country'),
     el('th',{},'Carrier'),
     el('th',{},'Destination'),
     el('th',{style:'width:36px'},'')
@@ -3736,6 +3736,9 @@ function eCardRules(){
     // Name
     const nameInp=el('input',{type:'text',class:'rtbl-inp',placeholder:'Rule name…',value:rule.name||'',oninput:e=>rule.name=e.target.value});
     tr.appendChild(el('td',{},nameInp));
+
+    // Country (after Rule Name)
+    tr.appendChild(el('td',{style:'min-width:120px'},makeRuleCountryCell(rule)));
 
     // Product Category
     const catSel=el('select',{class:'rtbl-sel'});
@@ -3759,9 +3762,6 @@ function eCardRules(){
     tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'0',value:rule.minValue||'',oninput:e=>rule.minValue=e.target.value,style:'width:70px'})));
     // Max
     tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'∞',value:rule.maxValue||'',oninput:e=>rule.maxValue=e.target.value,style:'width:70px'})));
-
-    // Country
-    tr.appendChild(el('td',{style:'min-width:120px'},makeRuleCountryCell(rule)));
 
     // Carrier
     tr.appendChild(el('td',{style:'min-width:150px'},makeRuleCarrierCell(rule)));
