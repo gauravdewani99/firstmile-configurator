@@ -780,6 +780,16 @@ tr.lane-row.unavail:hover{background:transparent}
 /* rule inline form */
 .rule-inline-form{border:1.5px dashed var(--border);border-radius:12px;padding:16px;background:#FAFBFC;display:flex;flex-direction:column;gap:12px;margin-bottom:4px}
 .rule-inline-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-bottom:4px}
+/* routing rules table */
+.rtbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.rtbl thead tr{background:#F8F9FA}
+.rtbl th{padding:9px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dim);border-bottom:1.5px solid var(--border);white-space:nowrap}
+.rtbl td{padding:7px 8px;border-bottom:1px solid var(--border-soft);vertical-align:middle}
+.rtbl tbody tr:hover td{background:#FAFBFC}
+.rtbl-inp{width:100%;padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font:inherit;font-size:12px;color:var(--text);background:#fff;outline:none;transition:border-color .12s}
+.rtbl-inp:focus{border-color:var(--brand-2)}
+.rtbl-sel{width:100%;padding:5px 8px;border:1.5px solid var(--border);border-radius:6px;font:inherit;font-size:12px;color:var(--text);background:#fff;outline:none;transition:border-color .12s}
+.rtbl-sel:focus{border-color:var(--brand-2)}
 .rule-field{display:flex;flex-direction:column;gap:6px}
 .rule-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
 .rule-field input,.rule-field select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13.5px;color:var(--text);background:#fff;outline:none;transition:border-color .14s}
@@ -3604,6 +3614,89 @@ function buildRuleInlineForm(draft, onSave, onCancel){
   return form;
 }
 
+function makeRuleCountryCell(rule){
+  // compact multi-select for table cell
+  const wrapper=el('div',{class:'rule-multisel-wrap'});
+  const trigger=el('div',{class:'rule-multisel-trigger',style:'min-height:34px;padding:4px 8px;font-size:12px'});
+  const dropdown=el('div',{class:'rule-multisel-dropdown',style:'display:none;z-index:400'});
+  const searchInp=el('input',{type:'text',class:'rule-multisel-search',placeholder:'Search…',style:'font-size:12px;padding:6px 10px'});
+
+  const updateTrigger=()=>{
+    trigger.innerHTML='';
+    if(!rule.countries||!rule.countries.length){
+      trigger.appendChild(el('span',{class:'rule-multisel-placeholder',style:'font-size:12px'},'All'));
+    } else {
+      rule.countries.slice(0,2).forEach(code=>trigger.appendChild(el('span',{class:'rule-cs-tag'},code)));
+      if(rule.countries.length>2) trigger.appendChild(el('span',{class:'rule-cs-tag more'},'+' +(rule.countries.length-2)));
+    }
+    trigger.appendChild(el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'}));
+  };
+  updateTrigger();
+
+  const renderList=(filter)=>{
+    dropdown.innerHTML='';
+    dropdown.appendChild(searchInp);
+    const allBtn=el('div',{class:'rule-multisel-opt'+(!rule.countries||!rule.countries.length?' sel':''),style:'font-size:12px'});
+    allBtn.appendChild(el('span',{class:'rule-multisel-check'},(!rule.countries||!rule.countries.length)?'✓':''));
+    allBtn.appendChild(el('span',{},'All countries'));
+    allBtn.onclick=()=>{ rule.countries=[]; renderList(searchInp.value); updateTrigger(); };
+    dropdown.appendChild(allBtn);
+    COUNTRIES.filter(c=>!filter||c.code.toLowerCase().includes(filter.toLowerCase())||(c.name&&c.name.toLowerCase().includes(filter.toLowerCase()))).forEach(c=>{
+      const on=rule.countries&&rule.countries.includes(c.code);
+      const opt=el('div',{class:'rule-multisel-opt'+(on?' sel':''),style:'font-size:12px'});
+      opt.appendChild(el('span',{class:'rule-multisel-check'},on?'✓':''));
+      opt.appendChild(el('span',{},(c.flag?c.flag+' ':'')+c.code));
+      opt.onclick=()=>{
+        if(!rule.countries) rule.countries=[];
+        if(rule.countries.includes(c.code)) rule.countries=rule.countries.filter(x=>x!==c.code); else rule.countries.push(c.code);
+        renderList(searchInp.value); updateTrigger();
+      };
+      dropdown.appendChild(opt);
+    });
+  };
+  renderList('');
+  searchInp.oninput=e=>renderList(e.target.value);
+  let open=false;
+  trigger.onclick=(e)=>{ e.stopPropagation(); open=!open; dropdown.style.display=open?'block':'none'; if(open) setTimeout(()=>searchInp.focus(),50); };
+  wrapper.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('click',()=>{ open=false; dropdown.style.display='none'; });
+  wrapper.appendChild(trigger); wrapper.appendChild(dropdown);
+  return wrapper;
+}
+
+function makeRuleCarrierCell(rule){
+  if(!rule.carrierServices) rule.carrierServices=[];
+  const wrap=el('div',{style:'display:flex;flex-direction:column;gap:4px'});
+  const pills=el('div',{class:'rule-cs-list'});
+  const redraw=()=>{
+    pills.innerHTML='';
+    rule.carrierServices.forEach((cs,i)=>{
+      const cr=ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
+      pills.appendChild(el('div',{class:'rule-cs-pill',style:'font-size:11px'},
+        el('span',{},(cr?cr.name:cs.carrierId)),
+        el('button',{class:'rule-cs-rm',onclick:()=>{ rule.carrierServices.splice(i,1); redraw(); sel.querySelector('[value="'+cs.carrierId+'"]').disabled=false; }},'×')
+      ));
+    });
+  };
+  const sel=el('select',{style:'width:100%;padding:4px 6px;font-size:12px;border:1.5px solid var(--border);border-radius:6px;background:#fff'});
+  sel.appendChild(el('option',{value:''},'Add carrier…'));
+  ROUTING_CARRIERS.forEach(cr=>{
+    const already=rule.carrierServices.some(cs=>cs.carrierId===cr.id);
+    sel.appendChild(el('option',{value:cr.id,disabled:already},cr.name));
+  });
+  sel.addEventListener('change',()=>{
+    if(!sel.value) return;
+    if(!rule.carrierServices.some(cs=>cs.carrierId===sel.value)){
+      rule.carrierServices.push({carrierId:sel.value,service:''});
+      sel.querySelector('[value="'+sel.value+'"]').disabled=true;
+    }
+    sel.value=''; redraw();
+  });
+  redraw();
+  wrap.appendChild(sel); wrap.appendChild(pills);
+  return wrap;
+}
+
 function eCardRules(){
   const card=el('div',{class:'q-card answered'});
   card.appendChild(el('div',{class:'q-card-head'},
@@ -3613,57 +3706,94 @@ function eCardRules(){
       el('div',{class:'q-subtitle'},'Override default routing for specific products, countries, or conditions')
     )
   ));
-  const body=el('div',{class:'q-body'});
+  const body=el('div',{class:'q-body',style:'padding:0;overflow:hidden'});
 
-  // Existing rules list
-  if(tabState.routingRules.length){
-    const list=el('div',{class:'rule-list'});
-    tabState.routingRules.forEach(rule=>{
-      const tags=el('div',{class:'rule-card-tags'});
-      if(rule.productCategory) tags.appendChild(el('span',{class:'rule-card-tag'},rule.productCategory));
-      if(rule.returnReason)    tags.appendChild(el('span',{class:'rule-card-tag'},rule.returnReason));
-      if(rule.countries&&rule.countries.length) rule.countries.slice(0,3).forEach(c=>tags.appendChild(el('span',{class:'rule-card-tag country'},c)));
-      if(rule.countries&&rule.countries.length>3) tags.appendChild(el('span',{class:'rule-card-tag country'},'+' +(rule.countries.length-3)+' more'));
-      if(rule.carrierServices&&rule.carrierServices.length) rule.carrierServices.forEach(cs=>{
-        const cr=ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
-        tags.appendChild(el('span',{class:'rule-card-tag carrier'},(cr?cr.name:cs.carrierId)+' · '+cs.service));
-      });
-      if(rule.destination) tags.appendChild(el('span',{class:'rule-card-tag dest'},rule.destination));
-      list.appendChild(el('div',{class:'rule-card'},
-        el('div',{class:'rule-card-body'},
-          el('div',{class:'rule-card-name'},rule.name||'Unnamed Rule'),
-          tags
-        ),
-        el('button',{class:'rule-del',title:'Delete rule',html:icon('trash'),onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})
-      ));
-    });
-    body.appendChild(list);
-  }
+  // ── Tabular rules ──
+  const tableWrap=el('div',{style:'overflow-x:auto'});
+  const tbl=el('table',{class:'rtbl'});
 
-  // Inline form or Add button
-  if(_ruleFormOpen){
-    const existing = _ruleEditId!=null ? tabState.routingRules.find(r=>r.id===_ruleEditId) : null;
-    const draft = existing
-      ? {...existing, countries:[...(existing.countries||[])], carrierServices:[...(existing.carrierServices||[])]}
-      : { id:++_ruleSeq, name:'', productCategory:'', returnReason:'', sku:'', ean:'', minValue:'', maxValue:'', countries:[], carrierServices:[], destination:'' };
+  // header
+  const thead=el('thead');
+  thead.appendChild(el('tr',{},
+    el('th',{},'Rule Name'),
+    el('th',{},'Product Category'),
+    el('th',{},'Return Reason'),
+    el('th',{},'SKU'),
+    el('th',{},'EAN'),
+    el('th',{},'Value Min'),
+    el('th',{},'Value Max'),
+    el('th',{},'Country'),
+    el('th',{},'Carrier'),
+    el('th',{},'Destination'),
+    el('th',{style:'width:36px'},'')
+  ));
+  tbl.appendChild(thead);
 
-    body.appendChild(buildRuleInlineForm(draft,
-      (saved)=>{
-        if(_ruleEditId!=null){
-          const idx=tabState.routingRules.findIndex(r=>r.id===_ruleEditId);
-          if(idx>=0) tabState.routingRules[idx]=saved; else tabState.routingRules.push(saved);
-        } else {
-          tabState.routingRules.push(saved);
-        }
-        _ruleFormOpen=false; _ruleEditId=null; rerenderE();
-      },
-      ()=>{ _ruleFormOpen=false; _ruleEditId=null; rerenderE(); }
+  const tbody=el('tbody');
+
+  const addRow=(rule)=>{
+    const tr=el('tr');
+    // Name
+    const nameInp=el('input',{type:'text',class:'rtbl-inp',placeholder:'Rule name…',value:rule.name||'',oninput:e=>rule.name=e.target.value});
+    tr.appendChild(el('td',{},nameInp));
+
+    // Product Category
+    const catSel=el('select',{class:'rtbl-sel'});
+    catSel.appendChild(el('option',{value:''},'—'));
+    ROUTING_PRODUCT_CATEGORIES.forEach(g=>{ const grp=el('optgroup',{label:g.group}); g.items.forEach(c=>grp.appendChild(el('option',{value:c,selected:rule.productCategory===c},c))); catSel.appendChild(grp); });
+    catSel.addEventListener('change',e=>rule.productCategory=e.target.value);
+    tr.appendChild(el('td',{},catSel));
+
+    // Return Reason
+    const rrSel=el('select',{class:'rtbl-sel'});
+    rrSel.appendChild(el('option',{value:''},'—'));
+    ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r,selected:rule.returnReason===r},r)));
+    rrSel.addEventListener('change',e=>rule.returnReason=e.target.value);
+    tr.appendChild(el('td',{},rrSel));
+
+    // SKU
+    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'SKU…',value:rule.sku||'',oninput:e=>rule.sku=e.target.value})));
+    // EAN
+    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'EAN…',value:rule.ean||'',oninput:e=>rule.ean=e.target.value})));
+    // Min
+    tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'0',value:rule.minValue||'',oninput:e=>rule.minValue=e.target.value,style:'width:70px'})));
+    // Max
+    tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'∞',value:rule.maxValue||'',oninput:e=>rule.maxValue=e.target.value,style:'width:70px'})));
+
+    // Country
+    tr.appendChild(el('td',{style:'min-width:120px'},makeRuleCountryCell(rule)));
+
+    // Carrier
+    tr.appendChild(el('td',{style:'min-width:150px'},makeRuleCarrierCell(rule)));
+
+    // Destination
+    const destSel=el('select',{class:'rtbl-sel'});
+    destSel.appendChild(el('option',{value:''},'—'));
+    [['DTW','DTW'],['DTR','DTR'],['DTP','DTP']].forEach(([v,n])=>destSel.appendChild(el('option',{value:v,selected:rule.destination===v},n)));
+    destSel.addEventListener('change',e=>rule.destination=e.target.value);
+    tr.appendChild(el('td',{},destSel));
+
+    // Delete
+    tr.appendChild(el('td',{},
+      el('button',{class:'rule-del',html:icon('trash'),onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})
     ));
-  } else {
-    body.appendChild(el('button',{class:'rule-card-btn',onclick:()=>{ _ruleFormOpen=true; _ruleEditId=null; rerenderE(); }},
-      el('span',{html:icon('plus')}), 'Add Routing Rule'
-    ));
-  }
+
+    tbody.appendChild(tr);
+  };
+
+  tabState.routingRules.forEach(addRow);
+  tbl.appendChild(tbody);
+  tableWrap.appendChild(tbl);
+  body.appendChild(tableWrap);
+
+  // Add row button
+  const addBtn=el('div',{style:'padding:12px 16px;border-top:1px solid var(--border)'});
+  addBtn.appendChild(el('button',{class:'rule-card-btn',onclick:()=>{
+    const newRule={id:++_ruleSeq,name:'',productCategory:'',returnReason:'',sku:'',ean:'',minValue:'',maxValue:'',countries:[],carrierServices:[],destination:''};
+    tabState.routingRules.push(newRule);
+    addRow(newRule);
+  }},el('span',{html:icon('plus')}),'Add Routing Rule'));
+  body.appendChild(addBtn);
 
   card.appendChild(body);
   return card;
