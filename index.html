@@ -1388,13 +1388,19 @@ const POSTAL_PRODUCTS = {
     ],
   },
 };
-function postalProductsFor(code, carrierId){
-  return (POSTAL_PRODUCTS[code] && POSTAL_PRODUCTS[code][carrierId]) || [];
-}
+/* Flatten all postal products into a single searchable list (id + name, no country/carrier filtering) */
+const ALL_POSTAL_PRODUCTS = (()=>{
+  const all = [];
+  Object.values(POSTAL_PRODUCTS).forEach(carriers=>{
+    Object.values(carriers).forEach(products=>{
+      products.forEach(p=>{ if(!all.find(x=>x.id===p.id)) all.push(p); });
+    });
+  });
+  return all.sort((a,b)=>a.id-b.id);
+})();
 
-/* Searchable combobox for Postal Product — supports "add custom" when no catalogue match */
+/* Searchable combobox for Postal Product — shows all products, search by ID or name */
 function ppCombobox(r){
-  const products = postalProductsFor(r.code, r.carrier);
   const wrap = el('div',{class:'pp-combo'});
 
   const trigger = el('button',{class:'pp-trigger'+(r.postalProduct?'':' empty'), type:'button'});
@@ -1403,10 +1409,8 @@ function ppCombobox(r){
 
   const drop = el('div',{class:'pp-drop'});
   const searchWrap = el('div',{class:'pp-search-wrap'});
-  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search…'});
-  const addBtn = el('button',{class:'pp-add-btn', type:'button', html:icon('plus')+' Add custom'});
+  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search by ID or name…'});
   searchWrap.appendChild(searchInput);
-  searchWrap.appendChild(addBtn);
   const list = el('div',{class:'pp-list'});
   drop.appendChild(searchWrap);
   drop.appendChild(list);
@@ -1420,22 +1424,17 @@ function ppCombobox(r){
     trigger.classList.remove('open');
   }
 
-  addBtn.addEventListener('click', ()=>{
-    const v = searchInput.value.trim();
-    if(v){ setVal(v); } else { searchInput.focus(); }
-  });
-
   function buildList(q){
     list.innerHTML = '';
     const lq = q.trim().toLowerCase();
-    const filtered = products.filter(p => !lq || String(p.id).includes(lq) || p.name.toLowerCase().includes(lq));
+    const filtered = ALL_POSTAL_PRODUCTS.filter(p => !lq || String(p.id).includes(lq) || p.name.toLowerCase().includes(lq));
 
     const clearOpt = el('button',{class:'pp-opt'+(r.postalProduct===null?' selected':''), type:'button'});
     clearOpt.textContent = '— none —';
     clearOpt.addEventListener('click', ()=> setVal(null));
     list.appendChild(clearOpt);
 
-    if(filtered.length === 0 && products.length > 0){
+    if(filtered.length === 0){
       list.appendChild(el('div',{class:'pp-empty'}, 'No matches'));
     }
     filtered.forEach(p => {
