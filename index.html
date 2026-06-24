@@ -354,6 +354,7 @@ a{color:inherit;text-decoration:none}
   padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;
   letter-spacing:.6px;color:var(--dim);background:var(--border-soft);
   text-align:left;border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:2;
 }
 .config-table tbody td{
   padding:10px 14px;font-size:13px;color:var(--text);
@@ -521,8 +522,8 @@ a{color:inherit;text-decoration:none}
    ═══════════════════════════════════════════════════ */
 /* layout: full-width questionnaire (JSON panel is a toggle overlay) */
 body[data-variant="D"] .wizard{max-width:1040px}
-body[data-variant="E"] .wizard{max-width:1280px}
-body[data-variant="F"] .wizard{max-width:1280px}
+body[data-variant="E"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
+body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 
 /* ─── Variant E: left navigation panel ─── */
 .e-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:30px;align-items:start}
