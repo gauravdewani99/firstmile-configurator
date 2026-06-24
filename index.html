@@ -1437,7 +1437,9 @@ function ppCombobox(r){
       list.appendChild(opt);
     });
 
-    // "add custom" — shown when user typed something or no catalogue exists
+    // "add custom":
+    //  - catalogue exists + user typed something → "Add '<query>' as custom"
+    //  - no catalogue at all → always show active "Add custom" button (uses search value or prompts to type)
     const qTrimmed = q.trim();
     if(qTrimmed){
       const addOpt = el('button',{class:'pp-opt pp-add', type:'button'});
@@ -1445,9 +1447,13 @@ function ppCombobox(r){
       addOpt.addEventListener('click',()=> setVal(qTrimmed));
       list.appendChild(addOpt);
     } else if(products.length === 0){
+      // no catalogue — show active add button; clicking focuses input if empty
       const addOpt = el('button',{class:'pp-opt pp-add', type:'button'});
-      addOpt.innerHTML = icon('plus')+' Type above to add a custom product';
-      addOpt.disabled = true;
+      addOpt.innerHTML = icon('plus')+' Add custom product…';
+      addOpt.addEventListener('click',()=>{
+        const v = searchInput.value.trim();
+        if(v){ setVal(v); } else { searchInput.focus(); }
+      });
       list.appendChild(addOpt);
     }
   }
