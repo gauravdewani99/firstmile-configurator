@@ -3787,13 +3787,32 @@ function eCardRules(){
   body.appendChild(tableWrap);
 
   // Add row button
-  const addBtn=el('div',{style:'padding:12px 16px;border-top:1px solid var(--border)'});
-  addBtn.appendChild(el('button',{class:'rule-card-btn',onclick:()=>{
-    const newRule={id:++_ruleSeq,name:'',productCategory:'',returnReason:'',sku:'',ean:'',minValue:'',maxValue:'',countries:[],carrierServices:[],destination:''};
-    tabState.routingRules.push(newRule);
-    addRow(newRule);
-  }},el('span',{html:icon('plus')}),'Add Routing Rule'));
-  body.appendChild(addBtn);
+  // Add Rule button / inline form
+  const formWrap=el('div',{style:'padding:12px 16px;border-top:1px solid var(--border)'});
+
+  const showAddBtn=()=>{
+    formWrap.innerHTML='';
+    formWrap.appendChild(el('button',{class:'rule-card-btn',onclick:()=>{ showInlineForm(); }},
+      el('span',{html:icon('plus')}),'Add Routing Rule'
+    ));
+  };
+
+  const showInlineForm=()=>{
+    formWrap.innerHTML='';
+    const draft={id:++_ruleSeq,name:'',productCategory:'',returnReason:'',sku:'',ean:'',minValue:'',maxValue:'',countries:[],carrierServices:[],destination:''};
+    _ruleEditId=null;
+    formWrap.appendChild(buildRuleInlineForm(draft,
+      (saved)=>{
+        tabState.routingRules.push(saved);
+        addRow(saved);
+        showAddBtn();
+      },
+      ()=>showAddBtn()
+    ));
+  };
+
+  showAddBtn();
+  body.appendChild(formWrap);
 
   card.appendChild(body);
   return card;
