@@ -1427,7 +1427,10 @@ const ROUTING_CARRIERS = [
   { id:'NZPost',      name:'NZ Post',               countries:'NZ',             services:['Drop-off'] },
 ];
 const ROUTING_RETURN_REASONS = ['Wrong item','Damaged','Changed mind','Too large','Too small','Quality issue','Other'];
-const ROUTING_PRODUCT_CATEGORIES = ['Apparel','Shoes','Electronics','Accessories','Furniture','Toners','High-value','Other'];
+const ROUTING_PRODUCT_CATEGORIES = [
+  { group:'Fashion & Apparel', items:['Jacket','Dress','Vest','Apparel','Sunglasses','Shoes'] },
+  { group:'Electronics',       items:['PlayStations','Consoles'] },
+];
 
 /* region lookup for the variant-E pickup countries (reuses PREF regions; GB added) */
 const E_REGION_BY_CODE = (() => {
@@ -3564,7 +3567,7 @@ function buildRuleInlineForm(draft, onSave, onCancel){
   // Category + Reason
   const catSel=el('select');
   catSel.appendChild(el('option',{value:''},'Any'));
-  ROUTING_PRODUCT_CATEGORIES.forEach(c=>catSel.appendChild(el('option',{value:c,selected:draft.productCategory===c},c)));
+  ROUTING_PRODUCT_CATEGORIES.forEach(g=>{ const grp=el('optgroup',{label:g.group}); g.items.forEach(c=>grp.appendChild(el('option',{value:c,selected:draft.productCategory===c},c))); catSel.appendChild(grp); });
   catSel.addEventListener('change',e=>draft.productCategory=e.target.value);
   const rrSel=el('select');
   rrSel.appendChild(el('option',{value:''},'Any'));
