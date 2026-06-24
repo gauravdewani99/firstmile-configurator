@@ -3387,7 +3387,7 @@ function eNav(){
     { id:'sec-label',   n:2, label:'Label Option',         done:eLabelReady(),   locked:!eServiceReady() },
     { id:'sec-dest',    n:3, label:'First Mile Destination',done:eDestReady(),    locked:!eLabelReady() },
     { id:'sec-review',  n:4, label:'Lane Review',          done:false,           locked:!eDestReady() },
-    { id:'sec-rules',   n:5, label:'Routing Rules',        done:false,           locked:false },
+    ...(state.variant==='F' ? [{ id:'sec-rules', n:5, label:'Routing Rules', done:false, locked:false }] : []),
   ];
   const activeId = (steps.find(s => !s.locked && !s.done) || steps[steps.length-1]).id;
   const nav = el('div',{class:'e-nav'});
@@ -3568,8 +3568,8 @@ function renderVariantE(root){
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
   const dst = eCardDestination(!eLabelReady());     dst.id = 'sec-dest';
   const rev = eCardTable(!eDestReady());            rev.id = 'sec-review';
-  const rls = eCardRules();                         rls.id = 'sec-rules';
-  main.appendChild(svc); main.appendChild(lbl); main.appendChild(dst); main.appendChild(rev); main.appendChild(rls);
+  main.appendChild(svc); main.appendChild(lbl); main.appendChild(dst); main.appendChild(rev);
+  if(state.variant === 'F'){ const rls = eCardRules(); rls.id = 'sec-rules'; main.appendChild(rls); }
   layout.appendChild(main);
 
   root.appendChild(layout);
