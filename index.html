@@ -981,7 +981,10 @@ body[data-view="wizard"] #view-landing{display:none}
   display:none;flex-direction:column;min-width:260px;
 }
 .pp-drop.open{display:flex}
-.pp-search-wrap{padding:8px 8px 6px;border-bottom:1px solid var(--border-soft)}
+.pp-search-wrap{display:flex;align-items:center;gap:6px;padding:8px 8px 6px;border-bottom:1px solid var(--border-soft)}
+.pp-add-btn{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:6px 10px;border:1.5px solid var(--brand-2);border-radius:var(--r-xs);font:inherit;font-size:11.5px;font-weight:600;color:var(--brand-2);background:transparent;cursor:pointer;white-space:nowrap;transition:background .12s,color .12s}
+.pp-add-btn:hover{background:var(--brand-soft);color:var(--brand)}
+.pp-add-btn svg{width:12px;height:12px}
 .pp-search{
   width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r-xs);
   font:inherit;font-size:12.5px;color:var(--text);background:var(--bg);outline:none;
@@ -1400,8 +1403,10 @@ function ppCombobox(r){
 
   const drop = el('div',{class:'pp-drop'});
   const searchWrap = el('div',{class:'pp-search-wrap'});
-  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search or type to add…'});
+  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search…'});
+  const addBtn = el('button',{class:'pp-add-btn', type:'button', html:icon('plus')+' Add custom'});
   searchWrap.appendChild(searchInput);
+  searchWrap.appendChild(addBtn);
   const list = el('div',{class:'pp-list'});
   drop.appendChild(searchWrap);
   drop.appendChild(list);
@@ -1415,12 +1420,16 @@ function ppCombobox(r){
     trigger.classList.remove('open');
   }
 
+  addBtn.addEventListener('click', ()=>{
+    const v = searchInput.value.trim();
+    if(v){ setVal(v); } else { searchInput.focus(); }
+  });
+
   function buildList(q){
     list.innerHTML = '';
     const lq = q.trim().toLowerCase();
     const filtered = products.filter(p => !lq || String(p.id).includes(lq) || p.name.toLowerCase().includes(lq));
 
-    // clear option
     const clearOpt = el('button',{class:'pp-opt'+(r.postalProduct===null?' selected':''), type:'button'});
     clearOpt.textContent = '— none —';
     clearOpt.addEventListener('click', ()=> setVal(null));
@@ -1436,26 +1445,6 @@ function ppCombobox(r){
       opt.addEventListener('click',()=> setVal(label));
       list.appendChild(opt);
     });
-
-    // "add custom":
-    //  - catalogue exists + user typed something → "Add '<query>' as custom"
-    //  - no catalogue at all → always show active "Add custom" button (uses search value or prompts to type)
-    const qTrimmed = q.trim();
-    if(qTrimmed){
-      const addOpt = el('button',{class:'pp-opt pp-add', type:'button'});
-      addOpt.innerHTML = icon('plus')+' Add "'+qTrimmed.replace(/</g,'&lt;')+'" as custom';
-      addOpt.addEventListener('click',()=> setVal(qTrimmed));
-      list.appendChild(addOpt);
-    } else if(products.length === 0){
-      // no catalogue — show active add button; clicking focuses input if empty
-      const addOpt = el('button',{class:'pp-opt pp-add', type:'button'});
-      addOpt.innerHTML = icon('plus')+' Add custom product…';
-      addOpt.addEventListener('click',()=>{
-        const v = searchInput.value.trim();
-        if(v){ setVal(v); } else { searchInput.focus(); }
-      });
-      list.appendChild(addOpt);
-    }
   }
 
   searchInput.addEventListener('input',()=> buildList(searchInput.value));
