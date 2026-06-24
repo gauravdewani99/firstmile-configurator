@@ -2734,18 +2734,22 @@ function dCardDestination(){
       const specs = dtpSpecsFor(prefState.dtpCategory);
       const regions = dtpRegionsFor(prefState.dtpCategory);
       const toggle = (arr, val) => arr.includes(val) ? arr.filter(x=>x!==val) : [...arr, val];
+      // filters (optional — narrow the list)
+      const filterWrap = el('div',{class:'dtp-filters-wrap'});
       if(specs.length){
-        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Specification'));
+        filterWrap.appendChild(el('div',{class:'dtp-filter-label'}, 'Filter by Specification'));
         const specRow = el('div',{class:'dtp-filter-row'});
         specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpSpecs.includes(s)?' on':''), type:'button',
           onclick:()=>{ prefState.dtpSpecs=toggle(prefState.dtpSpecs,s); prefState.dtpPartner=null; rerenderD(); }}, s)));
-        body.appendChild(specRow);
+        filterWrap.appendChild(specRow);
       }
-      body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
+      filterWrap.appendChild(el('div',{class:'dtp-filter-label'}, 'Filter by Country / Region'));
       const regRow = el('div',{class:'dtp-filter-row'});
       regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpRegions.includes(r)?' on':''), type:'button',
         onclick:()=>{ prefState.dtpRegions=toggle(prefState.dtpRegions,r); prefState.dtpPartner=null; rerenderD(); }}, r)));
-      body.appendChild(regRow);
+      filterWrap.appendChild(regRow);
+      body.appendChild(filterWrap);
+      // partner list — always visible, filtered by active pills
       const partners = dtpPartnersFor(prefState.dtpCategory, prefState.dtpSpecs, prefState.dtpRegions);
       body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
       if(partners.length){
@@ -2759,7 +2763,7 @@ function dCardDestination(){
         });
         body.appendChild(plist);
       } else {
-        body.appendChild(el('div',{class:'opt-empty'}, 'No partners available for this combination.'));
+        body.appendChild(el('div',{class:'opt-empty'}, 'No partners match this filter.'));
       }
     }
   }
@@ -3503,18 +3507,20 @@ function eCardDestination(locked){
       const specs = dtpSpecsFor(tabState.dtpCategory);
       const regions = dtpRegionsFor(tabState.dtpCategory);
       const toggle = (arr, val) => arr.includes(val) ? arr.filter(x=>x!==val) : [...arr, val];
+      const filterWrap = el('div',{class:'dtp-filters-wrap'});
       if(specs.length){
-        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Specification'));
+        filterWrap.appendChild(el('div',{class:'dtp-filter-label'}, 'Filter by Specification'));
         const specRow = el('div',{class:'dtp-filter-row'});
         specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpSpecs.includes(s)?' on':''), type:'button',
           onclick:()=>{ tabState.dtpSpecs=toggle(tabState.dtpSpecs,s); tabState.dtpPartner=null; rerenderE(); }}, s)));
-        body.appendChild(specRow);
+        filterWrap.appendChild(specRow);
       }
-      body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
+      filterWrap.appendChild(el('div',{class:'dtp-filter-label'}, 'Filter by Country / Region'));
       const regRow = el('div',{class:'dtp-filter-row'});
       regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpRegions.includes(r)?' on':''), type:'button',
         onclick:()=>{ tabState.dtpRegions=toggle(tabState.dtpRegions,r); tabState.dtpPartner=null; rerenderE(); }}, r)));
-      body.appendChild(regRow);
+      filterWrap.appendChild(regRow);
+      body.appendChild(filterWrap);
       const partners = dtpPartnersFor(tabState.dtpCategory, tabState.dtpSpecs, tabState.dtpRegions);
       body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
       if(partners.length){
@@ -3528,7 +3534,7 @@ function eCardDestination(locked){
         });
         body.appendChild(plist);
       } else {
-        body.appendChild(el('div',{class:'opt-empty'}, 'No partners available for this combination.'));
+        body.appendChild(el('div',{class:'opt-empty'}, 'No partners match this filter.'));
       }
     }
   }
