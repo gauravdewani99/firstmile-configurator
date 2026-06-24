@@ -581,6 +581,20 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 /* destination option icon badge */
 .opt-ic .opt-ic-badge{width:30px;height:30px;border-radius:8px;background:var(--brand-soft);color:var(--brand);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:2px}
 .opt-ic .opt-ic-badge svg{width:17px;height:17px}
+/* horizontal category tile grid */
+.cat-tile-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px}
+.cat-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  padding:14px 10px;min-width:90px;flex:1;border:1.5px solid var(--border);border-radius:12px;
+  background:#fff;cursor:pointer;font:inherit;color:var(--muted);transition:border-color .14s,background .14s,color .14s;position:relative}
+.cat-tile:hover{border-color:var(--brand-2);background:var(--brand-soft);color:var(--brand)}
+.cat-tile.active{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.cat-tile-ic{width:36px;height:36px;border-radius:10px;background:var(--brand-soft);color:var(--brand);display:flex;align-items:center;justify-content:center}
+.cat-tile.active .cat-tile-ic{background:var(--brand);color:#fff}
+.cat-tile-ic svg{width:18px;height:18px}
+.cat-tile-name{font-size:12px;font-weight:600;text-align:center;white-space:nowrap}
+.cat-tile .cat-check{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;display:none;align-items:center;justify-content:center}
+.cat-tile.active .cat-check{display:flex}
+.cat-tile .cat-check svg{width:10px;height:10px;stroke-width:3}
 .opt-ic.active .opt-ic-badge{background:#fff}
 
 /* address manager */
@@ -2653,15 +2667,15 @@ function dCardDestination(){
     body.appendChild(dAddressForm());
   }
 
-  // DTP branch — step 1: category (vertical with icon), step 2: partner
+  // DTP branch — step 1: category (horizontal tiles), step 2: partner
   if(prefState.destination === 'DTP'){
     body.appendChild(el('div',{class:'q-mini-label'}, 'Partner category'));
-    const catList = el('div',{class:'opt-list'});
+    const catList = el('div',{class:'cat-tile-grid'});
     DTP_CATEGORIES.forEach(cat => {
-      catList.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpCategory===cat?' active':''), onclick:()=>{ prefState.dtpCategory=cat; prefState.dtpPartner=null; rerenderD(); }},
-        el('span',{class:'opt-radio'}),
-        el('span',{class:'opt-ic-badge', html:categoryIcon(cat)}),
-        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, cat))
+      catList.appendChild(el('button',{class:'cat-tile'+(prefState.dtpCategory===cat?' active':''), type:'button', onclick:()=>{ prefState.dtpCategory=cat; prefState.dtpPartner=null; rerenderD(); }},
+        el('span',{class:'cat-tile-ic', html:categoryIcon(cat)}),
+        el('span',{class:'cat-tile-name'}, cat),
+        el('span',{class:'cat-check', html:icon('check')})
       ));
     });
     body.appendChild(catList);
@@ -3402,15 +3416,15 @@ function eCardDestination(locked){
     body.appendChild(eAddressManager());
   }
 
-  // DTP → step 1: category (vertical with icon), step 2: partner
+  // DTP → step 1: category (horizontal tiles), step 2: partner
   if(tabState.destination === 'DTP'){
     body.appendChild(el('div',{class:'q-mini-label'}, 'Partner category'));
-    const catList = el('div',{class:'opt-list'});
+    const catList = el('div',{class:'cat-tile-grid'});
     DTP_CATEGORIES.forEach(cat => {
-      catList.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpCategory===cat?' active':''), onclick:()=>{ tabState.dtpCategory=cat; tabState.dtpPartner=null; rerenderE(); }},
-        el('span',{class:'opt-radio'}),
-        el('span',{class:'opt-ic-badge', html:categoryIcon(cat)}),
-        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, cat))
+      catList.appendChild(el('button',{class:'cat-tile'+(tabState.dtpCategory===cat?' active':''), type:'button', onclick:()=>{ tabState.dtpCategory=cat; tabState.dtpPartner=null; rerenderE(); }},
+        el('span',{class:'cat-tile-ic', html:categoryIcon(cat)}),
+        el('span',{class:'cat-tile-name'}, cat),
+        el('span',{class:'cat-check', html:icon('check')})
       ));
     });
     body.appendChild(catList);
