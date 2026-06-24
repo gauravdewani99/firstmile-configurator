@@ -1241,7 +1241,16 @@ const PREF_COUNTRIES = PREF_REGIONS.flatMap(r => r.countries.map(c => ({...c, re
 const PREF_COUNTRY_BY_CODE = Object.fromEntries(PREF_COUNTRIES.map(c => [c.code, c]));
 const ERC_WAREHOUSE = 'DE_ASC_Nettetal';
 
-const DTP_PARTNERS = ['Liquidation Hub','Refurbish Center','Repair Center','Disposition','Recycling','Donation'];
+const DTP_PARTNER_CATEGORIES = {
+  'Recommerce':  ['Thrift+','Trove','Recurate','Faume','Yellow Octopus'],
+  'Liquidation': ['ReFlex'],
+  'Repair':      ['United Repair Center','BootRepairCompany'],
+  'Donation':    ['Soles4Souls','Smartworks','Salvation Army','UDO'],
+  'Recycling':   ['Frankenhuis','Avena','ShredStation','FastFeetGrinded','ESO','EGN','CloseTheLoop','WasteCare'],
+};
+const DTP_CATEGORIES = Object.keys(DTP_PARTNER_CATEGORIES);
+/* legacy flat list kept for any code that still needs it */
+const DTP_PARTNERS = DTP_CATEGORIES;
 const CONTRACT_CARRIERS = ['DHL','PostNL','PostItalia','FedEx']; // dynamic list (Q3, client-owned)
 const RETURN_SERVICES = ['Drop-off','Pickup','Self-post'];
 const RETURN_LABELS   = ['Printed label','Paperless / QR code'];
@@ -1520,6 +1529,7 @@ function initPrefs(){
     dtwType:null,            // 'local' | 'ERC'
     localWarehouses:{},      // code -> selected (for DTW local)
     dtrAddress:{ line1:'', line2:'', line3:'', city:'', postal:'', country:'' },
+    dtpCategory:null,
     dtpPartner:null,
     hasOwnContract:null,     // true (SaaS) | false (Managed)
     saasCarrier:null,
@@ -1550,6 +1560,7 @@ function initTabular(){
     destination:    null,   // Q3 — global default (DTW | DTR | DTP)
     dtwType:        null,   // 'local' | 'ERC'
     addresses:      [],     // [{id,line1,line2,line3,city,postal,countryCode}] — DTR
+    dtpCategory:    null,
     dtpPartner:     null,
     groupBy:        'country', // 'country' | 'region'
     rows:           [],     // generated per country × service×label combo
@@ -2631,17 +2642,28 @@ function dCardDestination(){
     body.appendChild(dAddressForm());
   }
 
-  // DTP branch
+  // DTP branch — step 1: category, step 2: partner
   if(prefState.destination === 'DTP'){
-    body.appendChild(el('div',{class:'q-mini-label'}, 'Choose a ReBound partner'));
-    const plist = el('div',{class:'opt-list'});
-    DTP_PARTNERS.forEach(p => {
-      plist.appendChild(el('button',{class:'opt'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Partner category'));
+    const catList = el('div',{class:'opt-list'});
+    DTP_CATEGORIES.forEach(cat => {
+      catList.appendChild(el('button',{class:'opt'+(prefState.dtpCategory===cat?' active':''), onclick:()=>{ prefState.dtpCategory=cat; prefState.dtpPartner=null; rerenderD(); }},
         el('span',{class:'opt-radio'}),
-        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, cat))
       ));
     });
-    body.appendChild(plist);
+    body.appendChild(catList);
+    if(prefState.dtpCategory){
+      body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+      const plist = el('div',{class:'opt-list'});
+      (DTP_PARTNER_CATEGORIES[prefState.dtpCategory]||[]).forEach(p => {
+        plist.appendChild(el('button',{class:'opt'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
+          el('span',{class:'opt-radio'}),
+          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+        ));
+      });
+      body.appendChild(plist);
+    }
   }
 
   card.appendChild(body);
@@ -3367,18 +3389,30 @@ function eCardDestination(locked){
     body.appendChild(eAddressManager());
   }
 
-  // DTP → choose a partner
+  // DTP → step 1: category, step 2: partner
   if(tabState.destination === 'DTP'){
-    body.appendChild(el('div',{class:'q-mini-label'}, 'Choose a ReBound partner'));
-    const plist = el('div',{class:'opt-list'});
-    DTP_PARTNERS.forEach(p => {
-      plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
+    body.appendChild(el('div',{class:'q-mini-label'}, 'Partner category'));
+    const catList = el('div',{class:'opt-list'});
+    DTP_CATEGORIES.forEach(cat => {
+      catList.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpCategory===cat?' active':''), onclick:()=>{ tabState.dtpCategory=cat; tabState.dtpPartner=null; rerenderE(); }},
         el('span',{class:'opt-radio'}),
-        el('span',{class:'opt-ic-badge', html:partnerIcon(p)}),
-        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+        el('span',{class:'opt-ic-badge', html:partnerIcon(cat)}),
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, cat))
       ));
     });
-    body.appendChild(plist);
+    body.appendChild(catList);
+    if(tabState.dtpCategory){
+      body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+      const plist = el('div',{class:'opt-list'});
+      (DTP_PARTNER_CATEGORIES[tabState.dtpCategory]||[]).forEach(p => {
+        plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
+          el('span',{class:'opt-radio'}),
+          el('span',{class:'opt-ic-badge', html:partnerIcon(p)}),
+          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+        ));
+      });
+      body.appendChild(plist);
+    }
   }
 
   card.appendChild(body);
@@ -3689,10 +3723,16 @@ function openDestinationModal(id){
       [['local','Local'],['ERC','ERC']].forEach(([v,n])=> sub.appendChild(el('button',{class:'minichip'+(draft.dtwType===v?' on':''), onclick:()=>{ draft.dtwType=v; renderBody(); }}, n)));
       bodyWrap.appendChild(sub);
     } else if(draft.destType === 'DTP'){
-      bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Partner'));
-      const sub = el('div',{class:'chip-row'});
-      DTP_PARTNERS.forEach(p => sub.appendChild(el('button',{class:'minichip'+(draft.partner===p?' on':''), onclick:()=>{ draft.partner=p; renderBody(); }}, p)));
-      bodyWrap.appendChild(sub);
+      bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Partner category'));
+      const catSub = el('div',{class:'chip-row'});
+      DTP_CATEGORIES.forEach(cat => catSub.appendChild(el('button',{class:'minichip'+(draft.dtpCategory===cat?' on':''), onclick:()=>{ draft.dtpCategory=cat; draft.partner=null; renderBody(); }}, cat)));
+      bodyWrap.appendChild(catSub);
+      if(draft.dtpCategory){
+        bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Partner'));
+        const sub = el('div',{class:'chip-row'});
+        (DTP_PARTNER_CATEGORIES[draft.dtpCategory]||[]).forEach(p => sub.appendChild(el('button',{class:'minichip'+(draft.partner===p?' on':''), onclick:()=>{ draft.partner=p; renderBody(); }}, p)));
+        bodyWrap.appendChild(sub);
+      }
     } else if(draft.destType === 'DTR'){
       bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Address'));
       const filled = tabState.addresses.filter(a=>a.city.trim()&&a.countryCode);
