@@ -623,8 +623,8 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .config-table.compact th:nth-child(1),.config-table.compact td:nth-child(1){width:10%}
 .config-table.compact th:nth-child(2),.config-table.compact td:nth-child(2){width:11%}
 .config-table.compact th:nth-child(3),.config-table.compact td:nth-child(3){width:15%}
-.config-table.compact th:nth-child(4),.config-table.compact td:nth-child(4){width:13%}
-.config-table.compact th:nth-child(5),.config-table.compact td:nth-child(5){width:14%}
+.config-table.compact th:nth-child(4),.config-table.compact td:nth-child(4){width:14%}
+.config-table.compact th:nth-child(5),.config-table.compact td:nth-child(5){width:13%}
 .config-table.compact th:nth-child(6),.config-table.compact td:nth-child(6){width:13%}
 .config-table.compact th:nth-child(7),.config-table.compact td:nth-child(7){width:24%}
 /* group header rows */
@@ -3521,11 +3521,7 @@ function eRow(r){
   );
   tr.appendChild(destCell);
 
-  // Lane type toggle
-  tr.appendChild(el('td',{}, eLaneToggle(r)));
-  // Contract
-  tr.appendChild(el('td',{}, eContractCell(r)));
-  // Carrier (last column) — the carrier-service-selector output
+  // Carrier — moved before Lane type
   const carrierCell = el('td',{class:'carrier-cell'});
   if(refreshing){
     carrierCell.appendChild(el('span',{class:'carrier-skeleton'}, el('span',{class:'cs-bar'}), el('span',{class:'cs-dot'})));
@@ -3537,6 +3533,10 @@ function eRow(r){
   // per-combo delete (floats at row right on hover)
   carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
   tr.appendChild(carrierCell);
+  // Lane type toggle
+  tr.appendChild(el('td',{}, eLaneToggle(r)));
+  // Contract
+  tr.appendChild(el('td',{}, eContractCell(r)));
 
   // Postal Product (last column) — legacy field, searchable combobox with custom add
   const ppCell = el('td',{class:'pp-td'});
@@ -3621,7 +3621,7 @@ function eCardTable(locked){
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')});
   table.appendChild(el('thead',{}, el('tr',{},
     el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
-    el('th',{},'Lane type'), el('th',{},'Contract'), el('th',{class:'th-carrier'},'Carrier'),
+    el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
     el('th',{},'Postal Product')
   )));
   const tbody = el('tbody',{});
