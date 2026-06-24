@@ -780,6 +780,10 @@ tr.lane-row.unavail:hover{background:transparent}
 /* rule inline form */
 .rule-inline-form{border:1.5px dashed var(--border);border-radius:12px;padding:16px;background:#FAFBFC;display:flex;flex-direction:column;gap:12px;margin-bottom:4px}
 .rule-inline-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-bottom:4px}
+.rule-subsec{display:flex;flex-direction:column}
+.rule-subsec-head{display:flex;align-items:baseline;gap:10px;padding:12px 16px 8px;background:#FAFBFC;border-bottom:1px solid var(--border-soft)}
+.rule-subsec-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
+.rule-subsec-desc{font-size:12px;color:var(--muted)}
 /* routing rules table */
 .rtbl{width:100%;border-collapse:collapse;font-size:12.5px}
 .rtbl thead tr{background:#F8F9FA}
@@ -3697,22 +3701,11 @@ function makeRuleCarrierCell(rule){
   return wrap;
 }
 
-function eCardRules(){
-  const card=el('div',{class:'q-card answered'});
-  card.appendChild(el('div',{class:'q-card-head'},
-    el('div',{class:'q-num'},el('span',{html:icon('flag')})),
-    el('div',{class:'q-titlewrap'},
-      el('div',{class:'q-title'},'Custom Routing Rules'),
-      el('div',{class:'q-subtitle'},'Override default routing for specific products, countries, or conditions')
-    )
-  ));
-  const body=el('div',{class:'q-body',style:'padding:0;overflow:hidden'});
+function buildRulesTabularSection(){
+  const wrap=el('div');
 
-  // ── Tabular rules ──
   const tableWrap=el('div',{style:'overflow-x:auto'});
   const tbl=el('table',{class:'rtbl'});
-
-  // header
   const thead=el('thead');
   thead.appendChild(el('tr',{},
     el('th',{},'Rule Name'),
@@ -3728,91 +3721,96 @@ function eCardRules(){
     el('th',{style:'width:36px'},'')
   ));
   tbl.appendChild(thead);
-
   const tbody=el('tbody');
 
   const addRow=(rule)=>{
     const tr=el('tr');
-    // Name
-    const nameInp=el('input',{type:'text',class:'rtbl-inp',placeholder:'Rule name…',value:rule.name||'',oninput:e=>rule.name=e.target.value});
-    tr.appendChild(el('td',{},nameInp));
-
-    // Country (after Rule Name)
+    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'Rule name…',value:rule.name||'',oninput:e=>rule.name=e.target.value})));
     tr.appendChild(el('td',{style:'min-width:120px'},makeRuleCountryCell(rule)));
-
-    // Product Category
     const catSel=el('select',{class:'rtbl-sel'});
     catSel.appendChild(el('option',{value:''},'—'));
     ROUTING_PRODUCT_CATEGORIES.forEach(g=>{ const grp=el('optgroup',{label:g.group}); g.items.forEach(c=>grp.appendChild(el('option',{value:c,selected:rule.productCategory===c},c))); catSel.appendChild(grp); });
     catSel.addEventListener('change',e=>rule.productCategory=e.target.value);
     tr.appendChild(el('td',{},catSel));
-
-    // Return Reason
     const rrSel=el('select',{class:'rtbl-sel'});
     rrSel.appendChild(el('option',{value:''},'—'));
     ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r,selected:rule.returnReason===r},r)));
     rrSel.addEventListener('change',e=>rule.returnReason=e.target.value);
     tr.appendChild(el('td',{},rrSel));
-
-    // SKU
     tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'SKU…',value:rule.sku||'',oninput:e=>rule.sku=e.target.value})));
-    // EAN
     tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'EAN…',value:rule.ean||'',oninput:e=>rule.ean=e.target.value})));
-    // Min
     tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'0',value:rule.minValue||'',oninput:e=>rule.minValue=e.target.value,style:'width:70px'})));
-    // Max
     tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'∞',value:rule.maxValue||'',oninput:e=>rule.maxValue=e.target.value,style:'width:70px'})));
-
-    // Carrier
     tr.appendChild(el('td',{style:'min-width:150px'},makeRuleCarrierCell(rule)));
-
-    // Destination
     const destSel=el('select',{class:'rtbl-sel'});
     destSel.appendChild(el('option',{value:''},'—'));
     [['DTW','DTW'],['DTR','DTR'],['DTP','DTP']].forEach(([v,n])=>destSel.appendChild(el('option',{value:v,selected:rule.destination===v},n)));
     destSel.addEventListener('change',e=>rule.destination=e.target.value);
     tr.appendChild(el('td',{},destSel));
-
-    // Delete
-    tr.appendChild(el('td',{},
-      el('button',{class:'rule-del',html:icon('trash'),onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})
-    ));
-
+    tr.appendChild(el('td',{},el('button',{class:'rule-del',html:icon('trash'),onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})));
     tbody.appendChild(tr);
   };
 
   tabState.routingRules.forEach(addRow);
   tbl.appendChild(tbody);
   tableWrap.appendChild(tbl);
-  body.appendChild(tableWrap);
+  wrap.appendChild(tableWrap);
 
-  // Add row button
-  // Add Rule button / inline form
-  const formWrap=el('div',{style:'padding:12px 16px;border-top:1px solid var(--border)'});
+  // Add row inline in table
+  const addBtnWrap=el('div',{style:'padding:10px 16px;border-top:1px solid var(--border-soft)'});
+  addBtnWrap.appendChild(el('button',{class:'rule-card-btn',onclick:()=>{
+    const r={id:++_ruleSeq,name:'',productCategory:'',returnReason:'',sku:'',ean:'',minValue:'',maxValue:'',countries:[],carrierServices:[],destination:''};
+    tabState.routingRules.push(r);
+    addRow(r);
+  }},el('span',{html:icon('plus')}),'Add Row'));
+  wrap.appendChild(addBtnWrap);
+  return wrap;
+}
 
+function eCardRules(){
+  const card=el('div',{class:'q-card answered'});
+  card.appendChild(el('div',{class:'q-card-head'},
+    el('div',{class:'q-num'},el('span',{html:icon('flag')})),
+    el('div',{class:'q-titlewrap'},
+      el('div',{class:'q-title'},'Custom Routing Rules'),
+      el('div',{class:'q-subtitle'},'Override default routing for specific products, countries, or conditions')
+    )
+  ));
+  const body=el('div',{class:'q-body',style:'padding:0;overflow:hidden'});
+
+  // ── Section A: Inline grid form ──
+  const secA=el('div',{class:'rule-subsec'});
+  secA.appendChild(el('div',{class:'rule-subsec-head'},
+    el('span',{class:'rule-subsec-label'},'Inline Form'),
+    el('span',{class:'rule-subsec-desc'},'Fill in a form and save each rule individually')
+  ));
+  const formWrap=el('div',{style:'padding:12px 16px'});
   const showAddBtn=()=>{
     formWrap.innerHTML='';
-    formWrap.appendChild(el('button',{class:'rule-card-btn',onclick:()=>{ showInlineForm(); }},
+    formWrap.appendChild(el('button',{class:'rule-card-btn',onclick:()=>showInlineForm()},
       el('span',{html:icon('plus')}),'Add Routing Rule'
     ));
   };
-
   const showInlineForm=()=>{
     formWrap.innerHTML='';
     const draft={id:++_ruleSeq,name:'',productCategory:'',returnReason:'',sku:'',ean:'',minValue:'',maxValue:'',countries:[],carrierServices:[],destination:''};
-    _ruleEditId=null;
     formWrap.appendChild(buildRuleInlineForm(draft,
-      (saved)=>{
-        tabState.routingRules.push(saved);
-        addRow(saved);
-        showAddBtn();
-      },
+      (saved)=>{ tabState.routingRules.push(saved); rerenderE(); },
       ()=>showAddBtn()
     ));
   };
-
   showAddBtn();
-  body.appendChild(formWrap);
+  secA.appendChild(formWrap);
+  body.appendChild(secA);
+
+  // ── Section B: Tabular ──
+  const secB=el('div',{class:'rule-subsec',style:'border-top:2px solid var(--border)'});
+  secB.appendChild(el('div',{class:'rule-subsec-head'},
+    el('span',{class:'rule-subsec-label'},'Tabular View'),
+    el('span',{class:'rule-subsec-desc'},'Edit all rules directly in a table — add rows and configure inline')
+  ));
+  secB.appendChild(buildRulesTabularSection());
+  body.appendChild(secB);
 
   card.appendChild(body);
   return card;
