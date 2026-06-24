@@ -522,6 +522,7 @@ a{color:inherit;text-decoration:none}
 /* layout: full-width questionnaire (JSON panel is a toggle overlay) */
 body[data-variant="D"] .wizard{max-width:1040px}
 body[data-variant="E"] .wizard{max-width:1280px}
+body[data-variant="F"] .wizard{max-width:1280px}
 
 /* ─── Variant E: left navigation panel ─── */
 .e-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:30px;align-items:start}
@@ -902,8 +903,8 @@ tr.lane-row.unavail:hover{background:transparent}
 }
 .json-fab:hover{box-shadow:var(--shadow-2);transform:translateY(-1px);border-color:#CBD5E1}
 .json-fab svg{width:15px;height:15px}
-body:not([data-variant="D"]):not([data-variant="E"]) .json-fab,
-body:not([data-variant="D"]):not([data-variant="E"]) .json-panel,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]) .json-fab,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]) .json-panel,
 body[data-view="landing"] .json-fab,
 body[data-view="landing"] .json-panel{display:none}
 .json-panel{
@@ -999,16 +1000,16 @@ body[data-view="wizard"] #view-landing{display:none}
     <div class="landing-mark"><img src="rebound-icon.png" alt="" /></div>
     <h1 class="landing-title">First Mile Configurator</h1>
     <p class="landing-sub">Configure first mile lanes for a client — carrier, service, routing type and account numbers for each pickup country.</p>
-    <!-- Hero: latest version (v5 Tabular) -->
-    <button class="hero-card" onclick="startVariant('E')">
+    <!-- Hero: latest version (v6 Manisha Tabular) -->
+    <button class="hero-card" onclick="startVariant('F')">
       <span class="hero-glow"></span>
-      <span class="hero-badge"><span class="hero-badge-dot"></span>Latest · v5</span>
+      <span class="hero-badge"><span class="hero-badge-dot"></span>Latest · v6</span>
       <span class="hero-row">
         <span class="hero-icon">
           <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
         </span>
         <span class="hero-info">
-          <span class="hero-name">Tabular</span>
+          <span class="hero-name">Manisha Tabular</span>
           <span class="hero-desc">A few global questions, then fine-tune every lane in a pre-filled table.</span>
         </span>
         <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -1021,22 +1022,27 @@ body[data-view="wizard"] #view-landing{display:none}
         <span class="legacy-title">Earlier versions</span>
       </div>
       <div class="legacy-stack">
-        <button class="legacy-card" style="--depth:0" onclick="startVariant('D')">
+        <button class="legacy-card" style="--depth:0" onclick="startVariant('E')">
+          <span class="variant-icon e"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+          <span class="variant-info"><span class="variant-name"><span class="vtag">v5</span>Tabular</span><span class="variant-desc">A few global questions, then fine-tune every lane in a pre-filled table.</span></span>
+          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>
+        <button class="legacy-card" style="--depth:1" onclick="startVariant('D')">
           <span class="variant-icon d"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v4</span>Client Preferences</span><span class="variant-desc">Guided preference questions derive every lane for you.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
-        <button class="legacy-card" style="--depth:1" onclick="startVariant('C')">
+        <button class="legacy-card" style="--depth:2" onclick="startVariant('C')">
           <span class="variant-icon c"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v3</span>Inline Grid</span><span class="variant-desc">All lanes in one table with inline dropdowns.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
-        <button class="legacy-card" style="--depth:2" onclick="startVariant('B')">
+        <button class="legacy-card" style="--depth:3" onclick="startVariant('B')">
           <span class="variant-icon b"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v2</span>Carrier-First Bulk</span><span class="variant-desc">Pick a carrier first, then assign lanes to it.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
-        <button class="legacy-card" style="--depth:3" onclick="startVariant('A')">
+        <button class="legacy-card" style="--depth:4" onclick="startVariant('A')">
           <span class="variant-icon a"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v1</span>Lane-by-Lane Stepper</span><span class="variant-desc">Configure each country one at a time.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -1538,7 +1544,7 @@ function confirmClient(){
   state.variant = pendingVariant;
   closeClientModal();
   if(state.variant === 'D'){ initPrefs(); }
-  else if(state.variant === 'E'){ initTabular(); }
+  else if(state.variant === 'E' || state.variant === 'F'){ initTabular(); }
   else { initLanes(); }
   setView('wizard');
   renderWizard();
@@ -1563,7 +1569,7 @@ function setView(v){
   if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
   else document.body.removeAttribute('data-variant');
   document.getElementById('meta-client').textContent = state.client || '—';
-  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular' };
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular', F:'Manisha Tabular' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
   const flowEl = document.getElementById('meta-flow');
   if(flowEl) flowEl.style.display = state.variant ? '' : 'none';
@@ -1586,7 +1592,7 @@ function renderWizard(){
   root.innerHTML = '';
 
   if(state.variant === 'D'){ renderVariantD(root); updateJson(); return; }
-  if(state.variant === 'E'){ renderVariantE(root); updateJson(); return; }
+  if(state.variant === 'E' || state.variant === 'F'){ renderVariantE(root); updateJson(); return; }
 
   const header = el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config'),
@@ -2832,7 +2838,7 @@ function buildTabJson(){
     summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
   };
 }
-function buildActiveJson(){ return state.variant === 'E' ? buildTabJson() : buildPrefJson(); }
+function buildActiveJson(){ return (state.variant === 'E' || state.variant === 'F') ? buildTabJson() : buildPrefJson(); }
 
 function highlightJson(obj){
   const str = JSON.stringify(obj, null, 2);
