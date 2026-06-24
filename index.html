@@ -3519,38 +3519,31 @@ function buildRuleCarrierPicker(draft){
     draft.carrierServices.forEach((cs,i)=>{
       const cr=ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
       addedList.appendChild(el('div',{class:'rule-cs-pill'},
-        el('span',{},(cr?cr.name:cs.carrierId)+' — '+cs.service),
-        el('button',{class:'rule-cs-rm',onclick:()=>{ draft.carrierServices.splice(i,1); redrawAdded(); }},'×')
+        el('span',{},(cr?cr.name:cs.carrierId)),
+        el('button',{class:'rule-cs-rm',onclick:()=>{ draft.carrierServices.splice(i,1); redrawAdded(); carrierSel.querySelector('[value="'+cs.carrierId+'"]').disabled=false; }},'×')
       ));
     });
   };
   redrawAdded();
 
-  const carrierSel=el('select',{class:'rule-carrier-sel'});
+  const carrierSel=el('select',{class:'rule-carrier-sel',style:'width:100%'});
   carrierSel.appendChild(el('option',{value:''},'Select carrier…'));
-  ROUTING_CARRIERS.forEach(cr=>carrierSel.appendChild(el('option',{value:cr.id},cr.name+' ('+cr.countries+')')));
-
-  const svcSel=el('select',{class:'rule-carrier-sel'});
-  svcSel.appendChild(el('option',{value:''},'Select service…'));
-
-  carrierSel.addEventListener('change',()=>{
-    svcSel.innerHTML='';
-    svcSel.appendChild(el('option',{value:''},'Select service…'));
-    const cr=ROUTING_CARRIERS.find(x=>x.id===carrierSel.value);
-    if(cr) cr.services.forEach(s=>svcSel.appendChild(el('option',{value:s},s)));
+  ROUTING_CARRIERS.forEach(cr=>{
+    const already=draft.carrierServices.some(cs=>cs.carrierId===cr.id);
+    carrierSel.appendChild(el('option',{value:cr.id,disabled:already},cr.name+' ('+cr.countries+')'));
   });
 
-  const addBtn=el('button',{class:'rule-cs-add-btn',type:'button',onclick:()=>{
-    if(!carrierSel.value||!svcSel.value) return;
-    if(!draft.carrierServices.some(cs=>cs.carrierId===carrierSel.value&&cs.service===svcSel.value))
-      draft.carrierServices.push({carrierId:carrierSel.value,service:svcSel.value});
-    carrierSel.value=''; svcSel.innerHTML=''; svcSel.appendChild(el('option',{value:''},'Select service…'));
+  carrierSel.addEventListener('change',()=>{
+    if(!carrierSel.value) return;
+    if(!draft.carrierServices.some(cs=>cs.carrierId===carrierSel.value)){
+      draft.carrierServices.push({carrierId:carrierSel.value,service:''});
+      carrierSel.querySelector('[value="'+carrierSel.value+'"]').disabled=true;
+    }
+    carrierSel.value='';
     redrawAdded();
-  }},'+ Add');
+  });
 
-  const row=el('div',{class:'rule-carrier-row'});
-  row.appendChild(carrierSel); row.appendChild(svcSel); row.appendChild(addBtn);
-  wrap.appendChild(row);
+  wrap.appendChild(carrierSel);
   wrap.appendChild(addedList);
   return wrap;
 }
@@ -3591,7 +3584,7 @@ function buildRuleInlineForm(draft, onSave, onCancel){
   form.appendChild(ruleField('Country',buildRuleCountrySelect(draft, form)));
 
   // Carrier & Service
-  form.appendChild(ruleField('Carrier & Service',buildRuleCarrierPicker(draft)));
+  form.appendChild(ruleField('Carrier',buildRuleCarrierPicker(draft)));
 
   // Destination
   const destSel=el('select');
