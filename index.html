@@ -600,6 +600,7 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .dtp-pill{padding:5px 14px;border:1.5px solid var(--border);border-radius:999px;background:#fff;font:inherit;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:border-color .12s,background .12s,color .12s;white-space:nowrap}
 .dtp-pill:hover{border-color:var(--brand-2);color:var(--brand)}
 .dtp-pill.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+.opt-empty{font-size:12.5px;color:var(--muted);padding:10px 0;font-style:italic}
 .opt-ic.active .opt-ic-badge{background:#fff}
 
 /* address manager */
@@ -1303,8 +1304,14 @@ const DTP_PARTNER_DATA = [
 const DTP_CATEGORIES = ['Recommerce','Liquidation','Repair','Donation','Recycling'];
 
 function dtpSpecsFor(cat){ return [...new Set(DTP_PARTNER_DATA.filter(d=>d.category===cat).map(d=>d.spec).filter(Boolean))]; }
-function dtpRegionsFor(cat, spec){ return [...new Set(DTP_PARTNER_DATA.filter(d=>d.category===cat&&(!spec||d.spec===spec)).map(d=>d.region))]; }
-function dtpPartnersFor(cat, spec, region){ return [...new Set(DTP_PARTNER_DATA.filter(d=>d.category===cat&&(!spec||d.spec===spec)&&(!region||d.region===region)).map(d=>d.partner))]; }
+function dtpRegionsFor(cat){ return [...new Set(DTP_PARTNER_DATA.filter(d=>d.category===cat).map(d=>d.region))]; }
+function dtpPartnersFor(cat, specs, regions){
+  return [...new Set(DTP_PARTNER_DATA.filter(d =>
+    d.category === cat &&
+    (!specs||!specs.length || (d.spec && specs.includes(d.spec))) &&
+    (!regions||!regions.length || regions.includes(d.region))
+  ).map(d=>d.partner))];
+}
 
 /* backwards-compat: flat list of unique partner names per category */
 const DTP_PARTNER_CATEGORIES = Object.fromEntries(DTP_CATEGORIES.map(cat=>[cat, dtpPartnersFor(cat,null,null)]));
@@ -1587,7 +1594,7 @@ function initPrefs(){
     dtwType:null,            // 'local' | 'ERC'
     localWarehouses:{},      // code -> selected (for DTW local)
     dtrAddress:{ line1:'', line2:'', line3:'', city:'', postal:'', country:'' },
-    dtpCategory:null, dtpSpec:null, dtpRegion:null,
+    dtpCategory:null, dtpSpecs:[], dtpRegions:[],
     dtpPartner:null,
     hasOwnContract:null,     // true (SaaS) | false (Managed)
     saasCarrier:null,
@@ -1618,7 +1625,7 @@ function initTabular(){
     destination:    null,   // Q3 — global default (DTW | DTR | DTP)
     dtwType:        null,   // 'local' | 'ERC'
     addresses:      [],     // [{id,line1,line2,line3,city,postal,countryCode}] — DTR
-    dtpCategory:    null, dtpSpec:null, dtpRegion:null,
+    dtpCategory:    null, dtpSpecs:[], dtpRegions:[],
     dtpPartner:     null,
     groupBy:        'country', // 'country' | 'region'
     rows:           [],     // generated per country × service×label combo
@@ -2725,22 +2732,23 @@ function dCardDestination(){
     body.appendChild(catList);
     if(prefState.dtpCategory){
       const specs = dtpSpecsFor(prefState.dtpCategory);
+      const regions = dtpRegionsFor(prefState.dtpCategory);
+      const toggle = (arr, val) => arr.includes(val) ? arr.filter(x=>x!==val) : [...arr, val];
       if(specs.length){
         body.appendChild(el('div',{class:'dtp-filter-label'}, 'Specification'));
         const specRow = el('div',{class:'dtp-filter-row'});
-        specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpSpec===s?' on':''), type:'button', onclick:()=>{ prefState.dtpSpec=s; prefState.dtpRegion=null; prefState.dtpPartner=null; rerenderD(); }}, s)));
+        specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpSpecs.includes(s)?' on':''), type:'button',
+          onclick:()=>{ prefState.dtpSpecs=toggle(prefState.dtpSpecs,s); prefState.dtpPartner=null; rerenderD(); }}, s)));
         body.appendChild(specRow);
       }
-      const regions = dtpRegionsFor(prefState.dtpCategory, prefState.dtpSpec);
-      if(regions.length && (!specs.length || prefState.dtpSpec)){
-        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
-        const regRow = el('div',{class:'dtp-filter-row'});
-        regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpRegion===r?' on':''), type:'button', onclick:()=>{ prefState.dtpRegion=r; prefState.dtpPartner=null; rerenderD(); }}, r)));
-        body.appendChild(regRow);
-      }
-      const partners = dtpPartnersFor(prefState.dtpCategory, prefState.dtpSpec, prefState.dtpRegion);
-      if(partners.length && (!specs.length || prefState.dtpSpec)){
-        body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+      body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
+      const regRow = el('div',{class:'dtp-filter-row'});
+      regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpRegions.includes(r)?' on':''), type:'button',
+        onclick:()=>{ prefState.dtpRegions=toggle(prefState.dtpRegions,r); prefState.dtpPartner=null; rerenderD(); }}, r)));
+      body.appendChild(regRow);
+      const partners = dtpPartnersFor(prefState.dtpCategory, prefState.dtpSpecs, prefState.dtpRegions);
+      body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+      if(partners.length){
         const plist = el('div',{class:'opt-list'});
         partners.forEach(p => {
           plist.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
@@ -2750,6 +2758,8 @@ function dCardDestination(){
           ));
         });
         body.appendChild(plist);
+      } else {
+        body.appendChild(el('div',{class:'opt-empty'}, 'No partners available for this combination.'));
       }
     }
   }
@@ -3491,22 +3501,23 @@ function eCardDestination(locked){
     body.appendChild(catList);
     if(tabState.dtpCategory){
       const specs = dtpSpecsFor(tabState.dtpCategory);
+      const regions = dtpRegionsFor(tabState.dtpCategory);
+      const toggle = (arr, val) => arr.includes(val) ? arr.filter(x=>x!==val) : [...arr, val];
       if(specs.length){
         body.appendChild(el('div',{class:'dtp-filter-label'}, 'Specification'));
         const specRow = el('div',{class:'dtp-filter-row'});
-        specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpSpec===s?' on':''), type:'button', onclick:()=>{ tabState.dtpSpec=s; tabState.dtpRegion=null; tabState.dtpPartner=null; rerenderE(); }}, s)));
+        specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpSpecs.includes(s)?' on':''), type:'button',
+          onclick:()=>{ tabState.dtpSpecs=toggle(tabState.dtpSpecs,s); tabState.dtpPartner=null; rerenderE(); }}, s)));
         body.appendChild(specRow);
       }
-      const regions = dtpRegionsFor(tabState.dtpCategory, tabState.dtpSpec);
-      if(regions.length && (!specs.length || tabState.dtpSpec)){
-        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
-        const regRow = el('div',{class:'dtp-filter-row'});
-        regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpRegion===r?' on':''), type:'button', onclick:()=>{ tabState.dtpRegion=r; tabState.dtpPartner=null; rerenderE(); }}, r)));
-        body.appendChild(regRow);
-      }
-      const partners = dtpPartnersFor(tabState.dtpCategory, tabState.dtpSpec, tabState.dtpRegion);
-      if(partners.length && (!specs.length || tabState.dtpSpec)){
-        body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+      body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
+      const regRow = el('div',{class:'dtp-filter-row'});
+      regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpRegions.includes(r)?' on':''), type:'button',
+        onclick:()=>{ tabState.dtpRegions=toggle(tabState.dtpRegions,r); tabState.dtpPartner=null; rerenderE(); }}, r)));
+      body.appendChild(regRow);
+      const partners = dtpPartnersFor(tabState.dtpCategory, tabState.dtpSpecs, tabState.dtpRegions);
+      body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+      if(partners.length){
         const plist = el('div',{class:'opt-list'});
         partners.forEach(p => {
           plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
@@ -3516,6 +3527,8 @@ function eCardDestination(locked){
           ));
         });
         body.appendChild(plist);
+      } else {
+        body.appendChild(el('div',{class:'opt-empty'}, 'No partners available for this combination.'));
       }
     }
   }
