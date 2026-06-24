@@ -960,6 +960,48 @@ body[data-view="wizard"] #view-landing{display:none}
   .fb-btn{bottom:14px;right:14px;width:38px;height:38px}
 }
 
+/* ─── Postal Product searchable combobox ─── */
+.pp-combo{position:relative;display:inline-block;width:100%}
+.pp-trigger{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  width:100%;padding:6px 28px 6px 10px;border:1px solid var(--border);border-radius:var(--r-xs);
+  background:var(--card);font-size:12.5px;font-weight:500;color:var(--text);
+  cursor:pointer;transition:border-color .12s;text-align:left;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pp-trigger.empty{color:var(--dim)}
+.pp-trigger:hover,.pp-trigger:focus{border-color:var(--brand-2);outline:none}
+.pp-trigger.open{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.pp-trigger-ic{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;display:flex}
+.pp-trigger-ic svg{width:12px;height:12px}
+.pp-drop{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:200;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);
+  box-shadow:var(--shadow-3);overflow:hidden;
+  display:none;flex-direction:column;min-width:260px;
+}
+.pp-drop.open{display:flex}
+.pp-search-wrap{padding:8px 8px 6px;border-bottom:1px solid var(--border-soft)}
+.pp-search{
+  width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r-xs);
+  font:inherit;font-size:12.5px;color:var(--text);background:var(--bg);outline:none;
+  transition:border-color .12s;
+}
+.pp-search:focus{border-color:var(--brand-2);box-shadow:0 0 0 2px rgba(45,95,138,.1)}
+.pp-search::placeholder{color:var(--dim)}
+.pp-list{max-height:220px;overflow-y:auto;padding:4px 0}
+.pp-opt{
+  display:block;width:100%;padding:8px 12px;text-align:left;
+  font-size:12px;color:var(--text);background:transparent;
+  transition:background .1s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.pp-opt:hover{background:var(--brand-soft);color:var(--brand)}
+.pp-opt.selected{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.pp-opt.pp-add{color:var(--brand-2);font-weight:600;border-top:1px solid var(--border-soft);margin-top:2px}
+.pp-opt.pp-add:hover{background:var(--brand-soft)}
+.pp-opt.pp-add svg{width:12px;height:12px;vertical-align:middle;margin-right:5px}
+.pp-empty{padding:10px 12px;font-size:12px;color:var(--dim);font-style:italic}
+
 /* ─── scrollbar ─── */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
@@ -1345,6 +1387,94 @@ const POSTAL_PRODUCTS = {
 };
 function postalProductsFor(code, carrierId){
   return (POSTAL_PRODUCTS[code] && POSTAL_PRODUCTS[code][carrierId]) || [];
+}
+
+/* Searchable combobox for Postal Product — supports "add custom" when no catalogue match */
+function ppCombobox(r){
+  const products = postalProductsFor(r.code, r.carrier);
+  const wrap = el('div',{class:'pp-combo'});
+
+  const trigger = el('button',{class:'pp-trigger'+(r.postalProduct?'':' empty'), type:'button'});
+  trigger.textContent = r.postalProduct || '— select —';
+  trigger.appendChild(el('span',{class:'pp-trigger-ic', html:icon('chevron-down')}));
+
+  const drop = el('div',{class:'pp-drop'});
+  const searchWrap = el('div',{class:'pp-search-wrap'});
+  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search or type to add…'});
+  searchWrap.appendChild(searchInput);
+  const list = el('div',{class:'pp-list'});
+  drop.appendChild(searchWrap);
+  drop.appendChild(list);
+
+  function setVal(val){
+    r.postalProduct = val || null;
+    trigger.textContent = val || '— select —';
+    if(val) trigger.classList.remove('empty'); else trigger.classList.add('empty');
+    trigger.appendChild(el('span',{class:'pp-trigger-ic', html:icon('chevron-down')}));
+    drop.classList.remove('open');
+    trigger.classList.remove('open');
+  }
+
+  function buildList(q){
+    list.innerHTML = '';
+    const lq = q.trim().toLowerCase();
+    const filtered = products.filter(p => !lq || String(p.id).includes(lq) || p.name.toLowerCase().includes(lq));
+
+    // clear option
+    const clearOpt = el('button',{class:'pp-opt'+(r.postalProduct===null?' selected':''), type:'button'});
+    clearOpt.textContent = '— none —';
+    clearOpt.addEventListener('click', ()=> setVal(null));
+    list.appendChild(clearOpt);
+
+    if(filtered.length === 0 && products.length > 0){
+      list.appendChild(el('div',{class:'pp-empty'}, 'No matches'));
+    }
+    filtered.forEach(p => {
+      const label = p.id+' - '+p.name;
+      const opt = el('button',{class:'pp-opt'+(r.postalProduct===label?' selected':''), type:'button'});
+      opt.textContent = label; opt.title = label;
+      opt.addEventListener('click',()=> setVal(label));
+      list.appendChild(opt);
+    });
+
+    // "add custom" — shown when user typed something or no catalogue exists
+    const qTrimmed = q.trim();
+    if(qTrimmed){
+      const addOpt = el('button',{class:'pp-opt pp-add', type:'button'});
+      addOpt.innerHTML = icon('plus')+' Add "'+qTrimmed.replace(/</g,'&lt;')+'" as custom';
+      addOpt.addEventListener('click',()=> setVal(qTrimmed));
+      list.appendChild(addOpt);
+    } else if(products.length === 0){
+      const addOpt = el('button',{class:'pp-opt pp-add', type:'button'});
+      addOpt.innerHTML = icon('plus')+' Type above to add a custom product';
+      addOpt.disabled = true;
+      list.appendChild(addOpt);
+    }
+  }
+
+  searchInput.addEventListener('input',()=> buildList(searchInput.value));
+
+  trigger.addEventListener('click', e=>{
+    e.stopPropagation();
+    const isOpen = drop.classList.contains('open');
+    document.querySelectorAll('.pp-drop.open').forEach(d=>d.classList.remove('open'));
+    document.querySelectorAll('.pp-trigger.open').forEach(t=>t.classList.remove('open'));
+    if(!isOpen){
+      drop.classList.add('open'); trigger.classList.add('open');
+      searchInput.value = ''; buildList('');
+      setTimeout(()=>searchInput.focus(), 30);
+    }
+  });
+
+  document.addEventListener('click', ()=>{
+    if(!wrap.contains(document.activeElement) && !wrap.matches(':hover')){
+      drop.classList.remove('open'); trigger.classList.remove('open');
+    }
+  });
+
+  buildList('');
+  wrap.appendChild(trigger); wrap.appendChild(drop);
+  return wrap;
 }
 
 const CARRIER_CATALOG = [
@@ -3413,14 +3543,12 @@ function eRow(r){
   carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
   tr.appendChild(carrierCell);
 
-  // Postal Product (last column) — legacy field, filtered by country × carrier
-  const ppCell = el('td',{});
-  const ppProducts = postalProductsFor(r.code, r.carrier);
-  if(unavailable || !r.carrier || !ppProducts.length){
-    ppCell.appendChild(el('span',{class:'cell-dim'}, ppProducts.length === 0 && r.carrier ? 'None available' : '—'));
+  // Postal Product (last column) — legacy field, searchable combobox with custom add
+  const ppCell = el('td',{class:'pp-td'});
+  if(unavailable || !r.carrier){
+    ppCell.appendChild(el('span',{class:'cell-dim'}, '—'));
   } else {
-    const ppOpts = [{value:'',text:'— select —'}, ...ppProducts.map(p=>({value:String(p.id), text:p.id+' - '+p.name}))];
-    ppCell.appendChild(eSelect(r.postalProduct || '', ppOpts, v=>{ r.postalProduct = v || null; rerenderE(); }));
+    ppCell.appendChild(ppCombobox(r));
   }
   tr.appendChild(ppCell);
 
