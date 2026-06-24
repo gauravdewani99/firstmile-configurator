@@ -1706,6 +1706,9 @@ function icon(name){
     building: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="6" x2="9" y2="6.01"/><line x1="15" y1="6" x2="15" y2="6.01"/><line x1="9" y1="10" x2="9" y2="10.01"/><line x1="15" y1="10" x2="15" y2="10.01"/><line x1="9" y1="14" x2="9" y2="14.01"/><line x1="15" y1="14" x2="15" y2="14.01"/><path d="M9 22v-4h6v4"/></svg>',
     partners: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
     recycle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 19H4.8a2 2 0 0 1-1.7-3l1.3-2.2"/><path d="M9.4 5.5l1.1-1.9a2 2 0 0 1 3.4 0l1.4 2.4"/><path d="M14.5 17.5h3.7a2 2 0 0 0 1.7-3l-1.1-1.9"/><polyline points="7.5 14.7 4.3 13.8 3.4 17"/><polyline points="9.7 5.2 9.4 8.6 12.8 8.4"/><polyline points="16.6 17.9 19.8 17 18.9 13.8"/></svg>',
+    cart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+    tool: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
     // person / client (for composite icon)
     client: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
     // actions / misc
@@ -1724,7 +1727,15 @@ function icon(name){
 /* service / label icon lookups (purpose-driven, minimal) */
 function serviceIcon(s){ return s==='Drop-off' ? icon('dropoff') : s==='Pickup' ? icon('pickup') : s==='Self-post' ? icon('selfpost') : ''; }
 function labelIcon(l){ return l==='Printed label' ? icon('printed') : icon('paperless'); }
-function partnerIcon(p){ return /recycl/i.test(p) ? icon('recycle') : icon('partners'); }
+function partnerIcon(p){
+  if(/recycl/i.test(p))    return icon('recycle');
+  if(/liquidat/i.test(p))  return icon('warehouse');
+  if(/recomm/i.test(p))    return icon('cart');
+  if(/repair/i.test(p))    return icon('tool');
+  if(/donat/i.test(p))     return icon('heart');
+  return icon('partners');
+}
+function categoryIcon(cat){ return partnerIcon(cat); }
 
 function allLanesConfigured(){
   return Object.values(state.lanes).every(l => l.carrier && l.service && l.routing && (l.routing === 'SaaS' || l.accountNumber.trim()));
@@ -2642,13 +2653,14 @@ function dCardDestination(){
     body.appendChild(dAddressForm());
   }
 
-  // DTP branch — step 1: category, step 2: partner
+  // DTP branch — step 1: category (vertical with icon), step 2: partner
   if(prefState.destination === 'DTP'){
     body.appendChild(el('div',{class:'q-mini-label'}, 'Partner category'));
     const catList = el('div',{class:'opt-list'});
     DTP_CATEGORIES.forEach(cat => {
-      catList.appendChild(el('button',{class:'opt'+(prefState.dtpCategory===cat?' active':''), onclick:()=>{ prefState.dtpCategory=cat; prefState.dtpPartner=null; rerenderD(); }},
+      catList.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpCategory===cat?' active':''), onclick:()=>{ prefState.dtpCategory=cat; prefState.dtpPartner=null; rerenderD(); }},
         el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-ic-badge', html:categoryIcon(cat)}),
         el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, cat))
       ));
     });
@@ -2657,8 +2669,9 @@ function dCardDestination(){
       body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
       const plist = el('div',{class:'opt-list'});
       (DTP_PARTNER_CATEGORIES[prefState.dtpCategory]||[]).forEach(p => {
-        plist.appendChild(el('button',{class:'opt'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
+        plist.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
           el('span',{class:'opt-radio'}),
+          el('span',{class:'opt-ic-badge', html:icon('partners')}),
           el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
         ));
       });
@@ -3389,14 +3402,14 @@ function eCardDestination(locked){
     body.appendChild(eAddressManager());
   }
 
-  // DTP → step 1: category, step 2: partner
+  // DTP → step 1: category (vertical with icon), step 2: partner
   if(tabState.destination === 'DTP'){
     body.appendChild(el('div',{class:'q-mini-label'}, 'Partner category'));
     const catList = el('div',{class:'opt-list'});
     DTP_CATEGORIES.forEach(cat => {
       catList.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpCategory===cat?' active':''), onclick:()=>{ tabState.dtpCategory=cat; tabState.dtpPartner=null; rerenderE(); }},
         el('span',{class:'opt-radio'}),
-        el('span',{class:'opt-ic-badge', html:partnerIcon(cat)}),
+        el('span',{class:'opt-ic-badge', html:categoryIcon(cat)}),
         el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, cat))
       ));
     });
@@ -3407,7 +3420,7 @@ function eCardDestination(locked){
       (DTP_PARTNER_CATEGORIES[tabState.dtpCategory]||[]).forEach(p => {
         plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
           el('span',{class:'opt-radio'}),
-          el('span',{class:'opt-ic-badge', html:partnerIcon(p)}),
+          el('span',{class:'opt-ic-badge', html:icon('partners')}),
           el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
         ));
       });
