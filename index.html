@@ -3581,18 +3581,17 @@ function buildRuleInlineForm(draft, onSave, onCancel){
   ));
 
   // Country
-  form.appendChild(ruleField('Country',buildRuleCountrySelect(draft, form)));
-
-  // Carrier & Service
-  form.appendChild(ruleField('Carrier',buildRuleCarrierPicker(draft)));
-
-  // Destination
+  // Country + Carrier + Destination on one row
   const destSel=el('select');
   destSel.appendChild(el('option',{value:''},'Select destination'));
   [['DTW','ReBound Warehouse (DTW)'],['DTR','Client Facility / Warehouse (DTR)'],['DTP','ReBound Partners (DTP)']].forEach(([v,n])=>
     destSel.appendChild(el('option',{value:v,selected:draft.destination===v},n)));
   destSel.addEventListener('change',e=>draft.destination=e.target.value);
-  form.appendChild(ruleField('Destination',destSel));
+  form.appendChild(el('div',{style:'display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px'},
+    ruleField('Country',buildRuleCountrySelect(draft, form)),
+    ruleField('Carrier',buildRuleCarrierPicker(draft)),
+    ruleField('Destination',destSel)
+  ));
 
   // Actions
   const actions=el('div',{style:'display:flex;gap:8px;justify-content:flex-end;margin-top:4px'});
