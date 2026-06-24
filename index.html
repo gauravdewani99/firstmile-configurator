@@ -601,6 +601,10 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .dtp-pill:hover{border-color:var(--brand-2);color:var(--brand)}
 .dtp-pill.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
 .opt-empty{font-size:12.5px;color:var(--muted);padding:10px 0;font-style:italic}
+.opt-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.opt-tag{font-size:10.5px;font-weight:600;padding:1px 7px;border-radius:10px;background:var(--border-soft);color:var(--muted);letter-spacing:.2px}
+.opt-tag.region{background:#EFF6FF;color:#2563EB}
+.opt-tag.spec{background:#F0FDF4;color:#16A34A}
 .opt-ic.active .opt-ic-badge{background:#fff}
 
 /* address manager */
@@ -1312,6 +1316,8 @@ function dtpPartnersFor(cat, specs, regions){
     (!regions||!regions.length || regions.includes(d.region))
   ).map(d=>d.partner))];
 }
+
+function dtpEntriesFor(cat){ return DTP_PARTNER_DATA.filter(d=>d.category===cat); }
 
 /* backwards-compat: flat list of unique partner names per category */
 const DTP_PARTNER_CATEGORIES = Object.fromEntries(DTP_CATEGORIES.map(cat=>[cat, dtpPartnersFor(cat,null,null)]));
@@ -2731,14 +2737,18 @@ function dCardDestination(){
     });
     body.appendChild(catList);
     if(prefState.dtpCategory){
-      const partners = dtpPartnersFor(prefState.dtpCategory, [], []);
+      const entries = dtpEntriesFor(prefState.dtpCategory);
       body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
       const plist = el('div',{class:'opt-list'});
-      partners.forEach(p => {
-        plist.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
+      entries.forEach(e => {
+        const key = e.partner+'|'+e.region+'|'+(e.spec||'');
+        const tags = el('div',{class:'opt-tags'});
+        tags.appendChild(el('span',{class:'opt-tag region'}, e.region));
+        if(e.spec) tags.appendChild(el('span',{class:'opt-tag spec'}, e.spec));
+        plist.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpPartner===key?' active':''), onclick:()=>{ prefState.dtpPartner=key; rerenderD(); }},
           el('span',{class:'opt-radio'}),
           el('span',{class:'opt-ic-badge', html:icon('partners')}),
-          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, e.partner), tags)
         ));
       });
       body.appendChild(plist);
@@ -3481,14 +3491,18 @@ function eCardDestination(locked){
     });
     body.appendChild(catList);
     if(tabState.dtpCategory){
-      const partners = dtpPartnersFor(tabState.dtpCategory, [], []);
+      const entries = dtpEntriesFor(tabState.dtpCategory);
       body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
       const plist = el('div',{class:'opt-list'});
-      partners.forEach(p => {
-        plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
+      entries.forEach(e => {
+        const key = e.partner+'|'+e.region+'|'+(e.spec||'');
+        const tags = el('div',{class:'opt-tags'});
+        tags.appendChild(el('span',{class:'opt-tag region'}, e.region));
+        if(e.spec) tags.appendChild(el('span',{class:'opt-tag spec'}, e.spec));
+        plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===key?' active':''), onclick:()=>{ tabState.dtpPartner=key; rerenderE(); }},
           el('span',{class:'opt-radio'}),
           el('span',{class:'opt-ic-badge', html:icon('partners')}),
-          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, e.partner), tags)
         ));
       });
       body.appendChild(plist);
