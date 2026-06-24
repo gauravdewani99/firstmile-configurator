@@ -777,13 +777,9 @@ tr.lane-row.unavail:hover{background:transparent}
 .rule-del{margin-left:auto;flex-shrink:0;padding:6px;border:none;background:none;cursor:pointer;color:var(--muted);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:color .12s,background .12s}
 .rule-del:hover{color:var(--red);background:#FEF2F2}
 .rule-del svg{width:14px;height:14px}
-/* rule modal */
-.rule-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:flex;align-items:flex-start;justify-content:flex-end}
-.rule-modal{width:520px;max-width:100vw;height:100vh;overflow-y:auto;background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.12);display:flex;flex-direction:column}
-.rule-modal-head{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;position:sticky;top:0;background:#fff;z-index:1}
-.rule-modal-title{font-size:16px;font-weight:700;color:var(--text);flex:1}
-.rule-modal-body{padding:24px;display:flex;flex-direction:column;gap:18px;flex:1}
-.rule-modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;position:sticky;bottom:0;background:#fff}
+/* rule inline form */
+.rule-inline-form{border:1.5px dashed var(--border);border-radius:12px;padding:16px;background:#FAFBFC;display:flex;flex-direction:column;gap:12px;margin-bottom:4px}
+.rule-inline-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-bottom:4px}
 .rule-field{display:flex;flex-direction:column;gap:6px}
 .rule-field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
 .rule-field input,.rule-field select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13.5px;color:var(--text);background:#fff;outline:none;transition:border-color .14s}
@@ -3454,234 +3450,228 @@ function eNav(){
 
 /* ─── Routing Rules ─── */
 let _ruleSeq = 0;
+let _ruleFormOpen = false;
+let _ruleEditId = null;
+
+function ruleField(label, input){
+  return el('div',{class:'rule-field'}, el('label',{},label), input);
+}
+
+function buildRuleCountrySelect(draft, containerForClose){
+  const wrapper = el('div',{class:'rule-multisel-wrap'});
+  const trigger = el('div',{class:'rule-multisel-trigger'});
+  const dropdown = el('div',{class:'rule-multisel-dropdown',style:'display:none'});
+  const searchInp = el('input',{type:'text',class:'rule-multisel-search',placeholder:'Search countries…'});
+
+  const updateTrigger = ()=>{
+    trigger.innerHTML='';
+    if(!draft.countries.length){
+      trigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries'));
+    } else {
+      draft.countries.slice(0,4).forEach(code=>{
+        const cc=COUNTRIES.find(x=>x.code===code);
+        trigger.appendChild(el('span',{class:'rule-cs-tag'},(cc&&cc.flag?cc.flag+' ':'')+code));
+      });
+      if(draft.countries.length>4) trigger.appendChild(el('span',{class:'rule-cs-tag more'},'+' +(draft.countries.length-4)));
+    }
+    trigger.appendChild(el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'}));
+  };
+  updateTrigger();
+
+  const renderList=(filter)=>{
+    dropdown.innerHTML='';
+    dropdown.appendChild(searchInp);
+    const allBtn=el('div',{class:'rule-multisel-opt'+(draft.countries.length===0?' sel':'')});
+    allBtn.appendChild(el('span',{class:'rule-multisel-check'},draft.countries.length===0?'✓':''));
+    allBtn.appendChild(el('span',{},'All countries'));
+    allBtn.onclick=()=>{ draft.countries=[]; renderList(searchInp.value); updateTrigger(); };
+    dropdown.appendChild(allBtn);
+    COUNTRIES.filter(c=>!filter||c.code.toLowerCase().includes(filter.toLowerCase())||(c.name&&c.name.toLowerCase().includes(filter.toLowerCase()))).forEach(c=>{
+      const on=draft.countries.includes(c.code);
+      const opt=el('div',{class:'rule-multisel-opt'+(on?' sel':'')});
+      opt.appendChild(el('span',{class:'rule-multisel-check'},on?'✓':''));
+      opt.appendChild(el('span',{},(c.flag?c.flag+' ':'')+c.code+(c.name?' — '+c.name:'')));
+      opt.onclick=()=>{ if(draft.countries.includes(c.code)) draft.countries=draft.countries.filter(x=>x!==c.code); else draft.countries.push(c.code); renderList(searchInp.value); updateTrigger(); };
+      dropdown.appendChild(opt);
+    });
+  };
+  renderList('');
+  searchInp.oninput=e=>renderList(e.target.value);
+
+  let open=false;
+  trigger.onclick=(e)=>{ e.stopPropagation(); open=!open; dropdown.style.display=open?'block':'none'; if(open) setTimeout(()=>searchInp.focus(),50); };
+  document.addEventListener('click',function handler(){ open=false; dropdown.style.display='none'; containerForClose&&containerForClose.removeEventListener&&null; });
+  wrapper.addEventListener('click',e=>e.stopPropagation());
+  wrapper.appendChild(trigger);
+  wrapper.appendChild(dropdown);
+  return wrapper;
+}
+
+function buildRuleCarrierPicker(draft){
+  const wrap=el('div',{class:'rule-carrier-wrap'});
+  const addedList=el('div',{class:'rule-cs-list'});
+
+  const redrawAdded=()=>{
+    addedList.innerHTML='';
+    draft.carrierServices.forEach((cs,i)=>{
+      const cr=ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
+      addedList.appendChild(el('div',{class:'rule-cs-pill'},
+        el('span',{},(cr?cr.name:cs.carrierId)+' — '+cs.service),
+        el('button',{class:'rule-cs-rm',onclick:()=>{ draft.carrierServices.splice(i,1); redrawAdded(); }},'×')
+      ));
+    });
+  };
+  redrawAdded();
+
+  const carrierSel=el('select',{class:'rule-carrier-sel'});
+  carrierSel.appendChild(el('option',{value:''},'Select carrier…'));
+  ROUTING_CARRIERS.forEach(cr=>carrierSel.appendChild(el('option',{value:cr.id},cr.name+' ('+cr.countries+')')));
+
+  const svcSel=el('select',{class:'rule-carrier-sel'});
+  svcSel.appendChild(el('option',{value:''},'Select service…'));
+
+  carrierSel.addEventListener('change',()=>{
+    svcSel.innerHTML='';
+    svcSel.appendChild(el('option',{value:''},'Select service…'));
+    const cr=ROUTING_CARRIERS.find(x=>x.id===carrierSel.value);
+    if(cr) cr.services.forEach(s=>svcSel.appendChild(el('option',{value:s},s)));
+  });
+
+  const addBtn=el('button',{class:'rule-cs-add-btn',type:'button',onclick:()=>{
+    if(!carrierSel.value||!svcSel.value) return;
+    if(!draft.carrierServices.some(cs=>cs.carrierId===carrierSel.value&&cs.service===svcSel.value))
+      draft.carrierServices.push({carrierId:carrierSel.value,service:svcSel.value});
+    carrierSel.value=''; svcSel.innerHTML=''; svcSel.appendChild(el('option',{value:''},'Select service…'));
+    redrawAdded();
+  }},'+ Add');
+
+  const row=el('div',{class:'rule-carrier-row'});
+  row.appendChild(carrierSel); row.appendChild(svcSel); row.appendChild(addBtn);
+  wrap.appendChild(row);
+  wrap.appendChild(addedList);
+  return wrap;
+}
+
+function buildRuleInlineForm(draft, onSave, onCancel){
+  const form=el('div',{class:'rule-inline-form'});
+  form.appendChild(el('div',{class:'rule-inline-title'}, _ruleEditId!=null?'Edit rule':'New rule'));
+
+  // Name
+  form.appendChild(ruleField('Rule Name *',
+    el('input',{type:'text',placeholder:'e.g. High Value UK Returns',value:draft.name,oninput:e=>draft.name=e.target.value})
+  ));
+
+  // Category + Reason
+  const catSel=el('select');
+  catSel.appendChild(el('option',{value:''},'Any'));
+  ROUTING_PRODUCT_CATEGORIES.forEach(c=>catSel.appendChild(el('option',{value:c,selected:draft.productCategory===c},c)));
+  catSel.addEventListener('change',e=>draft.productCategory=e.target.value);
+  const rrSel=el('select');
+  rrSel.appendChild(el('option',{value:''},'Any'));
+  ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r,selected:draft.returnReason===r},r)));
+  rrSel.addEventListener('change',e=>draft.returnReason=e.target.value);
+  form.appendChild(el('div',{class:'rule-field-row'},ruleField('Product Category',catSel),ruleField('Return Reason',rrSel)));
+
+  // SKU + EAN
+  form.appendChild(el('div',{class:'rule-field-row'},
+    ruleField('SKU',el('input',{type:'text',placeholder:'SKU-12345',value:draft.sku,oninput:e=>draft.sku=e.target.value})),
+    ruleField('EAN',el('input',{type:'text',placeholder:'1234567890123',value:draft.ean,oninput:e=>draft.ean=e.target.value}))
+  ));
+
+  // Value Min/Max
+  form.appendChild(el('div',{class:'rule-field-row'},
+    ruleField('Item Value Min (€)',el('input',{type:'number',placeholder:'0',value:draft.minValue,oninput:e=>draft.minValue=e.target.value})),
+    ruleField('Item Value Max (€)',el('input',{type:'number',placeholder:'500',value:draft.maxValue,oninput:e=>draft.maxValue=e.target.value}))
+  ));
+
+  // Country
+  form.appendChild(ruleField('Country',buildRuleCountrySelect(draft, form)));
+
+  // Carrier & Service
+  form.appendChild(ruleField('Carrier & Service',buildRuleCarrierPicker(draft)));
+
+  // Destination
+  const destSel=el('select');
+  destSel.appendChild(el('option',{value:''},'Select destination'));
+  [['DTW','ReBound Warehouse (DTW)'],['DTR','Client Facility / Warehouse (DTR)'],['DTP','ReBound Partners (DTP)']].forEach(([v,n])=>
+    destSel.appendChild(el('option',{value:v,selected:draft.destination===v},n)));
+  destSel.addEventListener('change',e=>draft.destination=e.target.value);
+  form.appendChild(ruleField('Destination',destSel));
+
+  // Actions
+  const actions=el('div',{style:'display:flex;gap:8px;justify-content:flex-end;margin-top:4px'});
+  actions.appendChild(el('button',{class:'rule-cancel-btn',onclick:onCancel},'Cancel'));
+  actions.appendChild(el('button',{class:'rule-save-btn',style:'flex:unset;padding:10px 20px',onclick:()=>{
+    if(!draft.name.trim()){ alert('Please enter a rule name.'); return; }
+    onSave(draft);
+  }},'Save Rule'));
+  form.appendChild(actions);
+  return form;
+}
 
 function eCardRules(){
-  const card = el('div',{class:'q-card answered'});
+  const card=el('div',{class:'q-card answered'});
   card.appendChild(el('div',{class:'q-card-head'},
-    el('div',{class:'q-num'}, el('span',{html:icon('flag')})),
-    el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Custom Routing Rules'),
-      el('div',{class:'q-subtitle'}, 'Override default routing for specific products, countries, or conditions'))
+    el('div',{class:'q-num'},el('span',{html:icon('flag')})),
+    el('div',{class:'q-titlewrap'},
+      el('div',{class:'q-title'},'Custom Routing Rules'),
+      el('div',{class:'q-subtitle'},'Override default routing for specific products, countries, or conditions')
+    )
   ));
-  const body = el('div',{class:'q-body'});
+  const body=el('div',{class:'q-body'});
 
+  // Existing rules list
   if(tabState.routingRules.length){
-    const list = el('div',{class:'rule-list'});
-    tabState.routingRules.forEach(rule => {
-      const tags = el('div',{class:'rule-card-tags'});
-      if(rule.productCategory) tags.appendChild(el('span',{class:'rule-card-tag'}, rule.productCategory));
-      if(rule.returnReason)    tags.appendChild(el('span',{class:'rule-card-tag'}, rule.returnReason));
-      if(rule.countries && rule.countries.length) rule.countries.slice(0,3).forEach(c => tags.appendChild(el('span',{class:'rule-card-tag country'}, c)));
-      if(rule.countries && rule.countries.length > 3) tags.appendChild(el('span',{class:'rule-card-tag country'}, '+'+( rule.countries.length-3)+' more'));
-      if(rule.carrierServices && rule.carrierServices.length) rule.carrierServices.forEach(cs => tags.appendChild(el('span',{class:'rule-card-tag carrier'}, cs.carrierId+' · '+cs.service)));
-      if(rule.destination) tags.appendChild(el('span',{class:'rule-card-tag dest'}, rule.destination));
+    const list=el('div',{class:'rule-list'});
+    tabState.routingRules.forEach(rule=>{
+      const tags=el('div',{class:'rule-card-tags'});
+      if(rule.productCategory) tags.appendChild(el('span',{class:'rule-card-tag'},rule.productCategory));
+      if(rule.returnReason)    tags.appendChild(el('span',{class:'rule-card-tag'},rule.returnReason));
+      if(rule.countries&&rule.countries.length) rule.countries.slice(0,3).forEach(c=>tags.appendChild(el('span',{class:'rule-card-tag country'},c)));
+      if(rule.countries&&rule.countries.length>3) tags.appendChild(el('span',{class:'rule-card-tag country'},'+' +(rule.countries.length-3)+' more'));
+      if(rule.carrierServices&&rule.carrierServices.length) rule.carrierServices.forEach(cs=>{
+        const cr=ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
+        tags.appendChild(el('span',{class:'rule-card-tag carrier'},(cr?cr.name:cs.carrierId)+' · '+cs.service));
+      });
+      if(rule.destination) tags.appendChild(el('span',{class:'rule-card-tag dest'},rule.destination));
       list.appendChild(el('div',{class:'rule-card'},
         el('div',{class:'rule-card-body'},
-          el('div',{class:'rule-card-name'}, rule.name || 'Unnamed Rule'),
+          el('div',{class:'rule-card-name'},rule.name||'Unnamed Rule'),
           tags
         ),
-        el('button',{class:'rule-del', title:'Delete rule', html:icon('trash'), onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})
+        el('button',{class:'rule-del',title:'Delete rule',html:icon('trash'),onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})
       ));
     });
     body.appendChild(list);
   }
 
-  body.appendChild(el('button',{class:'rule-card-btn', onclick:()=>openRuleModal(null)},
-    el('span',{html:icon('plus')}), 'Add Routing Rule'
-  ));
+  // Inline form or Add button
+  if(_ruleFormOpen){
+    const existing = _ruleEditId!=null ? tabState.routingRules.find(r=>r.id===_ruleEditId) : null;
+    const draft = existing
+      ? {...existing, countries:[...(existing.countries||[])], carrierServices:[...(existing.carrierServices||[])]}
+      : { id:++_ruleSeq, name:'', productCategory:'', returnReason:'', sku:'', ean:'', minValue:'', maxValue:'', countries:[], carrierServices:[], destination:'' };
+
+    body.appendChild(buildRuleInlineForm(draft,
+      (saved)=>{
+        if(_ruleEditId!=null){
+          const idx=tabState.routingRules.findIndex(r=>r.id===_ruleEditId);
+          if(idx>=0) tabState.routingRules[idx]=saved; else tabState.routingRules.push(saved);
+        } else {
+          tabState.routingRules.push(saved);
+        }
+        _ruleFormOpen=false; _ruleEditId=null; rerenderE();
+      },
+      ()=>{ _ruleFormOpen=false; _ruleEditId=null; rerenderE(); }
+    ));
+  } else {
+    body.appendChild(el('button',{class:'rule-card-btn',onclick:()=>{ _ruleFormOpen=true; _ruleEditId=null; rerenderE(); }},
+      el('span',{html:icon('plus')}), 'Add Routing Rule'
+    ));
+  }
 
   card.appendChild(body);
   return card;
-}
-
-function openRuleModal(existingRule){
-  const draft = existingRule ? {...existingRule, countries:[...(existingRule.countries||[])], carrierServices:[...(existingRule.carrierServices||[])]} : {
-    id: ++_ruleSeq,
-    name:'', productCategory:'', returnReason:'', sku:'', ean:'',
-    minValue:'', maxValue:'', countries:[], carrierServices:[], destination:''
-  };
-
-  const overlay = el('div',{class:'rule-modal-overlay'});
-  const modal = el('div',{class:'rule-modal'});
-
-  // header
-  modal.appendChild(el('div',{class:'rule-modal-head'},
-    el('div',{class:'rule-modal-title'}, existingRule ? 'Edit Rule' : 'New Routing Rule'),
-    el('button',{class:'addr-rm', html:icon('close'), onclick:()=>overlay.remove()})
-  ));
-
-  const body = el('div',{class:'rule-modal-body'});
-
-  // Rule Name
-  body.appendChild(ruleField('Rule Name *',
-    el('input',{type:'text', placeholder:'e.g. High Value UK Returns', value:draft.name, oninput:e=>draft.name=e.target.value})
-  ));
-
-  // Product Category + Return Reason
-  const catSel = el('select');
-  catSel.appendChild(el('option',{value:''},'Any'));
-  ROUTING_PRODUCT_CATEGORIES.forEach(c=>catSel.appendChild(el('option',{value:c,selected:draft.productCategory===c},c)));
-  catSel.addEventListener('change',e=>draft.productCategory=e.target.value);
-  const rrSel = el('select');
-  rrSel.appendChild(el('option',{value:''},'Any'));
-  ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r,selected:draft.returnReason===r},r)));
-  rrSel.addEventListener('change',e=>draft.returnReason=e.target.value);
-  body.appendChild(el('div',{class:'rule-field-row'},
-    ruleField('Product Category', catSel),
-    ruleField('Return Reason', rrSel)
-  ));
-
-  // SKU + EAN
-  body.appendChild(el('div',{class:'rule-field-row'},
-    ruleField('SKU', el('input',{type:'text',placeholder:'SKU-12345',value:draft.sku,oninput:e=>draft.sku=e.target.value})),
-    ruleField('EAN', el('input',{type:'text',placeholder:'1234567890123',value:draft.ean,oninput:e=>draft.ean=e.target.value}))
-  ));
-
-  // Item Value Min/Max
-  body.appendChild(el('div',{class:'rule-field-row'},
-    ruleField('Item Value Min (€)', el('input',{type:'number',placeholder:'0',value:draft.minValue,oninput:e=>draft.minValue=e.target.value})),
-    ruleField('Item Value Max (€)', el('input',{type:'number',placeholder:'500',value:draft.maxValue,oninput:e=>draft.maxValue=e.target.value}))
-  ));
-
-  // Country multi-select dropdown
-  body.appendChild(ruleField('Country', (()=>{
-    const wrapper = el('div',{class:'rule-multisel-wrap'});
-    const trigger = el('div',{class:'rule-multisel-trigger'});
-    const dropdown = el('div',{class:'rule-multisel-dropdown', style:'display:none'});
-    const searchInp = el('input',{type:'text',class:'rule-multisel-search',placeholder:'Search countries…'});
-
-    const updateTrigger = ()=>{
-      trigger.innerHTML = '';
-      if(!draft.countries.length){
-        trigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries'));
-      } else {
-        draft.countries.slice(0,4).forEach(code=>{
-          const cc = COUNTRIES.find(x=>x.code===code);
-          trigger.appendChild(el('span',{class:'rule-cs-tag'}, (cc&&cc.flag?cc.flag+' ':'')+code));
-        });
-        if(draft.countries.length>4) trigger.appendChild(el('span',{class:'rule-cs-tag more'},'+' +(draft.countries.length-4)));
-      }
-      trigger.appendChild(el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'}));
-    };
-    updateTrigger();
-
-    const renderList = (filter)=>{
-      dropdown.innerHTML = '';
-      dropdown.appendChild(searchInp);
-      const allBtn = el('div',{class:'rule-multisel-opt'+(draft.countries.length===0?' sel':'')});
-      allBtn.appendChild(el('span',{class:'rule-multisel-check'},draft.countries.length===0?'✓':''));
-      allBtn.appendChild(el('span',{},'All countries'));
-      allBtn.onclick=()=>{ draft.countries=[]; renderList(searchInp.value); updateTrigger(); };
-      dropdown.appendChild(allBtn);
-      const filtered = COUNTRIES.filter(c=>!filter||c.code.toLowerCase().includes(filter.toLowerCase())||(c.name&&c.name.toLowerCase().includes(filter.toLowerCase())));
-      filtered.forEach(c=>{
-        const on = draft.countries.includes(c.code);
-        const opt = el('div',{class:'rule-multisel-opt'+(on?' sel':'')});
-        opt.appendChild(el('span',{class:'rule-multisel-check'},on?'✓':''));
-        opt.appendChild(el('span',{},(c.flag?c.flag+' ':'')+c.code+(c.name?' — '+c.name:'')));
-        opt.onclick=()=>{
-          if(draft.countries.includes(c.code)) draft.countries=draft.countries.filter(x=>x!==c.code);
-          else draft.countries.push(c.code);
-          renderList(searchInp.value); updateTrigger();
-        };
-        dropdown.appendChild(opt);
-      });
-    };
-    renderList('');
-    searchInp.oninput=e=>renderList(e.target.value);
-
-    let open=false;
-    trigger.onclick=(e)=>{ e.stopPropagation(); open=!open; dropdown.style.display=open?'block':'none'; if(open) setTimeout(()=>searchInp.focus(),50); };
-    document.addEventListener('click',()=>{ open=false; dropdown.style.display='none'; },{capture:false,once:false});
-    overlay.addEventListener('click',(e)=>{ if(!wrapper.contains(e.target)){ open=false; dropdown.style.display='none'; } });
-
-    wrapper.appendChild(trigger);
-    wrapper.appendChild(dropdown);
-    return wrapper;
-  })()));
-
-  // Carrier & Service — two dropdowns + Add button
-  body.appendChild(ruleField('Carrier & Service', (()=>{
-    const wrap = el('div',{class:'rule-carrier-wrap'});
-    const addedList = el('div',{class:'rule-cs-list'});
-
-    const redrawAdded = ()=>{
-      addedList.innerHTML='';
-      draft.carrierServices.forEach((cs,i)=>{
-        const cr = ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
-        const tag = el('div',{class:'rule-cs-pill'},
-          el('span',{},(cr?cr.name:cs.carrierId)+' — '+cs.service),
-          el('button',{class:'rule-cs-rm',onclick:()=>{ draft.carrierServices.splice(i,1); redrawAdded(); }}, '×')
-        );
-        addedList.appendChild(tag);
-      });
-    };
-    redrawAdded();
-
-    // Carrier dropdown
-    const carrierSel = el('select',{class:'rule-carrier-sel'});
-    carrierSel.appendChild(el('option',{value:''},'Select carrier…'));
-    ROUTING_CARRIERS.forEach(cr=>carrierSel.appendChild(el('option',{value:cr.id},cr.name+' ('+cr.countries+')')));
-
-    // Service dropdown — updates when carrier changes
-    const svcSel = el('select',{class:'rule-carrier-sel'});
-    svcSel.appendChild(el('option',{value:''},'Select service…'));
-
-    carrierSel.addEventListener('change',()=>{
-      svcSel.innerHTML='';
-      svcSel.appendChild(el('option',{value:''},'Select service…'));
-      const cr = ROUTING_CARRIERS.find(x=>x.id===carrierSel.value);
-      if(cr) cr.services.forEach(s=>svcSel.appendChild(el('option',{value:s},s)));
-    });
-
-    const addBtn = el('button',{class:'rule-cs-add-btn', type:'button', onclick:()=>{
-      if(!carrierSel.value||!svcSel.value) return;
-      const already = draft.carrierServices.some(cs=>cs.carrierId===carrierSel.value&&cs.service===svcSel.value);
-      if(!already) draft.carrierServices.push({carrierId:carrierSel.value, service:svcSel.value});
-      carrierSel.value=''; svcSel.innerHTML=''; svcSel.appendChild(el('option',{value:''},'Select service…'));
-      redrawAdded();
-    }}, '+ Add');
-
-    const row = el('div',{class:'rule-carrier-row'});
-    row.appendChild(carrierSel);
-    row.appendChild(svcSel);
-    row.appendChild(addBtn);
-    wrap.appendChild(row);
-    wrap.appendChild(addedList);
-    return wrap;
-  })()));
-
-  // Destination
-  const destSel = el('select');
-  destSel.appendChild(el('option',{value:''},'Select destination'));
-  [['DTW','ReBound Warehouse (DTW)'],['DTR','Client Facility / Warehouse (DTR)'],['DTP','ReBound Partners (DTP)']].forEach(([v,n])=>
-    destSel.appendChild(el('option',{value:v,selected:draft.destination===v},n)));
-  destSel.addEventListener('change',e=>draft.destination=e.target.value);
-  body.appendChild(ruleField('Destination', destSel));
-
-  modal.appendChild(body);
-
-  // footer
-  const footer = el('div',{class:'rule-modal-footer'});
-  footer.appendChild(el('button',{class:'rule-cancel-btn',onclick:()=>overlay.remove()},'Cancel'));
-  footer.appendChild(el('button',{class:'rule-save-btn',onclick:()=>{
-    if(!draft.name.trim()){ alert('Please enter a rule name.'); return; }
-    if(existingRule){
-      const idx=tabState.routingRules.findIndex(r=>r.id===existingRule.id);
-      if(idx>=0) tabState.routingRules[idx]=draft;
-    } else {
-      tabState.routingRules.push(draft);
-    }
-    overlay.remove();
-    rerenderE();
-  }},'Save Rule'));
-  modal.appendChild(footer);
-
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-}
-
-function ruleField(label, input){
-  return el('div',{class:'rule-field'}, el('label',{},label), input);
 }
 
 function renderVariantE(root){
