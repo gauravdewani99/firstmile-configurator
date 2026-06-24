@@ -595,6 +595,11 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .cat-tile .cat-check{position:absolute;top:6px;right:6px;width:16px;height:16px;border-radius:50%;background:var(--brand);color:#fff;display:none;align-items:center;justify-content:center}
 .cat-tile.active .cat-check{display:flex}
 .cat-tile .cat-check svg{width:10px;height:10px;stroke-width:3}
+.dtp-filter-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:2px}
+.dtp-filter-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-bottom:4px}
+.dtp-pill{padding:5px 14px;border:1.5px solid var(--border);border-radius:999px;background:#fff;font:inherit;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:border-color .12s,background .12s,color .12s;white-space:nowrap}
+.dtp-pill:hover{border-color:var(--brand-2);color:var(--brand)}
+.dtp-pill.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
 .opt-ic.active .opt-ic-badge{background:#fff}
 
 /* address manager */
@@ -1255,15 +1260,54 @@ const PREF_COUNTRIES = PREF_REGIONS.flatMap(r => r.countries.map(c => ({...c, re
 const PREF_COUNTRY_BY_CODE = Object.fromEntries(PREF_COUNTRIES.map(c => [c.code, c]));
 const ERC_WAREHOUSE = 'DE_ASC_Nettetal';
 
-const DTP_PARTNER_CATEGORIES = {
-  'Recommerce':  ['Thrift+','Trove','Recurate','Faume','Yellow Octopus'],
-  'Liquidation': ['ReFlex'],
-  'Repair':      ['United Repair Center','BootRepairCompany'],
-  'Donation':    ['Soles4Souls','Smartworks','Salvation Army','UDO'],
-  'Recycling':   ['Frankenhuis','Avena','ShredStation','FastFeetGrinded','ESO','EGN','CloseTheLoop','WasteCare'],
-};
-const DTP_CATEGORIES = Object.keys(DTP_PARTNER_CATEGORIES);
-/* legacy flat list kept for any code that still needs it */
+/* Structured partner data: category × spec × country/region → partner */
+const DTP_PARTNER_DATA = [
+  // Recommerce
+  {category:'Recommerce', spec:'High-value',    region:'UK', partner:'Thrift+'},
+  {category:'Recommerce', spec:'High-value',    region:'EU', partner:'Trove'},
+  {category:'Recommerce', spec:'High-value',    region:'US', partner:'Recurate'},
+  {category:'Recommerce', spec:'High-value',    region:'EU', partner:'Faume'},
+  {category:'Recommerce', spec:'Medium-value',  region:'UK', partner:'Yellow Octopus'},
+  {category:'Recommerce', spec:'Medium-value',  region:'EU', partner:'Yellow Octopus'},
+  // Liquidation
+  {category:'Liquidation', spec:null,           region:'US', partner:'ReFlex'},
+  // Repair
+  {category:'Repair', spec:'Apparel',           region:'UK', partner:'United Repair Center'},
+  {category:'Repair', spec:'Apparel',           region:'EU', partner:'United Repair Center'},
+  {category:'Repair', spec:'Shoes',             region:'UK', partner:'BootRepairCompany'},
+  {category:'Repair', spec:'Shoes',             region:'EU', partner:'BootRepairCompany'},
+  // Donation
+  {category:'Donation', spec:'Shoes',           region:'EU', partner:'Soles4Souls'},
+  {category:'Donation', spec:'Shoes',           region:'US', partner:'Soles4Souls'},
+  {category:'Donation', spec:'Shoes',           region:'UK', partner:'Soles4Souls'},
+  {category:'Donation', spec:'Shoes',           region:'CA', partner:'Soles4Souls'},
+  {category:'Donation', spec:'Apparel Women',   region:'UK', partner:'Smartworks'},
+  {category:'Donation', spec:'Apparel',         region:'EU', partner:'Salvation Army'},
+  {category:'Donation', spec:'Apparel',         region:'US', partner:'Salvation Army'},
+  {category:'Donation', spec:'Apparel',         region:'UK', partner:'Salvation Army'},
+  {category:'Donation', spec:'Apparel',         region:'CA', partner:'Salvation Army'},
+  {category:'Donation', spec:'Apparel',         region:'PL', partner:'UDO'},
+  // Recycling
+  {category:'Recycling', spec:'Apparel',        region:'EU', partner:'Frankenhuis'},
+  {category:'Recycling', spec:'Apparel',        region:'UK', partner:'Avena'},
+  {category:'Recycling', spec:'Apparel',        region:'UK', partner:'ShredStation'},
+  {category:'Recycling', spec:'Shoes',          region:'EU', partner:'FastFeetGrinded'},
+  {category:'Recycling', spec:'Shoes',          region:'EU', partner:'ESO'},
+  {category:'Recycling', spec:'Shoes',          region:'UK', partner:'ESO'},
+  {category:'Recycling', spec:'Other',          region:'EU', partner:'EGN'},
+  {category:'Recycling', spec:'Other',          region:'UK', partner:'ShredStation'},
+  {category:'Recycling', spec:'Toners',         region:'EU', partner:'CloseTheLoop'},
+  {category:'Recycling', spec:'Toners',         region:'UK', partner:'WasteCare'},
+];
+
+const DTP_CATEGORIES = ['Recommerce','Liquidation','Repair','Donation','Recycling'];
+
+function dtpSpecsFor(cat){ return [...new Set(DTP_PARTNER_DATA.filter(d=>d.category===cat).map(d=>d.spec).filter(Boolean))]; }
+function dtpRegionsFor(cat, spec){ return [...new Set(DTP_PARTNER_DATA.filter(d=>d.category===cat&&(!spec||d.spec===spec)).map(d=>d.region))]; }
+function dtpPartnersFor(cat, spec, region){ return [...new Set(DTP_PARTNER_DATA.filter(d=>d.category===cat&&(!spec||d.spec===spec)&&(!region||d.region===region)).map(d=>d.partner))]; }
+
+/* backwards-compat: flat list of unique partner names per category */
+const DTP_PARTNER_CATEGORIES = Object.fromEntries(DTP_CATEGORIES.map(cat=>[cat, dtpPartnersFor(cat,null,null)]));
 const DTP_PARTNERS = DTP_CATEGORIES;
 const CONTRACT_CARRIERS = ['DHL','PostNL','PostItalia','FedEx']; // dynamic list (Q3, client-owned)
 const RETURN_SERVICES = ['Drop-off','Pickup','Self-post'];
@@ -1543,7 +1587,7 @@ function initPrefs(){
     dtwType:null,            // 'local' | 'ERC'
     localWarehouses:{},      // code -> selected (for DTW local)
     dtrAddress:{ line1:'', line2:'', line3:'', city:'', postal:'', country:'' },
-    dtpCategory:null,
+    dtpCategory:null, dtpSpec:null, dtpRegion:null,
     dtpPartner:null,
     hasOwnContract:null,     // true (SaaS) | false (Managed)
     saasCarrier:null,
@@ -1574,7 +1618,7 @@ function initTabular(){
     destination:    null,   // Q3 — global default (DTW | DTR | DTP)
     dtwType:        null,   // 'local' | 'ERC'
     addresses:      [],     // [{id,line1,line2,line3,city,postal,countryCode}] — DTR
-    dtpCategory:    null,
+    dtpCategory:    null, dtpSpec:null, dtpRegion:null,
     dtpPartner:     null,
     groupBy:        'country', // 'country' | 'region'
     rows:           [],     // generated per country × service×label combo
@@ -2680,16 +2724,33 @@ function dCardDestination(){
     });
     body.appendChild(catList);
     if(prefState.dtpCategory){
-      body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
-      const plist = el('div',{class:'opt-list'});
-      (DTP_PARTNER_CATEGORIES[prefState.dtpCategory]||[]).forEach(p => {
-        plist.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
-          el('span',{class:'opt-radio'}),
-          el('span',{class:'opt-ic-badge', html:icon('partners')}),
-          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
-        ));
-      });
-      body.appendChild(plist);
+      const specs = dtpSpecsFor(prefState.dtpCategory);
+      if(specs.length){
+        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Specification'));
+        const specRow = el('div',{class:'dtp-filter-row'});
+        specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpSpec===s?' on':''), type:'button', onclick:()=>{ prefState.dtpSpec=s; prefState.dtpRegion=null; prefState.dtpPartner=null; rerenderD(); }}, s)));
+        body.appendChild(specRow);
+      }
+      const regions = dtpRegionsFor(prefState.dtpCategory, prefState.dtpSpec);
+      if(regions.length && (!specs.length || prefState.dtpSpec)){
+        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
+        const regRow = el('div',{class:'dtp-filter-row'});
+        regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(prefState.dtpRegion===r?' on':''), type:'button', onclick:()=>{ prefState.dtpRegion=r; prefState.dtpPartner=null; rerenderD(); }}, r)));
+        body.appendChild(regRow);
+      }
+      const partners = dtpPartnersFor(prefState.dtpCategory, prefState.dtpSpec, prefState.dtpRegion);
+      if(partners.length && (!specs.length || prefState.dtpSpec)){
+        body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+        const plist = el('div',{class:'opt-list'});
+        partners.forEach(p => {
+          plist.appendChild(el('button',{class:'opt opt-ic'+(prefState.dtpPartner===p?' active':''), onclick:()=>{ prefState.dtpPartner=p; rerenderD(); }},
+            el('span',{class:'opt-radio'}),
+            el('span',{class:'opt-ic-badge', html:icon('partners')}),
+            el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+          ));
+        });
+        body.appendChild(plist);
+      }
     }
   }
 
@@ -3429,16 +3490,33 @@ function eCardDestination(locked){
     });
     body.appendChild(catList);
     if(tabState.dtpCategory){
-      body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
-      const plist = el('div',{class:'opt-list'});
-      (DTP_PARTNER_CATEGORIES[tabState.dtpCategory]||[]).forEach(p => {
-        plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
-          el('span',{class:'opt-radio'}),
-          el('span',{class:'opt-ic-badge', html:icon('partners')}),
-          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
-        ));
-      });
-      body.appendChild(plist);
+      const specs = dtpSpecsFor(tabState.dtpCategory);
+      if(specs.length){
+        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Specification'));
+        const specRow = el('div',{class:'dtp-filter-row'});
+        specs.forEach(s => specRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpSpec===s?' on':''), type:'button', onclick:()=>{ tabState.dtpSpec=s; tabState.dtpRegion=null; tabState.dtpPartner=null; rerenderE(); }}, s)));
+        body.appendChild(specRow);
+      }
+      const regions = dtpRegionsFor(tabState.dtpCategory, tabState.dtpSpec);
+      if(regions.length && (!specs.length || tabState.dtpSpec)){
+        body.appendChild(el('div',{class:'dtp-filter-label'}, 'Country / Region'));
+        const regRow = el('div',{class:'dtp-filter-row'});
+        regions.forEach(r => regRow.appendChild(el('button',{class:'dtp-pill'+(tabState.dtpRegion===r?' on':''), type:'button', onclick:()=>{ tabState.dtpRegion=r; tabState.dtpPartner=null; rerenderE(); }}, r)));
+        body.appendChild(regRow);
+      }
+      const partners = dtpPartnersFor(tabState.dtpCategory, tabState.dtpSpec, tabState.dtpRegion);
+      if(partners.length && (!specs.length || tabState.dtpSpec)){
+        body.appendChild(el('div',{class:'q-mini-label'}, 'Select a partner'));
+        const plist = el('div',{class:'opt-list'});
+        partners.forEach(p => {
+          plist.appendChild(el('button',{class:'opt opt-ic'+(tabState.dtpPartner===p?' active':''), onclick:()=>{ tabState.dtpPartner=p; rerenderE(); }},
+            el('span',{class:'opt-radio'}),
+            el('span',{class:'opt-ic-badge', html:icon('partners')}),
+            el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p))
+          ));
+        });
+        body.appendChild(plist);
+      }
     }
   }
 
