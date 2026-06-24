@@ -790,15 +790,32 @@ tr.lane-row.unavail:hover{background:transparent}
 .rule-field input:focus,.rule-field select:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.1)}
 .rule-field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .rule-section-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);margin-bottom:2px}
-.carrier-grid{display:flex;flex-direction:column;gap:6px}
-.carrier-row{border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
-.carrier-row-head{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#FAFBFC;font-size:13px;font-weight:600;color:var(--text)}
-.carrier-row-services{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px 10px 36px;border-top:1px solid var(--border-soft)}
-.carrier-svc-chip{padding:4px 12px;border:1.5px solid var(--border);border-radius:999px;font:inherit;font-size:11.5px;font-weight:500;color:var(--muted);background:#fff;cursor:pointer;transition:border-color .12s,background .12s,color .12s}
-.carrier-svc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
-.country-multi{display:flex;flex-wrap:wrap;gap:5px;max-height:140px;overflow-y:auto;padding:8px;border:1.5px solid var(--border);border-radius:8px;background:#fff}
-.country-chip{padding:3px 10px;border:1.5px solid var(--border);border-radius:999px;font:inherit;font-size:11.5px;color:var(--muted);background:#fff;cursor:pointer;transition:border-color .12s,background .12s,color .12s}
-.country-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+/* country + carrier dropdowns in rule modal */
+.rule-multisel-wrap{position:relative;width:100%}
+.rule-multisel-trigger{display:flex;align-items:center;flex-wrap:wrap;gap:4px;min-height:40px;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:var(--text);transition:border-color .14s}
+.rule-multisel-trigger:hover{border-color:var(--brand-2)}
+.rule-multisel-placeholder{color:var(--muted);font-size:13px}
+.rule-multisel-arrow{margin-left:auto;color:var(--muted);display:flex;align-items:center}
+.rule-multisel-arrow svg{width:10px;height:6px}
+.rule-multisel-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:300;background:#fff;border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:220px;overflow-y:auto}
+.rule-multisel-search{width:100%;padding:9px 12px;border:none;border-bottom:1px solid var(--border);font:inherit;font-size:13px;outline:none;border-radius:10px 10px 0 0;background:#FAFBFC}
+.rule-multisel-opt{display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;font-size:13px;color:var(--text);transition:background .1s}
+.rule-multisel-opt:hover{background:var(--brand-soft)}
+.rule-multisel-opt.sel{color:var(--brand)}
+.rule-multisel-check{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--brand);font-weight:700}
+.rule-cs-tag{padding:2px 8px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-size:11px;font-weight:600}
+.rule-cs-tag.more{background:var(--border-soft);color:var(--muted)}
+/* carrier row in modal */
+.rule-carrier-wrap{display:flex;flex-direction:column;gap:8px}
+.rule-carrier-row{display:flex;gap:8px;align-items:center}
+.rule-carrier-sel{flex:1;padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13px;color:var(--text);background:#fff;outline:none;transition:border-color .14s;min-width:0}
+.rule-carrier-sel:focus{border-color:var(--brand-2)}
+.rule-cs-add-btn{padding:9px 14px;border:none;border-radius:8px;background:var(--brand);color:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .14s;flex-shrink:0}
+.rule-cs-add-btn:hover{background:var(--brand-2)}
+.rule-cs-list{display:flex;flex-wrap:wrap;gap:6px}
+.rule-cs-pill{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#F5F0FF;color:#7C3AED;font-size:11.5px;font-weight:600}
+.rule-cs-rm{border:none;background:none;color:#9CA3AF;cursor:pointer;font-size:14px;line-height:1;padding:0;margin-left:2px}
+.rule-cs-rm:hover{color:#EF4444}
 .rule-save-btn{flex:1;padding:11px;border:none;border-radius:8px;background:var(--brand);color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:background .14s}
 .rule-save-btn:hover{background:var(--brand-2)}
 .rule-cancel-btn{padding:11px 18px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:border-color .14s,color .14s}
@@ -1370,15 +1387,48 @@ const RETURN_SERVICES = ['Drop-off','Pickup','Self-post'];
 const RETURN_LABELS   = ['Printed label','Paperless / QR code'];
 
 const ROUTING_CARRIERS = [
-  { id:'DHL',        name:'DHL',            services:['Pickup','Drop-off'] },
-  { id:'PostNL',     name:'PostNL',         services:['Pickup','Drop-off'] },
-  { id:'DPD',        name:'DPD',            services:['Pickup','Drop-off'] },
-  { id:'Evri',       name:'Evri',           services:['Pickup','Drop-off'] },
-  { id:'InPost',     name:'InPost',         services:['Locker Drop-off'] },
-  { id:'PostItalia', name:'Poste Italiane', services:['Pickup','Drop-off'] },
-  { id:'UPS',        name:'UPS',            services:['Pickup','Drop-off'] },
-  { id:'GLS',        name:'GLS',            services:['Pickup','Drop-off'] },
-  { id:'Hermes',     name:'Hermes',         services:['Pickup','Drop-off'] },
+  { id:'RoyalMail',   name:'Royal Mail',           countries:'GB, GG, JE, IM', services:['Label drop-off','Paperless drop-off','Paperless pick-up'] },
+  { id:'DPD_UK',      name:'DPD UK',               countries:'GB',             services:['Label drop-off','Paperless drop-off','Box collection'] },
+  { id:'Evri',        name:'EVRi',                  countries:'GB',             services:['Label drop-off','Paperless drop-off'] },
+  { id:'InPost_UK',   name:'InPost UK',             countries:'GB',             services:['Paperless drop-off (locker/shop QR)'] },
+  { id:'Parcelforce', name:'Parcelforce',           countries:'GB',             services:['Drop-off','Pick-up'] },
+  { id:'ASDA',        name:'ASDA',                  countries:'GB',             services:['Paperless drop-off'] },
+  { id:'Yodel',       name:'Yodel / Collect+',      countries:'GB',             services:['Return 72h'] },
+  { id:'Colissimo',   name:'Colissimo (La Poste)',  countries:'FR, MC',         services:['Drop-off (label & RMA)'] },
+  { id:'MondialRelay',name:'Mondial Relay',         countries:'FR',             services:['Parcel drop-off'] },
+  { id:'Chronopost',  name:'Chronopost',            countries:'FR',             services:['Box collection'] },
+  { id:'RelaisColis', name:'Relais Colis',          countries:'FR',             services:['First mile'] },
+  { id:'DHL_DE',      name:'DHL DE',                countries:'DE',             services:['Paperless drop-off','Retoure'] },
+  { id:'Hermes_DE',   name:'Hermes DE',             countries:'DE',             services:['Label drop-off','Paperless drop-off'] },
+  { id:'PostNL',      name:'PostNL',                countries:'NL',             services:['Pakket','Paperless drop-off','Label drop-off'] },
+  { id:'DHL_Benelux', name:'DHL Benelux',           countries:'NL',             services:['Drop-off'] },
+  { id:'Bpost',       name:'Bpost',                 countries:'BE',             services:['Bpack Easy Retour','Paperless drop-off'] },
+  { id:'AustrianPost',name:'Austrian Post',         countries:'AT',             services:['Retourpaket','Paperless drop-off'] },
+  { id:'Correos',     name:'Correos',               countries:'ES, AD, IC',     services:['Logistica Inversa','Paperless returns'] },
+  { id:'Celeritas',   name:'Celeritas',             countries:'ES',             services:['Collection at home','PUDO return'] },
+  { id:'PostNord',    name:'PostNord',              countries:'DK, SE, FI',     services:['Retur pakke','MyPack Return','Drop-off','Paperless drop-off'] },
+  { id:'PosteItaliane',name:'Poste Italiane / SDA', countries:'IT',             services:['CronoReverse drop-off','Paperless drop-off','Pick-up'] },
+  { id:'CTT',         name:'CTT (Portugal Post)',   countries:'PT',             services:['Drop-off','Paperless drop-off'] },
+  { id:'SwissPost',   name:'Swiss Post',            countries:'CH, LI',         services:['GAS','Pick-up'] },
+  { id:'CzechPost',   name:'Czech Post',            countries:'CZ',             services:['Ordinary Parcel'] },
+  { id:'HungarianPost',name:'Hungarian Post',       countries:'HU',             services:['Inverz Csomag Plusz','Send-in Mass RMA'] },
+  { id:'AnPost',      name:'An Post',               countries:'IE',             services:['Fee-Paid'] },
+  { id:'Coll8',       name:'Coll8',                 countries:'IE',             services:['Paperless drop-off'] },
+  { id:'Bring',       name:'Bring',                 countries:'NO, SE, DK, FI', services:['International returns','Box collection','Pallet collection'] },
+  { id:'Posti',       name:'Posti (Suomen)',         countries:'FI',             services:['Customer Return Drop-off','Itella Economy','Box collection'] },
+  { id:'PolskaPost',  name:'Polska Post',           countries:'PL',             services:['Parcel48 Drop-off'] },
+  { id:'DHL_PL',      name:'DHL PL',                countries:'PL',             services:['Retoure','Box collection'] },
+  { id:'Express24',   name:'Express 24',            countries:'PL',             services:['Drop-off'] },
+  { id:'SlovenskaPost',name:'Slovenská Pošta',      countries:'SK',             services:['Parcel Post'] },
+  { id:'HellenicPost',name:'Hellenic Post',         countries:'GR',             services:['Free Parcel Post'] },
+  { id:'PostLux',     name:'Post Luxembourg',       countries:'LU',             services:['Reponse Payée'] },
+  { id:'UPS',         name:'UPS',                   countries:'EU-wide',        services:['Various return services','Box collection'] },
+  { id:'UPS_MI',      name:'UPS Mail Innovations',  countries:'US',             services:['Paperless drop-off','Label drop-off'] },
+  { id:'USPS',        name:'USPS',                  countries:'US',             services:['Ground label drop-off','Paperless drop-off'] },
+  { id:'HappyReturns',name:'Happy Returns (UPS)',   countries:'US',             services:['Return Bar drop-off'] },
+  { id:'AustPost',    name:'Australia Post',        countries:'AU',             services:['Drop-off'] },
+  { id:'SingPost',    name:'Singapore Post',        countries:'SG',             services:['Drop-off'] },
+  { id:'NZPost',      name:'NZ Post',               countries:'NZ',             services:['Drop-off'] },
 ];
 const ROUTING_RETURN_REASONS = ['Wrong item','Damaged','Changed mind','Too large','Too small','Quality issue','Other'];
 const ROUTING_PRODUCT_CATEGORIES = ['Apparel','Shoes','Electronics','Accessories','Furniture','Toners','High-value','Other'];
@@ -3444,7 +3494,7 @@ function eCardRules(){
 }
 
 function openRuleModal(existingRule){
-  const draft = existingRule ? {...existingRule, countries:[...existingRule.countries], carrierServices:[...existingRule.carrierServices]} : {
+  const draft = existingRule ? {...existingRule, countries:[...(existingRule.countries||[])], carrierServices:[...(existingRule.carrierServices||[])]} : {
     id: ++_ruleSeq,
     name:'', productCategory:'', returnReason:'', sku:'', ean:'',
     minValue:'', maxValue:'', countries:[], carrierServices:[], destination:''
@@ -3453,97 +3503,177 @@ function openRuleModal(existingRule){
   const overlay = el('div',{class:'rule-modal-overlay'});
   const modal = el('div',{class:'rule-modal'});
 
-  const head = el('div',{class:'rule-modal-head'});
-  head.appendChild(el('div',{class:'rule-modal-title'}, existingRule ? 'Edit Rule' : 'Add Routing Rule'));
-  head.appendChild(el('button',{class:'addr-rm', html:icon('close'), onclick:()=>overlay.remove()}));
-  modal.appendChild(head);
+  // header
+  modal.appendChild(el('div',{class:'rule-modal-head'},
+    el('div',{class:'rule-modal-title'}, existingRule ? 'Edit Rule' : 'New Routing Rule'),
+    el('button',{class:'addr-rm', html:icon('close'), onclick:()=>overlay.remove()})
+  ));
 
   const body = el('div',{class:'rule-modal-body'});
 
-  body.appendChild(ruleField('Rule Name', el('input',{type:'text', placeholder:'e.g. High Value Returns', value:draft.name,
-    oninput:e=>draft.name=e.target.value})));
+  // Rule Name
+  body.appendChild(ruleField('Rule Name *',
+    el('input',{type:'text', placeholder:'e.g. High Value UK Returns', value:draft.name, oninput:e=>draft.name=e.target.value})
+  ));
 
+  // Product Category + Return Reason
   const catSel = el('select');
-  catSel.appendChild(el('option',{value:''},'Select category'));
-  ROUTING_PRODUCT_CATEGORIES.forEach(c=>catSel.appendChild(el('option',{value:c, selected:draft.productCategory===c},c)));
+  catSel.appendChild(el('option',{value:''},'Any'));
+  ROUTING_PRODUCT_CATEGORIES.forEach(c=>catSel.appendChild(el('option',{value:c,selected:draft.productCategory===c},c)));
   catSel.addEventListener('change',e=>draft.productCategory=e.target.value);
   const rrSel = el('select');
-  rrSel.appendChild(el('option',{value:''},'Select reason'));
-  ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r, selected:draft.returnReason===r},r)));
+  rrSel.appendChild(el('option',{value:''},'Any'));
+  ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r,selected:draft.returnReason===r},r)));
   rrSel.addEventListener('change',e=>draft.returnReason=e.target.value);
   body.appendChild(el('div',{class:'rule-field-row'},
-    ruleField('Product Category (Optional)', catSel),
-    ruleField('Return Reason (Optional)', rrSel)
+    ruleField('Product Category', catSel),
+    ruleField('Return Reason', rrSel)
   ));
 
+  // SKU + EAN
   body.appendChild(el('div',{class:'rule-field-row'},
-    ruleField('SKU (Optional)', el('input',{type:'text',placeholder:'e.g. SKU-12345',value:draft.sku, oninput:e=>draft.sku=e.target.value})),
-    ruleField('EAN (Optional)', el('input',{type:'text',placeholder:'e.g. 1234567890123',value:draft.ean, oninput:e=>draft.ean=e.target.value}))
+    ruleField('SKU', el('input',{type:'text',placeholder:'SKU-12345',value:draft.sku,oninput:e=>draft.sku=e.target.value})),
+    ruleField('EAN', el('input',{type:'text',placeholder:'1234567890123',value:draft.ean,oninput:e=>draft.ean=e.target.value}))
   ));
 
+  // Item Value Min/Max
   body.appendChild(el('div',{class:'rule-field-row'},
-    ruleField('Min Value (Optional)', el('input',{type:'number',placeholder:'e.g. 0',value:draft.minValue, oninput:e=>draft.minValue=e.target.value})),
-    ruleField('Max Value (Optional)', el('input',{type:'number',placeholder:'e.g. 500',value:draft.maxValue, oninput:e=>draft.maxValue=e.target.value}))
+    ruleField('Item Value Min (€)', el('input',{type:'number',placeholder:'0',value:draft.minValue,oninput:e=>draft.minValue=e.target.value})),
+    ruleField('Item Value Max (€)', el('input',{type:'number',placeholder:'500',value:draft.maxValue,oninput:e=>draft.maxValue=e.target.value}))
   ));
 
-  body.appendChild(ruleField('Country (Optional)',
-    (()=>{
-      const wrap = el('div',{class:'country-multi'});
-      COUNTRIES.forEach(c => {
-        const chip = el('button',{class:'country-chip'+(draft.countries.includes(c.code)?' on':''), type:'button', onclick:()=>{
+  // Country multi-select dropdown
+  body.appendChild(ruleField('Country', (()=>{
+    const wrapper = el('div',{class:'rule-multisel-wrap'});
+    const trigger = el('div',{class:'rule-multisel-trigger'});
+    const dropdown = el('div',{class:'rule-multisel-dropdown', style:'display:none'});
+    const searchInp = el('input',{type:'text',class:'rule-multisel-search',placeholder:'Search countries…'});
+
+    const updateTrigger = ()=>{
+      trigger.innerHTML = '';
+      if(!draft.countries.length){
+        trigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries'));
+      } else {
+        draft.countries.slice(0,4).forEach(code=>{
+          const cc = COUNTRIES.find(x=>x.code===code);
+          trigger.appendChild(el('span',{class:'rule-cs-tag'}, (cc&&cc.flag?cc.flag+' ':'')+code));
+        });
+        if(draft.countries.length>4) trigger.appendChild(el('span',{class:'rule-cs-tag more'},'+' +(draft.countries.length-4)));
+      }
+      trigger.appendChild(el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'}));
+    };
+    updateTrigger();
+
+    const renderList = (filter)=>{
+      dropdown.innerHTML = '';
+      dropdown.appendChild(searchInp);
+      const allBtn = el('div',{class:'rule-multisel-opt'+(draft.countries.length===0?' sel':'')});
+      allBtn.appendChild(el('span',{class:'rule-multisel-check'},draft.countries.length===0?'✓':''));
+      allBtn.appendChild(el('span',{},'All countries'));
+      allBtn.onclick=()=>{ draft.countries=[]; renderList(searchInp.value); updateTrigger(); };
+      dropdown.appendChild(allBtn);
+      const filtered = COUNTRIES.filter(c=>!filter||c.code.toLowerCase().includes(filter.toLowerCase())||(c.name&&c.name.toLowerCase().includes(filter.toLowerCase())));
+      filtered.forEach(c=>{
+        const on = draft.countries.includes(c.code);
+        const opt = el('div',{class:'rule-multisel-opt'+(on?' sel':'')});
+        opt.appendChild(el('span',{class:'rule-multisel-check'},on?'✓':''));
+        opt.appendChild(el('span',{},(c.flag?c.flag+' ':'')+c.code+(c.name?' — '+c.name:'')));
+        opt.onclick=()=>{
           if(draft.countries.includes(c.code)) draft.countries=draft.countries.filter(x=>x!==c.code);
           else draft.countries.push(c.code);
-          chip.classList.toggle('on', draft.countries.includes(c.code));
-        }}, (c.flag?c.flag+' ':'')+c.code);
-        wrap.appendChild(chip);
+          renderList(searchInp.value); updateTrigger();
+        };
+        dropdown.appendChild(opt);
       });
-      return wrap;
-    })()
-  ));
+    };
+    renderList('');
+    searchInp.oninput=e=>renderList(e.target.value);
 
-  body.appendChild(el('div',{class:'rule-section-label'}, 'Carrier & Service'));
-  const carrierGrid = el('div',{class:'carrier-grid'});
-  ROUTING_CARRIERS.forEach(cr => {
-    const row = el('div',{class:'carrier-row'});
-    const rowHead = el('div',{class:'carrier-row-head'}, cr.name);
-    row.appendChild(rowHead);
-    const svcs = el('div',{class:'carrier-row-services'});
-    cr.services.forEach(svc => {
-      const isOn = ()=>draft.carrierServices.some(cs=>cs.carrierId===cr.id&&cs.service===svc);
-      const chip = el('button',{class:'carrier-svc-chip'+(isOn()?' on':''), type:'button', onclick:()=>{
-        if(isOn()) draft.carrierServices=draft.carrierServices.filter(cs=>!(cs.carrierId===cr.id&&cs.service===svc));
-        else draft.carrierServices.push({carrierId:cr.id, service:svc});
-        chip.classList.toggle('on', isOn());
-      }}, svc);
-      svcs.appendChild(chip);
+    let open=false;
+    trigger.onclick=(e)=>{ e.stopPropagation(); open=!open; dropdown.style.display=open?'block':'none'; if(open) setTimeout(()=>searchInp.focus(),50); };
+    document.addEventListener('click',()=>{ open=false; dropdown.style.display='none'; },{capture:false,once:false});
+    overlay.addEventListener('click',(e)=>{ if(!wrapper.contains(e.target)){ open=false; dropdown.style.display='none'; } });
+
+    wrapper.appendChild(trigger);
+    wrapper.appendChild(dropdown);
+    return wrapper;
+  })()));
+
+  // Carrier & Service — two dropdowns + Add button
+  body.appendChild(ruleField('Carrier & Service', (()=>{
+    const wrap = el('div',{class:'rule-carrier-wrap'});
+    const addedList = el('div',{class:'rule-cs-list'});
+
+    const redrawAdded = ()=>{
+      addedList.innerHTML='';
+      draft.carrierServices.forEach((cs,i)=>{
+        const cr = ROUTING_CARRIERS.find(x=>x.id===cs.carrierId);
+        const tag = el('div',{class:'rule-cs-pill'},
+          el('span',{},(cr?cr.name:cs.carrierId)+' — '+cs.service),
+          el('button',{class:'rule-cs-rm',onclick:()=>{ draft.carrierServices.splice(i,1); redrawAdded(); }}, '×')
+        );
+        addedList.appendChild(tag);
+      });
+    };
+    redrawAdded();
+
+    // Carrier dropdown
+    const carrierSel = el('select',{class:'rule-carrier-sel'});
+    carrierSel.appendChild(el('option',{value:''},'Select carrier…'));
+    ROUTING_CARRIERS.forEach(cr=>carrierSel.appendChild(el('option',{value:cr.id},cr.name+' ('+cr.countries+')')));
+
+    // Service dropdown — updates when carrier changes
+    const svcSel = el('select',{class:'rule-carrier-sel'});
+    svcSel.appendChild(el('option',{value:''},'Select service…'));
+
+    carrierSel.addEventListener('change',()=>{
+      svcSel.innerHTML='';
+      svcSel.appendChild(el('option',{value:''},'Select service…'));
+      const cr = ROUTING_CARRIERS.find(x=>x.id===carrierSel.value);
+      if(cr) cr.services.forEach(s=>svcSel.appendChild(el('option',{value:s},s)));
     });
-    row.appendChild(svcs);
-    carrierGrid.appendChild(row);
-  });
-  body.appendChild(carrierGrid);
 
+    const addBtn = el('button',{class:'rule-cs-add-btn', type:'button', onclick:()=>{
+      if(!carrierSel.value||!svcSel.value) return;
+      const already = draft.carrierServices.some(cs=>cs.carrierId===carrierSel.value&&cs.service===svcSel.value);
+      if(!already) draft.carrierServices.push({carrierId:carrierSel.value, service:svcSel.value});
+      carrierSel.value=''; svcSel.innerHTML=''; svcSel.appendChild(el('option',{value:''},'Select service…'));
+      redrawAdded();
+    }}, '+ Add');
+
+    const row = el('div',{class:'rule-carrier-row'});
+    row.appendChild(carrierSel);
+    row.appendChild(svcSel);
+    row.appendChild(addBtn);
+    wrap.appendChild(row);
+    wrap.appendChild(addedList);
+    return wrap;
+  })()));
+
+  // Destination
   const destSel = el('select');
   destSel.appendChild(el('option',{value:''},'Select destination'));
   [['DTW','ReBound Warehouse (DTW)'],['DTR','Client Facility / Warehouse (DTR)'],['DTP','ReBound Partners (DTP)']].forEach(([v,n])=>
-    destSel.appendChild(el('option',{value:v, selected:draft.destination===v},n)));
+    destSel.appendChild(el('option',{value:v,selected:draft.destination===v},n)));
   destSel.addEventListener('change',e=>draft.destination=e.target.value);
   body.appendChild(ruleField('Destination', destSel));
 
   modal.appendChild(body);
 
+  // footer
   const footer = el('div',{class:'rule-modal-footer'});
-  footer.appendChild(el('button',{class:'rule-cancel-btn', onclick:()=>overlay.remove()}, 'Cancel'));
-  footer.appendChild(el('button',{class:'rule-save-btn', onclick:()=>{
+  footer.appendChild(el('button',{class:'rule-cancel-btn',onclick:()=>overlay.remove()},'Cancel'));
+  footer.appendChild(el('button',{class:'rule-save-btn',onclick:()=>{
     if(!draft.name.trim()){ alert('Please enter a rule name.'); return; }
     if(existingRule){
-      const idx = tabState.routingRules.findIndex(r=>r.id===existingRule.id);
+      const idx=tabState.routingRules.findIndex(r=>r.id===existingRule.id);
       if(idx>=0) tabState.routingRules[idx]=draft;
     } else {
       tabState.routingRules.push(draft);
     }
     overlay.remove();
     rerenderE();
-  }}, 'Save Rule'));
+  }},'Save Rule'));
   modal.appendChild(footer);
 
   overlay.appendChild(modal);
