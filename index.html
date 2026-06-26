@@ -4124,71 +4124,76 @@ function eContractCell(r){
 
 /* one combo row */
 function eRow(r){
+  const isSelfPost = r.service === 'Self-post';
   const refreshing = tabState.carrierPhase === 'refreshing';
-  const av = eCarriersFor(r.code, r.service, r.label);     // carrier-service-selector lookup
-  const unavailable = !refreshing && av.length === 0;
+  const av = isSelfPost ? [] : eCarriersFor(r.code, r.service, r.label);
+  const unavailable = !isSelfPost && !refreshing && av.length === 0;
   const c = COUNTRIES.find(x => x.code === r.code);
   const tr = el('tr',{class:'lane-row'+(unavailable?' unavail':'')});
 
-  // Return service / label (static)
+  // Return service (always shown)
   tr.appendChild(el('td',{}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
-  tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
 
-  // Destination (composite icon + city, edit pencil on hover)
-  const di = eDestCellInfo(r);
-  const destCell = el('td',{class:'dest-cell'},
-    el('span',{class:'dest-wrap'},
-      el('span',{class:'dest-ic-slot', html:di.iconHtml}),
-      el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
-      el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
-    )
-  );
-  tr.appendChild(destCell);
-
-  // Carrier — moved before Lane type
-  const carrierCell = el('td',{class:'carrier-cell'});
-  if(refreshing){
-    carrierCell.appendChild(el('span',{class:'carrier-skeleton'}, el('span',{class:'cs-bar'}), el('span',{class:'cs-dot'})));
-  } else if(unavailable){
-    carrierCell.appendChild(el('span',{class:'cell-dim'}, '—'));
-  } else {
-    carrierCell.appendChild(eSelect(r.carrier, av.map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
-  }
-  // per-combo delete (floats at row right on hover)
-  carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
-  tr.appendChild(carrierCell);
-  // Lane type toggle
-  tr.appendChild(el('td',{}, eLaneToggle(r)));
-  // Contract
-  tr.appendChild(el('td',{}, eContractCell(r)));
-
-  // Postal Product (last column) — legacy field, searchable combobox with custom add
-  const ppCell = el('td',{class:'pp-td'});
-  if(unavailable || !r.carrier){
-    ppCell.appendChild(el('span',{class:'cell-dim'}, '—'));
-  } else {
-    ppCell.appendChild(ppCombobox(r));
-  }
-  tr.appendChild(ppCell);
-
-  // unavailable → blurred row with a fix prompt overlay (placed in the first cell, spans the row)
-  if(unavailable){
-    tr.firstChild.appendChild(el('div',{class:'lane-unavailable-overlay'},
-      el('span',{class:'lua-ic', html:icon('warn')}),
-      el('span',{class:'lua-tx'}, 'No carrier ships ', el('b',{}, r.service + (r.label ? ' + ' + r.label : '')), ' from ', el('b',{}, c.name), ' — choose a different service or label for this country.'),
-      el('button',{class:'lua-btn', onclick:()=>openLaneFixModal(r.id)}, 'Change'),
-      el('button',{class:'lua-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})
+  if(isSelfPost){
+    // Self-post: only Destination + Postal Product
+    const di = eDestCellInfo(r);
+    tr.appendChild(el('td',{class:'dest-cell'},
+      el('span',{class:'dest-wrap'},
+        el('span',{class:'dest-ic-slot', html:di.iconHtml}),
+        el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
+        el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
+      )
     ));
+    tr.appendChild(el('td',{class:'pp-td'}, ppCombobox(r)));
+  } else {
+    // Standard lanes
+    tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
+
+    const di = eDestCellInfo(r);
+    tr.appendChild(el('td',{class:'dest-cell'},
+      el('span',{class:'dest-wrap'},
+        el('span',{class:'dest-ic-slot', html:di.iconHtml}),
+        el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
+        el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
+      )
+    ));
+
+    const carrierCell = el('td',{class:'carrier-cell'});
+    if(refreshing){
+      carrierCell.appendChild(el('span',{class:'carrier-skeleton'}, el('span',{class:'cs-bar'}), el('span',{class:'cs-dot'})));
+    } else if(unavailable){
+      carrierCell.appendChild(el('span',{class:'cell-dim'}, '—'));
+    } else {
+      carrierCell.appendChild(eSelect(r.carrier, av.map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
+    }
+    carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    tr.appendChild(carrierCell);
+    tr.appendChild(el('td',{}, eLaneToggle(r)));
+    tr.appendChild(el('td',{}, eContractCell(r)));
+
+    const ppCell = el('td',{class:'pp-td'});
+    ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
+    tr.appendChild(ppCell);
+
+    if(unavailable){
+      tr.firstChild.appendChild(el('div',{class:'lane-unavailable-overlay'},
+        el('span',{class:'lua-ic', html:icon('warn')}),
+        el('span',{class:'lua-tx'}, 'No carrier ships ', el('b',{}, r.service + (r.label ? ' + ' + r.label : '')), ' from ', el('b',{}, c.name), ' — choose a different service or label for this country.'),
+        el('button',{class:'lua-btn', onclick:()=>openLaneFixModal(r.id)}, 'Change'),
+        el('button',{class:'lua-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})
+      ));
+    }
   }
 
   return tr;
 }
 
 /* append a country group (header + its combo rows) */
-function eAppendCountryGroup(tbody, code, rows){
+function eAppendCountryGroup(tbody, code, rows, colCount){
+  colCount = colCount || 7;
   const c = COUNTRIES.find(x => x.code === code);
   tbody.appendChild(el('tr',{class:'grp-country'},
-    el('td',{colspan:7},
+    el('td',{colspan:colCount},
       el('span',{class:'grp-flag'}, c.flag),
       el('span',{class:'grp-name'}, c.name),
       el('span',{class:'grp-count'}, rows.length + (rows.length===1?' lane':' lanes'))
@@ -4242,12 +4247,15 @@ function eCardTable(locked){
     return card;
   }
 
+  const isSelfPostOnly = tabState.returnServices.length > 0 && tabState.returnServices.every(s => s === 'Self-post');
+  const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')});
-  table.appendChild(el('thead',{}, el('tr',{},
-    el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
-    el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
-    el('th',{},'Postal Product')
-  )));
+  const headerCols = isSelfPostOnly
+    ? [el('th',{},'Return service'), el('th',{},'Destination'), el('th',{},'Postal Product')]
+    : [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
+       el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
+       el('th',{},'Postal Product')];
+  table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
   const tbody = el('tbody',{});
 
   // rows grouped by country, in COUNTRIES order
@@ -4255,6 +4263,7 @@ function eCardTable(locked){
   tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
   const codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
 
+  const colCount = isSelfPostOnly ? 3 : 7;
   if(tabState.groupBy === 'region'){
     const regions = [...E_REGION_ORDER, ...codes.map(c=>regionOf(c)).filter(r=>!E_REGION_ORDER.includes(r))];
     const seen = {};
@@ -4262,11 +4271,11 @@ function eCardTable(locked){
       if(seen[region]) return; seen[region] = true;
       const inRegion = codes.filter(code => regionOf(code) === region);
       if(!inRegion.length) return;
-      tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:7}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
-      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code]));
+      tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:colCount}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
+      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount));
     });
   } else {
-    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code]));
+    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount));
   }
 
   table.appendChild(tbody);
