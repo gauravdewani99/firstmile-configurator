@@ -705,6 +705,13 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .row-del svg{width:13px;height:13px}
 .lane-row:hover .row-del{opacity:1}
 .row-del:hover{background:var(--red-soft);color:var(--red)}
+/* Tabular 2: add-another-configuration row */
+.add-config-row td{padding:0!important;background:transparent}
+.add-config-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:9px;border:1.5px dashed var(--border);border-radius:9px;margin:6px 0 4px;background:transparent;color:var(--brand-2);font-size:12.5px;font-weight:700;transition:all .14s}
+.add-config-btn:hover{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.acb-plus{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--brand);color:#fff}
+.acb-plus svg{width:11px;height:11px}
+.add-config-btn:hover .acb-plus{background:var(--brand-2)}
 /* on-demand modal (address + lane edit) */
 .modal-card.modal-wide{width:min(520px,calc(100vw - 36px));max-height:88vh;overflow-y:auto}
 .modal-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--card);font-size:13.5px;font-weight:500;transition:border-color .15s,box-shadow .15s}
@@ -714,6 +721,17 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .modal-card > div > .opt-list:first-child{margin-top:4px}
 .fix-carrier{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:9px;background:var(--green-soft);color:#065F46;font-size:13px;font-weight:600}
 .fix-carrier-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+/* address → operational country checklist */
+.addr-country-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
+.addr-cc{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;background:var(--card);text-align:left;transition:all .12s}
+.addr-cc:hover{border-color:#CBD5E1;background:#FAFBFC}
+.addr-cc.on{border-color:var(--brand);background:var(--brand-soft)}
+.addr-cc-box{width:17px;height:17px;flex-shrink:0;border:1.5px solid var(--border);border-radius:5px;display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#fff}
+.addr-cc.on .addr-cc-box{background:var(--brand);border-color:var(--brand)}
+.addr-cc-box svg{width:11px;height:11px}
+.addr-cc-flag{font-size:16px;flex-shrink:0}
+.addr-cc-name{font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:480px){.addr-country-grid{grid-template-columns:1fr}}
 .chip-row{display:flex;gap:7px;flex-wrap:wrap}
 .minichip{padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);font-size:12.5px;font-weight:600;color:var(--text);transition:all .12s}
 .minichip:hover{border-color:#CBD5E1;background:#FAFBFC}
@@ -1161,49 +1179,54 @@ body[data-view="wizard"] #view-landing{display:none}
     <div class="landing-mark"><img src="rebound-icon.png" alt="" /></div>
     <h1 class="landing-title">First Mile Configurator</h1>
     <p class="landing-sub">Configure first mile lanes for a client — carrier, service, routing type and account numbers for each pickup country.</p>
-    <!-- Hero: latest version (v6 Manisha Tabular) -->
-    <button class="hero-card" onclick="startVariant('F')">
+    <!-- Hero: Tabular 2 (single-select) -->
+    <button class="hero-card" onclick="startVariant('G')">
       <span class="hero-glow"></span>
-      <span class="hero-badge"><span class="hero-badge-dot"></span>Latest · v6</span>
+      <span class="hero-badge"><span class="hero-badge-dot"></span>Latest · Tabular 2</span>
       <span class="hero-row">
         <span class="hero-icon">
           <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
         </span>
         <span class="hero-info">
-          <span class="hero-name">Manisha Tabular</span>
-          <span class="hero-desc">A few global questions, then fine-tune every lane in a pre-filled table.</span>
+          <span class="hero-name">Tabular 2</span>
+          <span class="hero-desc">One return service and label, one row per country — add extra configurations per country whenever you need them.</span>
         </span>
         <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
       </span>
     </button>
 
-    <!-- Earlier versions: receding 3D stack -->
+    <!-- Other versions: receding 3D stack -->
     <div class="legacy-section">
       <div class="legacy-head">
-        <span class="legacy-title">Earlier versions</span>
+        <span class="legacy-title">Other versions</span>
       </div>
       <div class="legacy-stack">
         <button class="legacy-card" style="--depth:0" onclick="startVariant('E')">
           <span class="variant-icon e"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
-          <span class="variant-info"><span class="variant-name"><span class="vtag">v5</span>Tabular</span><span class="variant-desc">A few global questions, then fine-tune every lane in a pre-filled table.</span></span>
+          <span class="variant-info"><span class="variant-name">Tabular 1</span><span class="variant-desc">Multi-select service &amp; label — fine-tune every lane in a pre-filled table.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
-        <button class="legacy-card" style="--depth:1" onclick="startVariant('D')">
+        <button class="legacy-card" style="--depth:1" onclick="startVariant('F')">
+          <span class="variant-icon e"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+          <span class="variant-info"><span class="variant-name">Manisha Tabular</span><span class="variant-desc">Tabular with postal products and custom routing rules.</span></span>
+          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>
+        <button class="legacy-card" style="--depth:2" onclick="startVariant('D')">
           <span class="variant-icon d"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v4</span>Client Preferences</span><span class="variant-desc">Guided preference questions derive every lane for you.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
-        <button class="legacy-card" style="--depth:2" onclick="startVariant('C')">
+        <button class="legacy-card" style="--depth:3" onclick="startVariant('C')">
           <span class="variant-icon c"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v3</span>Inline Grid</span><span class="variant-desc">All lanes in one table with inline dropdowns.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
-        <button class="legacy-card" style="--depth:3" onclick="startVariant('B')">
+        <button class="legacy-card" style="--depth:4" onclick="startVariant('B')">
           <span class="variant-icon b"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v2</span>Carrier-First Bulk</span><span class="variant-desc">Pick a carrier first, then assign lanes to it.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
-        <button class="legacy-card" style="--depth:4" onclick="startVariant('A')">
+        <button class="legacy-card" style="--depth:5" onclick="startVariant('A')">
           <span class="variant-icon a"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
           <span class="variant-info"><span class="variant-name"><span class="vtag">v1</span>Lane-by-Lane Stepper</span><span class="variant-desc">Configure each country one at a time.</span></span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -1796,6 +1819,9 @@ function eCarriersFor(code, service, label){
   return CARRIER_CATALOG.filter(c => carrierServesCountry(c, eCountryObj(code), service, label));
 }
 
+/* Tabular 2 (variant G) = single-select service & label, one row per country */
+function eSingle(){ return state.variant === 'G'; }
+
 /* selected services split: which need a label vs Self-post (label-less) */
 function eNonSelfServices(){ return tabState.returnServices.filter(s => s !== 'Self-post'); }
 function eHasSelfPost(){ return tabState.returnServices.includes('Self-post'); }
@@ -1865,10 +1891,11 @@ function tabDeleteCombo(id){
 }
 
 /* addresses (DTR) */
-function makeAddress(){ return { id:'a'+(++_addrSeq), line1:'', line2:'', line3:'', city:'', postal:'', countryCode:'' }; }
+function makeAddress(){ return { id:'a'+(++_addrSeq), line1:'', line2:'', line3:'', city:'', postal:'', countryCode:'', countries:[] }; }
 function closestAddress(code){
   const a = tabState.addresses.filter(x => x.city.trim() && x.countryCode);
   if(!a.length) return null;
+  const mapped = a.find(x => (x.countries||[]).includes(code)); if(mapped) return mapped; // explicit operational-country mapping wins
   const exact = a.find(x => x.countryCode === code); if(exact) return exact;
   const reg = regionOf(code);
   const same = a.find(x => regionOf(x.countryCode) === reg); if(same) return same;
@@ -2021,7 +2048,7 @@ function confirmClient(){
   state.variant = pendingVariant;
   closeClientModal();
   if(state.variant === 'D'){ initPrefs(); }
-  else if(state.variant === 'E' || state.variant === 'F'){ initTabular(); }
+  else if(state.variant === 'E' || state.variant === 'F' || state.variant === 'G'){ initTabular(); }
   else { initLanes(); }
   setView('wizard');
   renderWizard();
@@ -2046,7 +2073,7 @@ function setView(v){
   if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
   else document.body.removeAttribute('data-variant');
   document.getElementById('meta-client').textContent = state.client || '—';
-  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular', F:'Manisha Tabular' };
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
   const flowEl = document.getElementById('meta-flow');
   if(flowEl) flowEl.style.display = state.variant ? '' : 'none';
@@ -2069,7 +2096,7 @@ function renderWizard(){
   root.innerHTML = '';
 
   if(state.variant === 'D'){ renderVariantD(root); updateJson(); return; }
-  if(state.variant === 'E' || state.variant === 'F'){ renderVariantE(root); updateJson(); return; }
+  if(state.variant === 'E' || state.variant === 'F' || state.variant === 'G'){ renderVariantE(root); updateJson(); return; }
 
   const header = el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config'),
@@ -3306,15 +3333,17 @@ function tabLaneDestJson(r){
 }
 function buildTabJson(){
   const unserviceable = tabState.rows.filter(r => eCarriersFor(r.code, r.service, r.label).length === 0).length;
+  const variantName = state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
   return {
     client: state.client || null,
-    variant: 'tabular',
+    variant: variantName,
+    selectionMode: eSingle() ? 'single-select' : 'multi-select',
     flowType: 'B2C',
     returnServices: tabState.returnServices,
     returnLabels: eNonSelfServices().length ? tabState.returnLabels : [],
     destination: tabGlobalDestJson(),
     clientAddresses: tabState.destination === 'DTR'
-      ? tabState.addresses.filter(a => a.city.trim() && a.countryCode).map(a => ({ line1:a.line1, line2:a.line2 || undefined, city:a.city, postalCode:a.postal || undefined, country:a.countryCode }))
+      ? tabState.addresses.filter(a => a.city.trim() && a.countryCode).map(a => ({ line1:a.line1, line2:a.line2 || undefined, city:a.city, postalCode:a.postal || undefined, country:a.countryCode, appliesToCountries:(a.countries||[]) }))
       : [],
     lanes: tabState.rows.map(r => {
       const c = COUNTRIES.find(x => x.code === r.code);
@@ -3334,7 +3363,7 @@ function buildTabJson(){
     summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
   };
 }
-function buildActiveJson(){ return (state.variant === 'E' || state.variant === 'F') ? buildTabJson() : buildPrefJson(); }
+function buildActiveJson(){ return (state.variant === 'E' || state.variant === 'F' || state.variant === 'G') ? buildTabJson() : buildPrefJson(); }
 
 function highlightJson(obj){
   const str = JSON.stringify(obj, null, 2);
@@ -3887,7 +3916,13 @@ function eCardService(locked){
     const on = tabState.returnServices.includes(s);
     g.appendChild(eChip(on, serviceIcon(s), s, ()=>{
       const wasReady = eTableReady();
-      tabState.returnServices = on ? tabState.returnServices.filter(x=>x!==s) : [...tabState.returnServices, s];
+      if(eSingle()){
+        if(on) return;                          // single-select: keep current selection
+        tabState.returnServices = [s];
+        if(s === 'Self-post') tabState.returnLabels = []; // self-post needs no label
+      } else {
+        tabState.returnServices = on ? tabState.returnServices.filter(x=>x!==s) : [...tabState.returnServices, s];
+      }
       eAfterSelectionChange(wasReady);
     }));
   });
@@ -3912,7 +3947,12 @@ function eCardLabel(locked){
       const on = tabState.returnLabels.includes(l);
       g.appendChild(eChip(on, labelIcon(l), l, ()=>{
         const wasReady = eTableReady();
-        tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
+        if(eSingle()){
+          if(on) return;                       // single-select: keep current selection
+          tabState.returnLabels = [l];
+        } else {
+          tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
+        }
         eAfterSelectionChange(wasReady);
       }));
     });
@@ -4049,7 +4089,28 @@ function openAddressModal(id){
   const ref = {};
   const card = el('div',{class:'modal-card modal-wide'});
   card.appendChild(el('div',{class:'modal-title'}, editing ? 'Edit address' : 'Add client facility address'));
-  card.appendChild(el('div',{class:'modal-sub'}, 'Returns sent to a client facility use the closest of these addresses per country.'));
+  card.appendChild(el('div',{class:'modal-sub'}, 'First map this address to the operational countries it serves, then enter the address. Countries you don’t map fall back to the closest address.'));
+
+  // Step 1 — operational countries this address applies to (same countries as the table below)
+  if(!draft.countries) draft.countries = [];
+  card.appendChild(el('div',{class:'mod-mini'}, 'Operational countries this address applies to'));
+  const ccGrid = el('div',{class:'addr-country-grid'});
+  COUNTRIES.forEach(co => {
+    const sel = draft.countries.includes(co.code);
+    const item = el('button',{class:'addr-cc'+(sel?' on':''), type:'button'});
+    const box = el('span',{class:'addr-cc-box', html: sel ? svgCheck() : ''});
+    item.appendChild(box);
+    item.appendChild(el('span',{class:'addr-cc-flag'}, co.flag));
+    item.appendChild(el('span',{class:'addr-cc-name'}, co.name));
+    item.addEventListener('click', ()=>{
+      if(draft.countries.includes(co.code)){ draft.countries = draft.countries.filter(x=>x!==co.code); item.classList.remove('on'); box.innerHTML=''; }
+      else { draft.countries = [...draft.countries, co.code]; item.classList.add('on'); box.innerHTML = svgCheck(); }
+    });
+    ccGrid.appendChild(item);
+  });
+  card.appendChild(ccGrid);
+
+  card.appendChild(el('div',{class:'mod-mini'}, 'Address'));
   const grid = el('div',{class:'form-grid'});
   const mk = (key,label,full,ph)=> el('div',{class:'fg'+(full?' fg-full':''), style: full?{gridColumn:'1 / -1'}:undefined},
     el('label',{}, label),
@@ -4200,6 +4261,17 @@ function eAppendCountryGroup(tbody, code, rows, colCount){
     )
   ));
   rows.forEach(r => tbody.appendChild(eRow(r)));
+  // Tabular 2: evident "+" to add another configuration for this country
+  if(eSingle()){
+    tbody.appendChild(el('tr',{class:'add-config-row'},
+      el('td',{colspan:colCount},
+        el('button',{class:'add-config-btn', onclick:()=>openAddConfigModal(code)},
+          el('span',{class:'acb-plus', html:icon('plus')}),
+          'Add another configuration'
+        )
+      )
+    ));
+  }
 }
 
 /* Table — grouped, compact, no horizontal scroll */
@@ -4434,6 +4506,75 @@ function openLaneFixModal(id){
       eSetCarrier(r, draft.carrier);
       closeModal(ref.o); rerenderE();
     }}, 'Apply')
+  ));
+  renderBody();
+  ref.o = openModal(card);
+}
+
+/* ─── add-configuration modal (Tabular 2 "+" — extra service/label config for a country) ─── */
+function openAddConfigModal(code){
+  const c = COUNTRIES.find(x => x.code === code);
+  // default to a service×label combo not already used for this country
+  const existing = new Set(tabState.rows.filter(r => r.code === code).map(r => eComboKey(r.code, r.service, r.label)));
+  const allCombos = [];
+  RETURN_SERVICES.filter(s => s !== 'Self-post').forEach(s => RETURN_LABELS.forEach(l => allCombos.push({ service:s, label:l })));
+  allCombos.push({ service:'Self-post', label:null });
+  let def = allCombos.find(cb => !existing.has(eComboKey(code, cb.service, cb.label)));
+  if(!def) def = { service: tabState.returnServices[0] || 'Drop-off', label: tabState.returnLabels[0] || RETURN_LABELS[0] };
+  const draft = { service:def.service, label:def.label, carrier:null };
+  function reconcile(){ const av = eCarriersFor(code, draft.service, draft.label); draft.carrier = av.length ? av[0].id : null; }
+  reconcile();
+
+  const ref = {};
+  const card = el('div',{class:'modal-card modal-wide'});
+  const bodyWrap = el('div',{});
+
+  function renderBody(){
+    bodyWrap.innerHTML = '';
+    bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Return service'));
+    const srow = el('div',{class:'chip-row'});
+    RETURN_SERVICES.forEach(s => {
+      const has = eCarriersFor(code, s, s==='Self-post' ? null : (draft.label||RETURN_LABELS[0])).length > 0;
+      srow.appendChild(el('button',{class:'minichip'+(draft.service===s?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{
+        draft.service=s; if(s==='Self-post') draft.label=null; else if(!draft.label) draft.label=RETURN_LABELS[0];
+        reconcile(); renderBody();
+      }}, s));
+    });
+    bodyWrap.appendChild(srow);
+
+    if(draft.service !== 'Self-post'){
+      bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Return label'));
+      const lrow = el('div',{class:'chip-row'});
+      RETURN_LABELS.forEach(l => {
+        const has = eCarriersFor(code, draft.service, l).length > 0;
+        lrow.appendChild(el('button',{class:'minichip'+(draft.label===l?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{ draft.label=l; reconcile(); renderBody(); }}, l));
+      });
+      bodyWrap.appendChild(lrow);
+    }
+
+    bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Resulting carrier'));
+    const av = eCarriersFor(code, draft.service, draft.label);
+    if(!av.length) bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier ships this combination from '+c.name+'. Pick another service or label.'));
+    else bodyWrap.appendChild(el('div',{class:'fix-carrier'}, el('span',{class:'fix-carrier-dot'}), av.map(x=>x.name).join(', ')));
+  }
+
+  card.appendChild(el('div',{class:'modal-title'}, c.flag+' '+c.name+' — add configuration'));
+  card.appendChild(el('div',{class:'modal-sub'}, 'Add another return service / label lane for this country. Destination defaults to your global choice and can be fine-tuned after.'));
+  card.appendChild(bodyWrap);
+  const hint = el('div',{class:'modal-hint'});
+  card.appendChild(hint);
+  card.appendChild(el('div',{class:'modal-actions'},
+    el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
+    el('button',{class:'btn btn-primary', onclick:()=>{
+      const key = eComboKey(code, draft.service, draft.label);
+      if(!draft.carrier){ hint.textContent='No carrier ships this combination from '+c.name+'. Choose another service or label.'; hint.classList.add('err'); return; }
+      if(tabState.rows.some(r => eComboKey(r.code, r.service, r.label) === key)){ hint.textContent='That service × label already exists for '+c.name+'.'; hint.classList.add('err'); return; }
+      delete tabState.deleted[key];
+      const row = makeERow(code, draft.service, draft.label);
+      row.custom = true; eSetCarrier(row, draft.carrier);
+      tabState.rows.push(row);
+      tabBuildRows(); closeModal(ref.o); rerenderE();
+    }}, 'Add configuration')
   ));
   renderBody();
   ref.o = openModal(card);
