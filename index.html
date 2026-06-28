@@ -706,13 +706,14 @@ body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .row-del svg{width:13px;height:13px}
 .lane-row:hover .row-del{opacity:1}
 .row-del:hover{background:var(--red-soft);color:var(--red)}
-/* Tabular 2: add-another-configuration row */
-.add-config-row td{padding:0!important;background:transparent}
-.add-config-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:9px;border:1.5px dashed var(--border);border-radius:9px;margin:6px 0 4px;background:transparent;color:var(--brand-2);font-size:12.5px;font-weight:700;transition:all .14s}
-.add-config-btn:hover{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
-.acb-plus{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:var(--brand);color:#fff}
-.acb-plus svg{width:11px;height:11px}
-.add-config-btn:hover .acb-plus{background:var(--brand-2)}
+/* Tabular 2: lightweight icon-only add-configuration button in the country header */
+.config-table .grp-country td{position:relative}
+.grp-add{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--brand-2);opacity:.7;transition:all .12s;padding:0}
+.grp-add svg{width:15px;height:15px}
+.grp-add:hover{opacity:1;background:var(--brand-soft);color:var(--brand)}
+/* delete affordance visible (not hover-only) in single mode so added configs are clearly removable */
+.config-table.single-mode .row-del{opacity:.5}
+.config-table.single-mode .row-del:hover{opacity:1}
 /* on-demand modal (address + lane edit) */
 .modal-card.modal-wide{width:min(520px,calc(100vw - 36px));max-height:88vh;overflow-y:auto}
 .modal-select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--card);font-size:13.5px;font-weight:500;transition:border-color .15s,box-shadow .15s}
@@ -1179,7 +1180,7 @@ body[data-view="wizard"] #view-landing{display:none}
   <div class="landing">
     <div class="landing-mark"><img src="rebound-icon.png" alt="" /></div>
     <h1 class="landing-title">First Mile Configurator</h1>
-    <p class="landing-sub">Configure first mile lanes for a client — carrier, service, routing type and account numbers for each pickup country.</p>
+    <p class="landing-sub">Configure first mile lanes for a client, i.e. carrier, service, routing type and account numbers for each pickup country.</p>
     <!-- Hero: Tabular 2 (single-select) -->
     <button class="hero-card" onclick="startVariant('G')">
       <span class="hero-glow"></span>
@@ -1246,7 +1247,6 @@ body[data-view="wizard"] #view-landing{display:none}
 <div class="modal-overlay" id="client-modal">
   <div class="modal-card">
     <div class="modal-title">Client Name</div>
-    <div class="modal-sub">Enter the client identifier. This is used to label the configuration.</div>
     <input id="client-modal-input" class="modal-input" type="text" autocomplete="off" />
     <div class="modal-hint" id="client-modal-hint"></div>
     <div class="modal-actions">
@@ -4205,7 +4205,9 @@ function eRow(r){
         el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
       )
     ));
-    tr.appendChild(el('td',{class:'pp-td'}, ppCombobox(r)));
+    const spPp = el('td',{class:'pp-td carrier-cell'}, ppCombobox(r));
+    spPp.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    tr.appendChild(spPp);
   } else {
     // Standard lanes
     tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
@@ -4253,25 +4255,17 @@ function eRow(r){
 function eAppendCountryGroup(tbody, code, rows, colCount){
   colCount = colCount || 7;
   const c = COUNTRIES.find(x => x.code === code);
-  tbody.appendChild(el('tr',{class:'grp-country'},
-    el('td',{colspan:colCount},
-      el('span',{class:'grp-flag'}, c.flag),
-      el('span',{class:'grp-name'}, c.name),
-      el('span',{class:'grp-count'}, rows.length + (rows.length===1?' lane':' lanes'))
-    )
-  ));
-  rows.forEach(r => tbody.appendChild(eRow(r)));
-  // Tabular 2: evident "+" to add another configuration for this country
+  const headCell = el('td',{colspan:colCount},
+    el('span',{class:'grp-flag'}, c.flag),
+    el('span',{class:'grp-name'}, c.name),
+    el('span',{class:'grp-count'}, rows.length + (rows.length===1?' lane':' lanes'))
+  );
+  // Tabular 2: lightweight icon-only "+" at the end of the columns to add a configuration
   if(eSingle()){
-    tbody.appendChild(el('tr',{class:'add-config-row'},
-      el('td',{colspan:colCount},
-        el('button',{class:'add-config-btn', onclick:()=>openAddConfigModal(code)},
-          el('span',{class:'acb-plus', html:icon('plus')}),
-          'Add another configuration'
-        )
-      )
-    ));
+    headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=>openAddConfigModal(code), html:icon('plus')}));
   }
+  tbody.appendChild(el('tr',{class:'grp-country'}, headCell));
+  rows.forEach(r => tbody.appendChild(eRow(r)));
 }
 
 /* Table — grouped, compact, no horizontal scroll */
@@ -4321,7 +4315,7 @@ function eCardTable(locked){
 
   const isSelfPostOnly = tabState.returnServices.length > 0 && tabState.returnServices.every(s => s === 'Self-post');
   const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
-  const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')});
+  const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')});
   const headerCols = isSelfPostOnly
     ? [el('th',{},'Return service'), el('th',{},'Destination'), el('th',{},'Postal Product')]
     : [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
@@ -4552,14 +4546,18 @@ function openAddConfigModal(code){
       bodyWrap.appendChild(lrow);
     }
 
-    bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Resulting carrier'));
+    bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Carrier'));
     const av = eCarriersFor(code, draft.service, draft.label);
-    if(!av.length) bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier ships this combination from '+c.name+'. Pick another service or label.'));
-    else bodyWrap.appendChild(el('div',{class:'fix-carrier'}, el('span',{class:'fix-carrier-dot'}), av.map(x=>x.name).join(', ')));
+    if(!av.length){
+      bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier ships this combination from '+c.name+'. Pick another service or label.'));
+    } else {
+      const sel = el('select',{class:'modal-select', onchange:e=>{ draft.carrier = e.target.value || null; }});
+      av.forEach(x => { const o = el('option',{value:x.id}, x.name); if(draft.carrier === x.id) o.selected = true; sel.appendChild(o); });
+      bodyWrap.appendChild(sel);
+    }
   }
 
   card.appendChild(el('div',{class:'modal-title'}, c.flag+' '+c.name+' — add configuration'));
-  card.appendChild(el('div',{class:'modal-sub'}, 'Add another return service / label lane for this country. Destination defaults to your global choice and can be fine-tuned after.'));
   card.appendChild(bodyWrap);
   const hint = el('div',{class:'modal-hint'});
   card.appendChild(hint);
