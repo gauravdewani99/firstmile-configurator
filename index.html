@@ -524,6 +524,7 @@ a{color:inherit;text-decoration:none}
 body[data-variant="D"] .wizard{max-width:1040px}
 body[data-variant="E"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
+body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 
 /* ─── Variant E: left navigation panel ─── */
 .e-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:30px;align-items:start}
@@ -1037,8 +1038,8 @@ tr.lane-row.unavail:hover{background:transparent}
 }
 .json-fab:hover{box-shadow:var(--shadow-2);transform:translateY(-1px);border-color:#CBD5E1}
 .json-fab svg{width:15px;height:15px}
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]) .json-fab,
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]) .json-panel,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]) .json-fab,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]) .json-panel,
 body[data-view="landing"] .json-fab,
 body[data-view="landing"] .json-panel{display:none}
 .json-panel{
@@ -4089,11 +4090,10 @@ function openAddressModal(id){
   const ref = {};
   const card = el('div',{class:'modal-card modal-wide'});
   card.appendChild(el('div',{class:'modal-title'}, editing ? 'Edit address' : 'Add client facility address'));
-  card.appendChild(el('div',{class:'modal-sub'}, 'First map this address to the operational countries it serves, then enter the address. Countries you don’t map fall back to the closest address.'));
 
   // Step 1 — operational countries this address applies to (same countries as the table below)
   if(!draft.countries) draft.countries = [];
-  card.appendChild(el('div',{class:'mod-mini'}, 'Operational countries this address applies to'));
+  card.appendChild(el('div',{class:'mod-mini', style:{marginTop:'4px'}}, 'Operational countries'));
   const ccGrid = el('div',{class:'addr-country-grid'});
   COUNTRIES.forEach(co => {
     const sel = draft.countries.includes(co.code);
