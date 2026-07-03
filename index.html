@@ -4404,12 +4404,12 @@ function openAddressModal(id){
     el('label',{},label),
     el('input',{type:'text',value:draft[key]||'',placeholder:ph||label,oninput:e=>{ draft[key]=e.target.value; }})
   );
-  grid.appendChild(mk('company','Company / Facility name',true,'e.g. Gymshark Returns Centre'));
+  grid.appendChild(mk('company','Facility name',true,'e.g. Gymshark Returns Centre'));
   grid.appendChild(mk('line1','Address line 1',true,'Street number and name'));
-  grid.appendChild(mk('line2','Address line 2 (optional)',true,'Building, floor, unit, suite…'));
-  grid.appendChild(mk('city','City / Town',false,'City'));
-  grid.appendChild(mk('state','State / County / Region (optional)',false,'e.g. West Midlands'));
-  grid.appendChild(mk('postal','Postcode / ZIP',false,'Postal code'));
+  grid.appendChild(mk('line2','Address line 2',true,'Apartment, floor, unit (optional)'));
+  grid.appendChild(mk('postal','Postcode / ZIP',false,'e.g. WC2N 5DU'));
+  grid.appendChild(mk('city','City',false,'e.g. London'));
+  grid.appendChild(mk('state','State / Region',false,'Optional'));
   card.appendChild(grid);
 
   // ── 3. Apply to countries — searchable multi-select ──
