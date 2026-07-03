@@ -4404,14 +4404,14 @@ function openAddressModal(id){
   };
   const inp=(key,ph)=>el('input',{type:'text',class:'modal-inp',value:draft[key]||'',placeholder:ph,oninput:e=>draft[key]=e.target.value});
 
+  // Facility Name *
+  card.appendChild(fld('Facility Name',true,inp('company','e.g. Gymshark Returns Centre')));
+
   // Country *
   const countrySel=el('select',{class:'modal-select',onchange:e=>draft.countryCode=e.target.value});
   countrySel.appendChild(el('option',{value:''},'Select country…'));
   ADDRESS_COUNTRIES.forEach(c=>{ const o=el('option',{value:c.code},c.flag+'  '+c.name); if(draft.countryCode===c.code) o.selected=true; countrySel.appendChild(o); });
   card.appendChild(fld('Country',true,countrySel));
-
-  // Facility Name *
-  card.appendChild(fld('Facility Name',true,inp('company','e.g. Gymshark Returns Centre')));
 
   // Street Address *
   card.appendChild(fld('Street Address',true,inp('line1','Street number and name')));
