@@ -4421,26 +4421,26 @@ function openAddressModal(id){
   // Facility Name (full width)
   formBody.appendChild(fld('Facility Name',true,inp('company','e.g. Gymshark Returns Centre')));
 
-  // Address Line 1 + Postal Code side by side
+  // Address Line 1 + Address Line 2 side by side
   const row1=el('div',{class:'addr-row'});
   row1.appendChild(fld('Address Line 1',true,inp('line1','e.g. 12 Baker Street')));
-  row1.appendChild(fld('Postal Code',false,inp('postal','e.g. WC2N 5DU')));
+  row1.appendChild(fld('Address Line 2',false,inp('line2','Apt, suite, floor (optional)')));
   formBody.appendChild(row1);
 
-  // Address Line 2 (full width)
-  formBody.appendChild(fld('Address Line 2',false,inp('line2','Apartment, suite, floor, unit (optional)')));
-
-  // City/Town + State side by side
+  // City/Town + Postal Code side by side
   const row2=el('div',{class:'addr-row'});
   row2.appendChild(fld('City / Town',true,inp('city','e.g. London')));
-  row2.appendChild(fld('State / Region',false,inp('state','e.g. Greater London')));
+  row2.appendChild(fld('Postal Code',false,inp('postal','e.g. WC2N 5DU')));
   formBody.appendChild(row2);
 
-  // Country dropdown (full width)
+  // State + Country side by side
+  const row3=el('div',{class:'addr-row'});
+  row3.appendChild(fld('State / Region',false,inp('state','e.g. Greater London')));
   const countrySel=el('select',{class:'modal-select modal-inp',onchange:e=>draft.countryCode=e.target.value});
   countrySel.appendChild(el('option',{value:''},'Select country…'));
   ADDRESS_COUNTRIES.forEach(c=>{ const o=el('option',{value:c.code},c.flag+'  '+c.name); if(draft.countryCode===c.code) o.selected=true; countrySel.appendChild(o); });
-  formBody.appendChild(fld('Country',true,countrySel));
+  row3.appendChild(fld('Country',true,countrySel));
+  formBody.appendChild(row3);
 
   card.appendChild(formBody);
 
