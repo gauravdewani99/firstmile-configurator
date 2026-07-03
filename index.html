@@ -4411,8 +4411,8 @@ function openAddressModal(id){
   card.appendChild(grid);
 
   // ── 3. Apply to countries — searchable multi-select ──
-  card.appendChild(el('div',{class:'mod-mini',style:{marginTop:'16px'}},'Apply to return countries'));
-  card.appendChild(el('div',{class:'modal-hint',style:{marginBottom:'6px',color:'var(--muted)',fontSize:'12px'}},'Select one or more countries this facility serves. Leave empty to apply to all.'));
+  card.appendChild(el('div',{class:'mod-mini',style:{marginTop:'16px'}},'Apply this address to return countries'));
+  card.appendChild(el('div',{class:'modal-hint',style:{marginBottom:'6px',color:'var(--muted)',fontSize:'12px'}},'Choose the countries whose returns should be routed to this facility. Leave blank to make this address available for all countries.'));
 
   // Build searchable multi-select inline (portal not needed inside modal — modal is above overflow)
   const applyWrap=el('div',{class:'rule-multisel-wrap',style:'width:100%'});
