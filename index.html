@@ -3924,7 +3924,7 @@ function buildDestField(draft, compact){
   const wrap=el('div',{style:'display:flex;flex-direction:column;gap:6px'});
   const typeSel=el('select',{class:compact?'rtbl-sel':'rule-form-select'});
   typeSel.appendChild(el('option',{value:''},'— Select type —'));
-  [['DTW','DTW — ReBound Warehouse'],['DTR','DTR — Client Facility'],['DTP','DTP — ReBound Partners']].forEach(([v,n])=>
+  [['DTW','DTW — ReBound Warehouse'],['DTR','DTR — Client Facility or Warehouse'],['DTP','DTP — Rebound Partners']].forEach(([v,n])=>
     typeSel.appendChild(el('option',{value:v,selected:(draft.destinationType||draft.destination||'')===v},n)));
 
   const nameWrap=el('div');
@@ -4074,7 +4074,7 @@ function buildRulesTabularSection(){
     // Destination Type (compact select)
     const dtypeSel=el('select',{class:'rtbl-sel'});
     dtypeSel.appendChild(el('option',{value:''},'—'));
-    [['DTW','DTW'],['DTR','DTR'],['DTP','DTP']].forEach(([v,n])=>dtypeSel.appendChild(el('option',{value:v,selected:(rule.destinationType||rule.destination||'')===v},n)));
+    [['DTW','DTW — ReBound Warehouse'],['DTR','DTR — Client Facility or Warehouse'],['DTP','DTP — Rebound Partners']].forEach(([v,n])=>dtypeSel.appendChild(el('option',{value:v,selected:(rule.destinationType||rule.destination||'')===v},n)));
     const destNameTd=el('td',{style:'min-width:180px'});
     const refreshDestName=()=>{
       destNameTd.innerHTML='';
