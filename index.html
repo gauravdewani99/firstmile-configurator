@@ -4926,7 +4926,10 @@ function openAddConfigModal(code){
   let def = allCombos.find(cb => !existing.has(eComboKey(code, cb.service, cb.label)));
   if(!def) def = { service: tabState.returnServices[0] || 'Drop-off', label: tabState.returnLabels[0] || RETURN_LABELS[0] };
   const draft = { service:def.service, label:def.label, carrier:null };
-  function reconcile(){ const av = eCarriersFor(code, draft.service, draft.label); draft.carrier = av.length ? av[0].id : null; }
+  function reconcile(){
+    if(draft.service === 'Self-post'){ draft.carrier = null; return; }
+    const av = eCarriersFor(code, draft.service, draft.label); draft.carrier = av.length ? av[0].id : null;
+  }
   reconcile();
 
   const ref = {};
@@ -4937,10 +4940,12 @@ function openAddConfigModal(code){
     bodyWrap.innerHTML = '';
     bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Return service'));
     const srow = el('div',{class:'chip-row'});
-    RETURN_SERVICES.filter(s => s !== 'Self-post').forEach(s => {  // Self-post not offered as an added config
-      const has = eCarriersFor(code, s, draft.label||RETURN_LABELS[0]).length > 0;
+    RETURN_SERVICES.forEach(s => {
+      const isSP = s === 'Self-post';
+      const has = isSP || eCarriersFor(code, s, draft.label||RETURN_LABELS[0]).length > 0;
       srow.appendChild(el('button',{class:'minichip'+(draft.service===s?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{
-        draft.service=s; if(!draft.label) draft.label=RETURN_LABELS[0];
+        draft.service=s;
+        if(isSP){ draft.label=null; } else if(!draft.label){ draft.label=RETURN_LABELS[0]; }
         reconcile(); renderBody();
       }}, s));
     });
@@ -4954,16 +4959,18 @@ function openAddConfigModal(code){
         lrow.appendChild(el('button',{class:'minichip'+(draft.label===l?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{ draft.label=l; reconcile(); renderBody(); }}, l));
       });
       bodyWrap.appendChild(lrow);
-    }
 
-    bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Carrier'));
-    const av = eCarriersFor(code, draft.service, draft.label);
-    if(!av.length){
-      bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier ships this combination from '+c.name+'. Pick another service or label.'));
+      bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Carrier'));
+      const av = eCarriersFor(code, draft.service, draft.label);
+      if(!av.length){
+        bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier ships this combination from '+c.name+'. Pick another service or label.'));
+      } else {
+        const sel = el('select',{class:'modal-select', onchange:e=>{ draft.carrier = e.target.value || null; }});
+        av.forEach(x => { const o = el('option',{value:x.id}, x.name); if(draft.carrier === x.id) o.selected = true; sel.appendChild(o); });
+        bodyWrap.appendChild(sel);
+      }
     } else {
-      const sel = el('select',{class:'modal-select', onchange:e=>{ draft.carrier = e.target.value || null; }});
-      av.forEach(x => { const o = el('option',{value:x.id}, x.name); if(draft.carrier === x.id) o.selected = true; sel.appendChild(o); });
-      bodyWrap.appendChild(sel);
+      bodyWrap.appendChild(el('div',{class:'sub-note',style:'margin-top:10px'}, 'Return label and carrier do not apply to self-post.'));
     }
   }
 
@@ -4975,11 +4982,11 @@ function openAddConfigModal(code){
     el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
     el('button',{class:'btn btn-primary', onclick:()=>{
       const key = eComboKey(code, draft.service, draft.label);
-      if(!draft.carrier){ hint.textContent='No carrier ships this combination from '+c.name+'. Choose another service or label.'; hint.classList.add('err'); return; }
+      if(draft.service !== 'Self-post' && !draft.carrier){ hint.textContent='No carrier ships this combination from '+c.name+'. Choose another service or label.'; hint.classList.add('err'); return; }
       if(tabState.rows.some(r => eComboKey(r.code, r.service, r.label) === key)){ hint.textContent='That service × label already exists for '+c.name+'.'; hint.classList.add('err'); return; }
       delete tabState.deleted[key];
       const row = makeERow(code, draft.service, draft.label);
-      row.custom = true; eSetCarrier(row, draft.carrier);
+      row.custom = true; if(draft.carrier) eSetCarrier(row, draft.carrier);
       tabState.rows.push(row);
       tabBuildRows(); closeModal(ref.o); rerenderE();
     }}, 'Add configuration')
