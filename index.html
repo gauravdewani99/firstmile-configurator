@@ -712,8 +712,9 @@ body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .grp-add{position:absolute;right:12px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--brand-2);opacity:.7;transition:all .12s;padding:0}
 .grp-add svg{width:15px;height:15px}
 .grp-add:hover{opacity:1;background:var(--brand-soft);color:var(--brand)}
-.grp-add-top{margin-left:auto;flex-shrink:0;width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;background:var(--brand-soft);border:1px solid var(--brand-2);color:var(--brand-2);opacity:.85;transition:all .12s;padding:0;cursor:pointer}
-.grp-add-top svg{width:16px;height:16px}
+.th-add-col{width:44px;text-align:right;padding-right:10px!important}
+.grp-add-top{width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:var(--brand-soft);border:1px solid var(--brand-2);color:var(--brand-2);opacity:.85;transition:all .12s;padding:0;cursor:pointer}
+.grp-add-top svg{width:14px;height:14px}
 .grp-add-top:hover{opacity:1;background:var(--brand);color:#fff;border-color:var(--brand)}
 /* delete affordance visible (not hover-only) in single mode so added configs are clearly removable */
 .config-table.single-mode .row-del{opacity:.5}
@@ -4714,15 +4715,12 @@ function eAppendCountryGroup(tbody, code, rows, colCount){
 function eCardTable(locked){
   if(!locked) tabBuildRows();
 
-  const addBtn = (!locked && (eSingle() || state.variant==='F'))
-    ? el('button',{class:'grp-add-top', title:'Add another configuration', onclick:()=>openAddConfigModal(COUNTRIES[0].code), html:icon('plus')})
-    : null;
-  const headRow = el('div',{class:'q-card-head'});
-  headRow.appendChild(el('div',{class:'q-num'}, '4'));
-  headRow.appendChild(el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane')));
-  if(addBtn) headRow.appendChild(addBtn);
-  const card = el('div',{class:'q-card'+(locked?' locked':'')});
-  card.appendChild(headRow);
+  const card = el('div',{class:'q-card'+(locked?' locked':'')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, '4'),
+      el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
+    )
+  );
   const body = el('div',{class:'q-body'});
 
   if(locked){ card.appendChild(body); return card; }
@@ -4761,9 +4759,15 @@ function eCardTable(locked){
   const isSelfPostOnly = tabState.returnServices.length > 0 && tabState.returnServices.every(s => s === 'Self-post');
   const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')});
+  const showAddBtn = !locked && (eSingle() || state.variant === 'F');
   const headerCols = [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
        el('th',{},'Postal Product')];
+  if(showAddBtn){
+    const thAdd = el('th',{class:'th-add-col'});
+    thAdd.appendChild(el('button',{class:'grp-add-top', title:'Add configuration', onclick:()=>openAddConfigModal(COUNTRIES[0].code), html:icon('plus')}));
+    headerCols.push(thAdd);
+  }
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
   const tbody = el('tbody',{});
 
@@ -4772,7 +4776,7 @@ function eCardTable(locked){
   tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
   const codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
 
-  const colCount = isSelfPostOnly ? 3 : 7;
+  const colCount = showAddBtn ? 8 : 7;
   if(tabState.groupBy === 'region'){
     const regions = [...E_REGION_ORDER, ...codes.map(c=>regionOf(c)).filter(r=>!E_REGION_ORDER.includes(r))];
     const seen = {};
