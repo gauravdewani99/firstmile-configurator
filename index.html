@@ -4558,8 +4558,8 @@ function eAppendCountryGroup(tbody, code, rows, colCount){
     el('span',{class:'grp-name'}, c.name),
     el('span',{class:'grp-count'}, rows.length + (rows.length===1?' lane':' lanes'))
   );
-  // Tabular 2: lightweight icon-only "+" at the end of the columns to add a configuration
-  if(eSingle()){
+  // Tabular 2 + Manisha Tabular: lightweight icon-only "+" to add a configuration
+  if(eSingle() || state.variant === 'F'){
     headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=>openAddConfigModal(code), html:icon('plus')}));
   }
   tbody.appendChild(el('tr',{class:'grp-country'}, headCell));
