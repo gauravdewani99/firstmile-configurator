@@ -4385,57 +4385,120 @@ function closeModal(overlay){ overlay.classList.remove('open'); setTimeout(()=> 
 function openAddressModal(id){
   const editing = id ? tabState.addresses.find(a=>a.id===id) : null;
   const draft = editing ? {...editing} : makeAddress();
+  if(!draft.countries) draft.countries = [];
   const ref = {};
   const card = el('div',{class:'modal-card modal-wide'});
   card.appendChild(el('div',{class:'modal-title'}, editing ? 'Edit address' : 'Add client facility address'));
 
-  // Step 1 — operational countries this address applies to (same countries as the table below)
-  if(!draft.countries) draft.countries = [];
-  card.appendChild(el('div',{class:'mod-mini', style:{marginTop:'4px'}}, 'Operational countries'));
-  const ccGrid = el('div',{class:'addr-country-grid'});
-  COUNTRIES.forEach(co => {
-    const sel = draft.countries.includes(co.code);
-    const item = el('button',{class:'addr-cc'+(sel?' on':''), type:'button'});
-    const box = el('span',{class:'addr-cc-box', html: sel ? svgCheck() : ''});
-    item.appendChild(box);
-    item.appendChild(el('span',{class:'addr-cc-flag'}, co.flag));
-    item.appendChild(el('span',{class:'addr-cc-name'}, co.name));
-    item.addEventListener('click', ()=>{
-      if(draft.countries.includes(co.code)){ draft.countries = draft.countries.filter(x=>x!==co.code); item.classList.remove('on'); box.innerHTML=''; }
-      else { draft.countries = [...draft.countries, co.code]; item.classList.add('on'); box.innerHTML = svgCheck(); }
-    });
-    ccGrid.appendChild(item);
-  });
-  card.appendChild(ccGrid);
+  // ── 1. Facility country ──────────────────────────────
+  card.appendChild(el('div',{class:'mod-mini',style:{marginTop:'4px'}},'Facility country'));
+  const countrySel = el('select',{class:'modal-select',onchange:e=>{ draft.countryCode=e.target.value; }});
+  countrySel.appendChild(el('option',{value:''},'Select country…'));
+  ADDRESS_COUNTRIES.forEach(c => { const o=el('option',{value:c.code},c.flag+'  '+c.name); if(draft.countryCode===c.code) o.selected=true; countrySel.appendChild(o); });
+  card.appendChild(countrySel);
 
-  card.appendChild(el('div',{class:'mod-mini'}, 'Address'));
+  // ── 2. Address fields ────────────────────────────────
+  card.appendChild(el('div',{class:'mod-mini',style:{marginTop:'16px'}},'Address'));
   const grid = el('div',{class:'form-grid'});
-  const mk = (key,label,full,ph)=> el('div',{class:'fg'+(full?' fg-full':''), style: full?{gridColumn:'1 / -1'}:undefined},
-    el('label',{}, label),
-    el('input',{type:'text', value:draft[key]||'', placeholder:ph||label, oninput:e=>{ draft[key]=e.target.value; }})
+  const mk=(key,label,full,ph)=>el('div',{class:'fg'+(full?' fg-full':''),style:full?{gridColumn:'1 / -1'}:undefined},
+    el('label',{},label),
+    el('input',{type:'text',value:draft[key]||'',placeholder:ph||label,oninput:e=>{ draft[key]=e.target.value; }})
   );
-  grid.appendChild(mk('line1','Address line 1', true));
-  grid.appendChild(mk('line2','Address line 2 (optional)', true));
+  grid.appendChild(mk('line1','Address line 1',true));
+  grid.appendChild(mk('line2','Address line 2 (optional)',true));
   grid.appendChild(mk('city','City'));
   grid.appendChild(mk('postal','Postal code'));
-  const coWrap = el('div',{class:'fg fg-full', style:{gridColumn:'1 / -1'}}, el('label',{}, 'Country'));
-  const sel = el('select',{class:'modal-select', onchange:e=>{ draft.countryCode=e.target.value; }});
-  sel.appendChild(el('option',{value:''}, 'Select country…'));
-  ADDRESS_COUNTRIES.forEach(c => { const o = el('option',{value:c.code}, c.flag+'  '+c.name); if(draft.countryCode===c.code) o.selected=true; sel.appendChild(o); });
-  coWrap.appendChild(sel);
-  grid.appendChild(coWrap);
   card.appendChild(grid);
-  const hint = el('div',{class:'modal-hint'});
+
+  // ── 3. Apply to countries — searchable multi-select ──
+  card.appendChild(el('div',{class:'mod-mini',style:{marginTop:'16px'}},'Apply to return countries'));
+  card.appendChild(el('div',{class:'modal-hint',style:{marginBottom:'6px',color:'var(--muted)',fontSize:'12px'}},'Select one or more countries this facility serves. Leave empty to apply to all.'));
+
+  // Build searchable multi-select inline (portal not needed inside modal — modal is above overflow)
+  const applyWrap=el('div',{class:'rule-multisel-wrap',style:'width:100%'});
+  const applyTrigger=el('div',{class:'rule-multisel-trigger',style:'min-height:40px'});
+  const applyArrow=el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'});
+  const applyDropdown=el('div',{class:'rule-multisel-dropdown',style:'position:absolute;top:calc(100% + 4px);left:0;right:0'});
+  const applySearchWrap=el('div',{class:'rule-multisel-search-wrap'});
+  const applySearch=el('input',{type:'text',class:'rule-multisel-search',placeholder:'Search countries…'});
+  applySearchWrap.appendChild(applySearch);
+  const applyList=el('div',{class:'rule-multisel-list'});
+
+  const updateApplyTrigger=()=>{
+    applyTrigger.innerHTML='';
+    if(!draft.countries.length){
+      applyTrigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries (no restriction)'));
+    } else {
+      draft.countries.slice(0,4).forEach(code=>{
+        const co=COUNTRIES.find(x=>x.code===code);
+        applyTrigger.appendChild(el('span',{class:'rule-cs-tag'},(co&&co.flag?co.flag+' ':'')+code));
+      });
+      if(draft.countries.length>4) applyTrigger.appendChild(el('span',{class:'rule-cs-tag more'},'+' +(draft.countries.length-4)+' more'));
+    }
+    applyTrigger.appendChild(applyArrow);
+  };
+  updateApplyTrigger();
+
+  const renderApplyList=(filter)=>{
+    applyList.innerHTML='';
+    const f=filter.trim().toLowerCase();
+    // All option
+    const allSel=draft.countries.length===0;
+    const allBtn=el('div',{class:'rule-multisel-opt'+(allSel?' sel':'')});
+    const allChk=el('span',{class:'rule-multisel-check'}); if(allSel) allChk.textContent='✓';
+    allBtn.appendChild(allChk); allBtn.appendChild(el('span',{},'All countries'));
+    allBtn.onclick=()=>{ draft.countries=[]; renderApplyList(applySearch.value); updateApplyTrigger(); };
+    applyList.appendChild(allBtn);
+    applyList.appendChild(el('div',{class:'rule-multisel-divider'}));
+    COUNTRIES.filter(c=>!f||c.code.toLowerCase().includes(f)||c.name.toLowerCase().includes(f)).forEach(co=>{
+      const on=draft.countries.includes(co.code);
+      const opt=el('div',{class:'rule-multisel-opt'+(on?' sel':'')});
+      const chk=el('span',{class:'rule-multisel-check'}); if(on) chk.textContent='✓';
+      opt.appendChild(chk);
+      opt.appendChild(el('span',{},(co.flag?co.flag+' ':'')+co.code+' — '+co.name));
+      opt.onclick=()=>{
+        if(draft.countries.includes(co.code)) draft.countries=draft.countries.filter(x=>x!==co.code);
+        else draft.countries.push(co.code);
+        renderApplyList(applySearch.value); updateApplyTrigger();
+      };
+      applyList.appendChild(opt);
+    });
+  };
+  renderApplyList('');
+  applySearch.oninput=e=>renderApplyList(e.target.value);
+
+  const clearApplyRow=el('div',{class:'rule-multisel-clear'});
+  clearApplyRow.appendChild(el('button',{class:'rule-multisel-clear-btn',onclick:(e)=>{ e.stopPropagation(); draft.countries=[]; renderApplyList(''); applySearch.value=''; updateApplyTrigger(); }},'Clear all'));
+  applyDropdown.appendChild(applySearchWrap);
+  applyDropdown.appendChild(applyList);
+  applyDropdown.appendChild(clearApplyRow);
+
+  let applyOpen=false;
+  const setApplyOpen=(v)=>{
+    applyOpen=v;
+    applyTrigger.classList.toggle('open',applyOpen);
+    applyArrow.classList.toggle('open',applyOpen);
+    applyDropdown.classList.toggle('open',applyOpen);
+    if(applyOpen) setTimeout(()=>applySearch.focus(),30);
+  };
+  applyTrigger.onclick=(e)=>{ e.stopPropagation(); setApplyOpen(!applyOpen); };
+  applyWrap.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('click',()=>{ if(applyOpen) setApplyOpen(false); });
+  applyWrap.appendChild(applyTrigger);
+  applyWrap.appendChild(applyDropdown);
+  card.appendChild(applyWrap);
+
+  const hint = el('div',{class:'modal-hint',style:{marginTop:'8px'}});
   card.appendChild(hint);
   card.appendChild(el('div',{class:'modal-actions'},
-    el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
-    el('button',{class:'btn btn-primary', onclick:()=>{
-      if(!draft.line1.trim() || !draft.city.trim() || !draft.countryCode){
-        hint.textContent = 'Address line 1, city and country are required.'; hint.classList.add('err'); return;
+    el('button',{class:'btn btn-ghost',onclick:()=>closeModal(ref.o)},'Cancel'),
+    el('button',{class:'btn btn-primary',onclick:()=>{
+      if(!draft.line1.trim()||!draft.city.trim()||!draft.countryCode){
+        hint.textContent='Facility country, address line 1 and city are required.'; hint.classList.add('err'); return;
       }
-      if(editing) Object.assign(editing, draft); else tabState.addresses.push(draft);
+      if(editing) Object.assign(editing,draft); else tabState.addresses.push(draft);
       closeModal(ref.o); rerenderE();
-    }}, editing ? 'Save address' : 'Add address')
+    }},editing?'Save address':'Add address')
   ));
   ref.o = openModal(card);
 }
