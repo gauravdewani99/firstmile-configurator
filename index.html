@@ -4925,10 +4925,10 @@ function openAddConfigModal(code){
   RETURN_SERVICES.filter(s => s !== 'Self-post').forEach(s => RETURN_LABELS.forEach(l => allCombos.push({ service:s, label:l })));
   let def = allCombos.find(cb => !existing.has(eComboKey(code, cb.service, cb.label)));
   if(!def) def = { service: tabState.returnServices[0] || 'Drop-off', label: tabState.returnLabels[0] || RETURN_LABELS[0] };
-  const draft = { service:def.service, label:def.label, carrier:null };
+  const draft = { service:def.service, label:def.label, carrier:null, targetCode:code };
   function reconcile(){
     if(draft.service === 'Self-post'){ draft.carrier = null; return; }
-    const av = eCarriersFor(code, draft.service, draft.label); draft.carrier = av.length ? av[0].id : null;
+    const av = eCarriersFor(draft.targetCode, draft.service, draft.label); draft.carrier = av.length ? av[0].id : null;
   }
   reconcile();
 
@@ -4942,7 +4942,7 @@ function openAddConfigModal(code){
     const srow = el('div',{class:'chip-row'});
     RETURN_SERVICES.forEach(s => {
       const isSP = s === 'Self-post';
-      const has = isSP || eCarriersFor(code, s, draft.label||RETURN_LABELS[0]).length > 0;
+      const has = isSP || eCarriersFor(draft.targetCode, s, draft.label||RETURN_LABELS[0]).length > 0;
       srow.appendChild(el('button',{class:'minichip'+(draft.service===s?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{
         draft.service=s;
         if(isSP){ draft.label=null; } else if(!draft.label){ draft.label=RETURN_LABELS[0]; }
@@ -4951,17 +4951,28 @@ function openAddConfigModal(code){
     });
     bodyWrap.appendChild(srow);
 
-    if(draft.service !== 'Self-post'){
+    if(draft.service === 'Self-post'){
+      // Country picker — let user choose which country to add self-post to
+      bodyWrap.appendChild(el('div',{class:'mod-mini',style:'margin-top:14px'}, 'Country'));
+      const cSel = el('select',{class:'modal-select', onchange:e=>{ draft.targetCode = e.target.value; }});
+      COUNTRIES.forEach(ct => {
+        const o = el('option',{value:ct.code}, ct.flag+'  '+ct.name);
+        if(draft.targetCode === ct.code) o.selected = true;
+        cSel.appendChild(o);
+      });
+      bodyWrap.appendChild(cSel);
+      bodyWrap.appendChild(el('div',{class:'sub-note',style:'margin-top:12px'}, 'Return label and carrier do not apply to self-post.'));
+    } else {
       bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Return label'));
       const lrow = el('div',{class:'chip-row'});
       RETURN_LABELS.forEach(l => {
-        const has = eCarriersFor(code, draft.service, l).length > 0;
+        const has = eCarriersFor(draft.targetCode, draft.service, l).length > 0;
         lrow.appendChild(el('button',{class:'minichip'+(draft.label===l?' on':'')+(has?'':' nocarrier'), title: has?'':'No carrier in '+c.name, onclick:()=>{ draft.label=l; reconcile(); renderBody(); }}, l));
       });
       bodyWrap.appendChild(lrow);
 
       bodyWrap.appendChild(el('div',{class:'mod-mini'}, 'Carrier'));
-      const av = eCarriersFor(code, draft.service, draft.label);
+      const av = eCarriersFor(draft.targetCode, draft.service, draft.label);
       if(!av.length){
         bodyWrap.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No carrier ships this combination from '+c.name+'. Pick another service or label.'));
       } else {
@@ -4969,8 +4980,6 @@ function openAddConfigModal(code){
         av.forEach(x => { const o = el('option',{value:x.id}, x.name); if(draft.carrier === x.id) o.selected = true; sel.appendChild(o); });
         bodyWrap.appendChild(sel);
       }
-    } else {
-      bodyWrap.appendChild(el('div',{class:'sub-note',style:'margin-top:10px'}, 'Return label and carrier do not apply to self-post.'));
     }
   }
 
@@ -4981,11 +4990,12 @@ function openAddConfigModal(code){
   card.appendChild(el('div',{class:'modal-actions'},
     el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
     el('button',{class:'btn btn-primary', onclick:()=>{
-      const key = eComboKey(code, draft.service, draft.label);
-      if(draft.service !== 'Self-post' && !draft.carrier){ hint.textContent='No carrier ships this combination from '+c.name+'. Choose another service or label.'; hint.classList.add('err'); return; }
-      if(tabState.rows.some(r => eComboKey(r.code, r.service, r.label) === key)){ hint.textContent='That service × label already exists for '+c.name+'.'; hint.classList.add('err'); return; }
+      const tCode = draft.targetCode;
+      const key = eComboKey(tCode, draft.service, draft.label);
+      if(draft.service !== 'Self-post' && !draft.carrier){ hint.textContent='No carrier ships this combination. Choose another service or label.'; hint.classList.add('err'); return; }
+      if(tabState.rows.some(r => eComboKey(r.code, r.service, r.label) === key)){ hint.textContent='That configuration already exists for this country.'; hint.classList.add('err'); return; }
       delete tabState.deleted[key];
-      const row = makeERow(code, draft.service, draft.label);
+      const row = makeERow(tCode, draft.service, draft.label);
       row.custom = true; if(draft.carrier) eSetCarrier(row, draft.carrier);
       tabState.rows.push(row);
       tabBuildRows(); closeModal(ref.o); rerenderE();
