@@ -4477,7 +4477,7 @@ function openAddressModal(id){
     applyList.innerHTML='';
     const f=filter.trim().toLowerCase();
     applyList.appendChild(el('div',{class:'rule-multisel-divider'}));
-    COUNTRIES.filter(c=>!f||c.code.toLowerCase().includes(f)||c.name.toLowerCase().includes(f)).forEach(co=>{
+    ADDRESS_COUNTRIES.filter(c=>!f||c.code.toLowerCase().includes(f)||c.name.toLowerCase().includes(f)).forEach(co=>{
       const on=draft.countries.includes(co.code);
       const opt=el('div',{class:'rule-multisel-opt'+(on?' sel':'')});
       const chk=el('span',{class:'rule-multisel-check'}); if(on) chk.textContent='✓';
