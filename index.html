@@ -4729,9 +4729,7 @@ function eCardTable(locked){
   const isSelfPostOnly = tabState.returnServices.length > 0 && tabState.returnServices.every(s => s === 'Self-post');
   const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')});
-  const headerCols = isSelfPostOnly
-    ? [el('th',{},'Return service'), el('th',{},'Destination'), el('th',{},'Postal Product')]
-    : [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
+  const headerCols = [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
        el('th',{},'Postal Product')];
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
