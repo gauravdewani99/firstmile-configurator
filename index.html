@@ -4446,8 +4446,8 @@ function openAddressModal(id){
 
   // ── Apply to countries ───────────────────────────────
   const applySection=el('div',{class:'addr-section addr-apply-section'});
-  applySection.appendChild(el('div',{class:'addr-section-title'},'Apply to return countries'));
-  applySection.appendChild(el('div',{class:'addr-section-hint'},'Select one or more countries this facility serves. Leave empty to apply to all countries.'));
+  applySection.appendChild(el('div',{class:'addr-section-title'},'Applicable Return Countries'));
+  applySection.appendChild(el('div',{class:'addr-section-hint'},'Select one or more countries where this return address applies. If no countries are selected, the address applies to all countries.'));
 
   const applyWrap=el('div',{class:'rule-multisel-wrap',style:'width:100%'});
   const applyTrigger=el('div',{class:'rule-multisel-trigger',style:'min-height:40px'});
@@ -4461,7 +4461,7 @@ function openAddressModal(id){
   const updateApplyTrigger=()=>{
     applyTrigger.innerHTML='';
     if(!draft.countries.length){
-      applyTrigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries (leave empty to apply to all)'));
+      applyTrigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries'));
     } else {
       draft.countries.slice(0,4).forEach(code=>{
         const co=ADDRESS_COUNTRIES.find(x=>x.code===code);
