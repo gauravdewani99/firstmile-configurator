@@ -4429,7 +4429,7 @@ function openAddressModal(id){
   const updateApplyTrigger=()=>{
     applyTrigger.innerHTML='';
     if(!draft.countries.length){
-      applyTrigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries (no restriction)'));
+      applyTrigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries'));
     } else {
       draft.countries.slice(0,4).forEach(code=>{
         const co=COUNTRIES.find(x=>x.code===code);
