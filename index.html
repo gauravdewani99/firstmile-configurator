@@ -4763,11 +4763,7 @@ function eCardTable(locked){
   const headerCols = [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
        el('th',{},'Postal Product')];
-  if(showAddBtn){
-    const thAdd = el('th',{class:'th-add-col'});
-    thAdd.appendChild(el('button',{class:'grp-add-top', title:'Add configuration', onclick:()=>openAddConfigModal(COUNTRIES[0].code), html:icon('plus')}));
-    headerCols.push(thAdd);
-  }
+  if(showAddBtn) headerCols.push(el('th',{class:'th-add-col'}));
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
   const tbody = el('tbody',{});
 
