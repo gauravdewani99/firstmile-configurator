@@ -731,7 +731,11 @@ body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .modal-inp:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.08)}
 .modal-inp::placeholder{color:var(--muted)}
 .addr-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.addr-apply-section{margin-top:20px;padding-top:18px;border-top:1px solid var(--border-soft)}
+.addr-section{background:var(--bg-soft,#f8f9fb);border:1px solid var(--border-soft);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.addr-section .addr-fld:last-child{margin-bottom:0}
+.addr-section-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:14px}
+.addr-section-hint{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.45}
+.addr-apply-section{margin-top:0;margin-bottom:0}
 /* keep old addr-cc classes in case referenced elsewhere */
 .addr-country-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
 .addr-cc{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;background:var(--card);text-align:left;transition:all .12s}
@@ -4407,34 +4411,32 @@ function openAddressModal(id){
   };
   const inp=(key,ph)=>el('input',{type:'text',class:'modal-inp',value:draft[key]||'',placeholder:ph,oninput:e=>draft[key]=e.target.value});
 
-  // Facility Name *
-  card.appendChild(fld('Facility Name',true,inp('company','e.g. Gymshark Returns Centre')));
-
-  // Country *
+  // ── Section 1: Facility ──────────────────────────────
+  const sec1=el('div',{class:'addr-section'});
+  sec1.appendChild(el('div',{class:'addr-section-title'},'Facility'));
+  sec1.appendChild(fld('Facility Name',true,inp('company','e.g. Gymshark Returns Centre')));
   const countrySel=el('select',{class:'modal-select',onchange:e=>draft.countryCode=e.target.value});
   countrySel.appendChild(el('option',{value:''},'Select country…'));
   ADDRESS_COUNTRIES.forEach(c=>{ const o=el('option',{value:c.code},c.flag+'  '+c.name); if(draft.countryCode===c.code) o.selected=true; countrySel.appendChild(o); });
-  card.appendChild(fld('Country',true,countrySel));
+  sec1.appendChild(fld('Country',true,countrySel));
+  card.appendChild(sec1);
 
-  // Street Address *
-  card.appendChild(fld('Street Address',true,inp('line1','Street number and name')));
-
-  // Apartment / Suite
-  card.appendChild(fld('Apartment / Suite',false,inp('line2','Optional')));
-
-  // Postal Code * + City * side by side
+  // ── Section 2: Address ───────────────────────────────
+  const sec2=el('div',{class:'addr-section'});
+  sec2.appendChild(el('div',{class:'addr-section-title'},'Address'));
+  sec2.appendChild(fld('Address Line 1',true,inp('line1','Building number & street name — e.g. 12 Baker Street')));
+  sec2.appendChild(fld('Address Line 2',false,inp('line2','Apartment, suite, floor, unit — e.g. Suite 4B, 3rd Floor')));
   const row=el('div',{class:'addr-row'});
   row.appendChild(fld('Postal Code',true,inp('postal','e.g. WC2N 5DU')));
   row.appendChild(fld('City',true,inp('city','e.g. London')));
-  card.appendChild(row);
+  sec2.appendChild(row);
+  sec2.appendChild(fld('State / Region',false,inp('state','e.g. Greater London  (optional)')));
+  card.appendChild(sec2);
 
-  // State / Region
-  card.appendChild(fld('State / Region',false,inp('state','Optional')));
-
-  // ── Apply to countries ───────────────────────────────
-  const applySection=el('div',{class:'addr-apply-section'});
-  applySection.appendChild(el('div',{class:'addr-lbl',style:'margin-bottom:4px'},'Apply this address to return countries'));
-  applySection.appendChild(el('div',{style:'font-size:12px;color:var(--muted);margin-bottom:10px'},'Select one or more countries this facility serves. Leave empty to apply to all countries.'));
+  // ── Section 3: Apply to countries ───────────────────
+  const applySection=el('div',{class:'addr-section addr-apply-section'});
+  applySection.appendChild(el('div',{class:'addr-section-title'},'Apply to return countries'));
+  applySection.appendChild(el('div',{class:'addr-section-hint'},'Select one or more countries this facility serves. Leave empty to apply to all countries.'));
 
   const applyWrap=el('div',{class:'rule-multisel-wrap',style:'width:100%'});
   const applyTrigger=el('div',{class:'rule-multisel-trigger',style:'min-height:40px'});
