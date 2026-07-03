@@ -724,17 +724,14 @@ body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .fix-carrier{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:9px;background:var(--green-soft);color:#065F46;font-size:13px;font-weight:600}
 .fix-carrier-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
 /* address form fields */
-.addr-fld{display:flex;flex-direction:column;gap:5px;width:100%}
+.addr-fld{display:flex;flex-direction:column;gap:6px;width:100%;margin-bottom:14px}
 .addr-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
 .addr-req{color:#E53E3E}
-.modal-inp{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13.5px;color:var(--text);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+.modal-inp{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13.5px;color:var(--text);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
 .modal-inp:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.08)}
 .modal-inp::placeholder{color:var(--muted)}
-.addr-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.addr-apply-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--border-soft)}
-.addr-check-row{display:flex;align-items:center;gap:10px}
-.addr-check-row input[type=checkbox]{width:17px;height:17px;accent-color:var(--brand);cursor:pointer;flex-shrink:0}
-.addr-check-label{font-size:13.5px;font-weight:500;color:var(--text);cursor:pointer;user-select:none}
+.addr-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.addr-apply-section{margin-top:20px;padding-top:18px;border-top:1px solid var(--border-soft)}
 /* keep old addr-cc classes in case referenced elsewhere */
 .addr-country-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:4px}
 .addr-cc{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1.5px solid var(--border);border-radius:9px;background:var(--card);text-align:left;transition:all .12s}
@@ -4392,8 +4389,6 @@ function openAddressModal(id){
   const editing = id ? tabState.addresses.find(a=>a.id===id) : null;
   const draft = editing ? {...editing} : makeAddress();
   if(!draft.countries) draft.countries = [];
-  // applyAll: true = this address applies to all countries (draft.countries stays empty)
-  let applyAll = draft.countries.length === 0;
   const ref = {};
   const card = el('div',{class:'modal-card modal-wide'});
   card.appendChild(el('div',{class:'modal-title'}, editing ? 'Edit address' : 'Add client facility address'));
@@ -4421,7 +4416,7 @@ function openAddressModal(id){
   // Street Address *
   card.appendChild(fld('Street Address',true,inp('line1','Street number and name')));
 
-  // Apartment / Suite (Optional)
+  // Apartment / Suite
   card.appendChild(fld('Apartment / Suite',false,inp('line2','Optional')));
 
   // Postal Code * + City * side by side
@@ -4430,25 +4425,14 @@ function openAddressModal(id){
   row.appendChild(fld('City',true,inp('city','e.g. London')));
   card.appendChild(row);
 
-  // State / Region (Optional)
+  // State / Region
   card.appendChild(fld('State / Region',false,inp('state','Optional')));
 
   // ── Apply to countries ───────────────────────────────
   const applySection=el('div',{class:'addr-apply-section'});
+  applySection.appendChild(el('div',{class:'addr-lbl',style:'margin-bottom:4px'},'Apply this address to return countries'));
+  applySection.appendChild(el('div',{style:'font-size:12px;color:var(--muted);margin-bottom:10px'},'Select one or more countries this facility serves. Leave empty to apply to all countries.'));
 
-  const checkRow=el('div',{class:'addr-check-row'});
-  const checkbox=el('input',{type:'checkbox',id:'addr-all-chk',checked:applyAll,onchange:e=>{
-    applyAll=e.target.checked;
-    if(applyAll) draft.countries=[];
-    specificWrap.style.display=applyAll?'none':'block';
-    renderApplyList(''); updateApplyTrigger();
-  }});
-  checkRow.appendChild(checkbox);
-  checkRow.appendChild(el('label',{for:'addr-all-chk',class:'addr-check-label'},'Apply this address to all return countries'));
-  applySection.appendChild(checkRow);
-
-  // Specific country multi-select (shown when checkbox unchecked)
-  const specificWrap=el('div',{style:'display:'+(applyAll?'none':'block')+';margin-top:10px'});
   const applyWrap=el('div',{class:'rule-multisel-wrap',style:'width:100%'});
   const applyTrigger=el('div',{class:'rule-multisel-trigger',style:'min-height:40px'});
   const applyArrow=el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'});
@@ -4461,10 +4445,10 @@ function openAddressModal(id){
   const updateApplyTrigger=()=>{
     applyTrigger.innerHTML='';
     if(!draft.countries.length){
-      applyTrigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'Select countries…'));
+      applyTrigger.appendChild(el('span',{class:'rule-multisel-placeholder'},'All countries (leave empty to apply to all)'));
     } else {
       draft.countries.slice(0,4).forEach(code=>{
-        const co=COUNTRIES.find(x=>x.code===code);
+        const co=ADDRESS_COUNTRIES.find(x=>x.code===code);
         applyTrigger.appendChild(el('span',{class:'rule-cs-tag'},(co&&co.flag?co.flag+' ':'')+code));
       });
       if(draft.countries.length>4) applyTrigger.appendChild(el('span',{class:'rule-cs-tag more'},'+' +(draft.countries.length-4)+' more'));
@@ -4476,6 +4460,13 @@ function openAddressModal(id){
   const renderApplyList=(filter)=>{
     applyList.innerHTML='';
     const f=filter.trim().toLowerCase();
+    // "All" option
+    const allSel=draft.countries.length===0;
+    const allBtn=el('div',{class:'rule-multisel-opt'+(allSel?' sel':'')});
+    const allChk=el('span',{class:'rule-multisel-check'}); if(allSel) allChk.textContent='✓';
+    allBtn.appendChild(allChk); allBtn.appendChild(el('span',{},'All countries'));
+    allBtn.onclick=()=>{ draft.countries=[]; renderApplyList(applySearch.value); updateApplyTrigger(); };
+    applyList.appendChild(allBtn);
     applyList.appendChild(el('div',{class:'rule-multisel-divider'}));
     ADDRESS_COUNTRIES.filter(c=>!f||c.code.toLowerCase().includes(f)||c.name.toLowerCase().includes(f)).forEach(co=>{
       const on=draft.countries.includes(co.code);
@@ -4495,7 +4486,7 @@ function openAddressModal(id){
   applySearch.oninput=e=>renderApplyList(e.target.value);
 
   const clearApplyRow=el('div',{class:'rule-multisel-clear'});
-  clearApplyRow.appendChild(el('button',{class:'rule-multisel-clear-btn',onclick:(e)=>{ e.stopPropagation(); draft.countries=[]; renderApplyList(''); applySearch.value=''; updateApplyTrigger(); }},'Clear'));
+  clearApplyRow.appendChild(el('button',{class:'rule-multisel-clear-btn',onclick:(e)=>{ e.stopPropagation(); draft.countries=[]; renderApplyList(''); applySearch.value=''; updateApplyTrigger(); }},'Clear all'));
   applyDropdown.appendChild(applySearchWrap);
   applyDropdown.appendChild(applyList);
   applyDropdown.appendChild(clearApplyRow);
@@ -4519,8 +4510,7 @@ function openAddressModal(id){
   applyWrap.addEventListener('click',e=>e.stopPropagation());
   document.addEventListener('click',()=>{ if(applyOpen) setApplyOpen(false); });
   applyWrap.appendChild(applyTrigger);
-  specificWrap.appendChild(applyWrap);
-  applySection.appendChild(specificWrap);
+  applySection.appendChild(applyWrap);
   card.appendChild(applySection);
 
   const hint=el('div',{class:'modal-hint',style:{marginTop:'8px'}});
@@ -4531,7 +4521,6 @@ function openAddressModal(id){
       if(!draft.countryCode||!draft.company.trim()||!draft.line1.trim()||!draft.postal.trim()||!draft.city.trim()){
         hint.textContent='Country, Facility Name, Street Address, Postal Code and City are required.'; hint.classList.add('err'); return;
       }
-      if(applyAll) draft.countries=[];
       if(editing) Object.assign(editing,draft); else tabState.addresses.push(draft);
       closeModal(ref.o); rerenderE();
     }},editing?'Save address':'Add address')
