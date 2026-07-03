@@ -3745,6 +3745,7 @@ function buildCountryMultiSelect(obj, compact){
     }
   };
   trigger.onclick=(e)=>{ e.stopPropagation(); setOpen(!open); };
+  dropdown.addEventListener('click',e=>e.stopPropagation());
   document.addEventListener('click',()=>{ if(open) setOpen(false); });
   wrapper.addEventListener('click',e=>e.stopPropagation());
   wrapper.appendChild(trigger);
@@ -3835,6 +3836,7 @@ function buildCarrierMultiSelect(obj, compact){
     }
   };
   trigger.onclick=(e)=>{ e.stopPropagation(); setOpen(!open); };
+  dropdown.addEventListener('click',e=>e.stopPropagation());
   document.addEventListener('click',()=>{ if(open) setOpen(false); });
   wrapper.addEventListener('click',e=>e.stopPropagation());
   wrapper.appendChild(trigger);
@@ -3914,6 +3916,7 @@ function buildSearchSelect(getVal, setVal, options, placeholder, compact){
     }
   };
   trigger.onclick=(e)=>{ e.stopPropagation(); setOpen(!open); };
+  dropdown.addEventListener('click',e=>e.stopPropagation());
   document.addEventListener('click',()=>{ if(open) setOpen(false); });
   wrapper.addEventListener('click',e=>e.stopPropagation());
   wrapper.appendChild(trigger);
@@ -4507,6 +4510,7 @@ function openAddressModal(id){
     }
   };
   applyTrigger.onclick=(e)=>{ e.stopPropagation(); setApplyOpen(!applyOpen); };
+  applyDropdown.addEventListener('click',e=>e.stopPropagation());
   applyWrap.addEventListener('click',e=>e.stopPropagation());
   document.addEventListener('click',()=>{ if(applyOpen) setApplyOpen(false); });
   applyWrap.appendChild(applyTrigger);
