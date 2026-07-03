@@ -814,6 +814,7 @@ tr.lane-row.unavail:hover{background:transparent}
 .rule-form-divider{height:1px;background:var(--border-soft);margin:0 18px}
 .rule-form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 18px}
 .rule-form-row-3{grid-template-columns:1fr 1fr 1fr}
+.rule-form-row-4{grid-template-columns:1fr 1fr 1fr 1fr}
 .rule-form-row-5{grid-template-columns:1fr 1fr 1fr 1fr 1.2fr}
 .rule-form-input{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font:inherit;font-size:13px;color:var(--text);background:#fff;outline:none;transition:border-color .14s,box-shadow .14s}
 .rule-form-input:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.08)}
@@ -1499,6 +1500,110 @@ const ROUTING_RETURN_REASONS = ['Wrong item','Damaged','Changed mind','Too large
 const ROUTING_PRODUCT_CATEGORIES = [
   { group:'Fashion & Apparel', items:['Jacket','Dress','Vest','Apparel','Sunglasses','Shoes'] },
   { group:'Electronics',       items:['PlayStations','Consoles'] },
+];
+
+const DTW_DESTINATIONS = [
+  'ERC Nettetal (Germany)', 'Corby (UK)', 'Las Vegas, NV (US)', 'Dallas, TX (US)', 'Cranbury, NJ (US)',
+];
+
+const DTP_DESTINATIONS = [
+  'Thrift+','Trove','Recurate','Faume','Yellow Octopus','ReFlex',
+  'United Repair Center','BootRepairCompany','Soles4Souls','Smartworks',
+  'Salvation Army','UDO','Frankenhuis','Avena','ShredStation',
+  'FastFeetGrinded','ESO','EGN','CloseTheLoop','WasteCare',
+];
+
+const DTR_DESTINATIONS = [
+  'Demo TikTok Client GB','Bleckmann c/o Gymshark UK RM','Nike Terrace DC','The Couture Club',
+  'ASOS Royal Mail Returns','ASOS DC2','Curvy Kate Torque','Damson Madder c/o Torque',
+  'SmartWorks_Circ','BootRepairCompanyUK_Circ','UnitedRepairCentreUK_Circ','AvenaRecycling_Circ',
+  'RedIndustries_Circ','WasteCare_Circ','ShredStation_Circ','Military1st UK',
+  'Feelunique Returns Coventry','Avena GB','JD Sports returns','JD Group SP UK Manchester',
+  'Naylors','Ultimate Outdoors','JD Sports','Millets','HipStore','Go Outdoors','Blacks',
+  'Ezi Returns United Kingdom (Corby)','Bleckmann c/o Gymshark UK','Feelunique Returns c/o Coventry',
+  'Village Hats UK Ltd c/o Wembley','JD Group SP UK Rochdale','Charlotte Tilbury UK',
+  'Wills Vegan UK','Peloton Returns c/o Ingram','Le Col UK','Dare2b GB','Inov8 SP GB',
+  'Crocs_Bridgend','Footjoy SP UK','Titleist SP UK','ASCG Trove UK','Burton EVRi',
+  'Spoke London UK','Animal SP UK','Mountain Warehouse GB','ASOS Demo GB 2',
+  'Triumph Motorcycles GB','ASOS Demo GB','Crocs Swindon','Crocs East Midlands',
+  'Crocs Braintree','DSGN RM','Ezi Returns United Kingdom','Crocs Wembley','Soles4Souls UK',
+  'Naylors UK','JD Sports UK','Crocs York','Crocs Gunwharf Quays','Crocs Ashford',
+  'Crocs Cheshire Oaks','Steve Madden SP Location','Indigolune SP','Global-e SP',
+  'FMT CLIENT UK','TheDrillShed (B2C Distribution Ltd)','New Era Cap c/o Noatum Logistics',
+  'Accessorize SP UK','Monsoon SP UK','Military1st SP UK','Arsenal c/o Torque Logistics',
+  'ARNE Clo SP','Adanola Torque','Disney c/o Ceva','RM Williams DSP UK','ReBound Europe UK',
+  'Wetsuit Outlet UK','boohoo_sheffield','ZDEL Kettlewell Colours DC','Represent Clothing UK',
+  'Boohoo Sheffield','Bully Billows UK','CT Shirts SP UK','PrettyLittleThing RM',
+  'Nadine Merabi Bleckmann UK','zdelCalzedonia UK','DP World Canon E-Commerce',
+  'Royal Mail SP Returns','Belstaff UK','Regatta GB','Gymshark UK Bleckmann','Boulevard',
+  'Simba Sleep','Le Col','Bluebella','Epson UK','Tradeinn UK','Clearcore Ltd',
+  'Paige Dream Client','VollebakUK','Lovall warehouse','Bugaboo_UK',
+  'Advanced Supply Chain UK Weldon','Advanced Supply Chain UK','Salvation Army UK',
+  'Nasty Gal RM','Boohoo WW RM','Boohooman RM','Miss Pap RM','Warehouse RM',
+  'D. Louise','Debenhams RM','ASC Bradford','DP RM','Coast RM','Oasis RM',
+  'Karen Millen RM','Wallis RM','CEVA_UK','Burton RM','Nike Avena UK',
+  'Passenger Clothing Ltd','Syncreon Technology (UK) Ltd','URBN PFC','Currentbody UK',
+  'Ceva Logistics Max Park','RM Williams 3PL DSV UK','Club L London Narvar Warehouse',
+  'Nike Van Wincanton','Boohoo Daventry','Burnley UK1','Funiglobal warehouse UK',
+  'vivoeutakeback','Collectif','Hera','BecauseofAlice','AYBL UK','Chain Reaction Cycles',
+  'Pertemba','Hobbs','Fairfax and Favor','Paul Smith','Legend London','Abbott Lyon',
+  'OhPolly Loop Warehouse','Shredstation Destruction facility','Rapha UK','vivobarefoot',
+  'Shoes For Crews UK Local','Suez Recycling & Recovery UK','Jockey DC UK','camper local UK',
+  '2051 Bicester Store','URBN UK','Rebound','Oner Active UK','Brother UK Limited',
+  'Sports Edit ReBOUND','indigolune','Triumph motorcycles','542 Nike PORTSMOUTH FACTORY STORE',
+  'ARNE','Phase Eight','Arsenal - Torque Logistics','James Cargo','Hotter Shoes',
+  'BeeInspiredClothing','Hylo Athletics','Clarks','Neena Swim','kettlewellcolours',
+  'Universal Textiles','Lavish Alice','Global-e Returns','Accupart','boandtee','Cernucci',
+  'Spoke London','whitestuff','ZDEL Oh Polly','ukClubLLondon','LH Trading',
+  'truclothingreturn','chichiclothing','Village Hats','WIT Fitness','Footjoy','Titleist',
+  '2Tall.com','4thandreckless','Fierce PC LTD','The Foschini Group','ZDEL Nadine Merabi',
+  'Style cheat','Sophie Allport','SOHO Grit','peruvianconnection','Mahabis','arneclo',
+  'Military1st','Feelunique','manieredevoir','River Island','Woolovers','Yours Clothing',
+  'Motel Rocks','getthelabel','Zoom','Dryrobe UK','Creatures of XIX','Hella Heels',
+  'KITRI','JDSports GB','Mountain Warehouse','Joebrowns','Internet Fusion','Wiggle',
+  'CT Shirts','Fanatics','Global-e','Missguided','Loungewear','Pretty Little Thing',
+  '2057 NFS LEICESTER','Womens Best/Oner Active UK','Norfolk Scraping facility',
+  'WasteCare Ltd','Shred Station','Trendyol UK Just in time ltd','Data Shredders',
+  'Pangaia XPO LOGISTICS','Patagonia Lancashire Sports','Brother Industries (UK) Ltd',
+  'DHL Normanton (Nikon B2C Returns)','Allbirds Returns UK','AP Taylor Ltd',
+  'Electrichut LTD','Nikon Repair UK Ltd','LCY2_Amazon Fulfillment Center',
+  'EDI4_Amazon Fulfillment Center','LTN2_Amazon Fulfillment Center',
+  'EUK5_Amazon Fulfillment Center','XUKD_Amazon Fulfillment Center',
+  'BHX4_Amazon Fulfillment Center','LBA2_Amazon Fulfillment Center',
+  'BHX2_Amazon Fulfillment Center','GB_Yusen_Northampton_Starbucks',
+  'GB_ASC_RoyalMailRouting Nike','Philips Centre','Pro:Direct Returns Department',
+  'JD Sports fashion plc','JLP c/o Clipper Logistic Plc','Mitra Trading (UK) Limited',
+  'Clearance Lines Ltd','Clear Cycle','Cycleon - Recare B2C UK','Paul Murray PLC',
+  '2209300 ASDA Lutterworth','Bonaventure Okolo','2027 NFS LONDON ORPINGTON',
+  'Spectrum Brands UK Ltd','Walton Works','Servatek LTD','NB EXPORT LTD',
+  'Sims Recycling Solutions','Sims Metal Management','Canon Service & Repair Centre',
+  'New Look Retailers Ltd','814 Nike Covent Garden','531 Nike Town London',
+  '806 Nike London Westfield','Nike Talke','972 London Taplow Factory Store',
+  '665 West Thurrock Factory Store','636 Spalding Factory Store',
+  '635 Ebbw Vale Factory Store','553 Royal Quays Factory Store','804 Nike Manchester',
+  '983 Leeds Crown Point Factory Store','805 Nike Store Liverpool','532 Nike Store Glasgow',
+  '523 Tillicoultry Factory Store','623 Livingston Factory Store','501 Nike NRG 1948',
+  '918 Hackney Factory Store','803 Nike Stratford','533 Nike Store Boxpark',
+  '802 Durham Arnison Factory Store','634 Gretna Gateway Opening Factory Store',
+  '633 Mansfield Factory Store','811 Nike BlueWater','817 Nike Cardiff',
+  'Nike Birmingham One Stop','818 Wembley Factory Store','Knights of Old Ltd',
+  '962 Edinburgh Loanhead Factory Store','529 Ashford Factory Store',
+  '959 East Kilbride Kingsgate Retail Park','585 Junction 1 International Outlet',
+  '641 Atlantic Village Factory Store','631 Gloucester Quays Factory Store',
+  '614 Hatfield Factory Store','606 Bridgewater Factory Store',
+  '800 Nike Store UK - BIRMINGHAM ONE STOP FS','997 Edinburgh Factory Store',
+  '822 Norwich Factory Store','821 Nike FS Glasgow','622 Nike FS York',
+  '526 Nike FS Castleford','Moock Environmental Solutions Ltd','OKI Europe Limited',
+  '897 Rotherham Factory Store','820 Nike Store UK - Chester',
+  '819 Manchester Fort Factory Store','Dachser Rochdale Ltd',
+  'SuperGroup Internet Ltd','Dachser Northampton Ltd','525 Nike Store UK - Braintree',
+  '542 Portsmouth Factory Store','510 Nike Great Western Designer Outlet',
+  '504 Nike Store UK Cheshire Oaks','INFOTEAM UK','Samsung E-commerce Northampton',
+  'Panasonic System Networks Company (U.K.) Ltd.','Johnsons Photopia Ltd (Nikon)',
+  'H Lehman Ltd. (Nikon)','Fixation Unit C (Nikon)','Nikon UK Ltd','Zebra Technologies UK',
+  'Amazon UK EDI4 (ERC)','Flextronics Global Services (Manchester) Ltd','Canon Europe',
+  'P2P Mailing Limited','D-Link Europe LTD.','New Balance C/O',
+  'ZDEL_Brother Industries (UK) Ltd','test_mms2p_GB',
 ];
 
 /* region lookup for the variant-E pickup countries (reuses PREF regions; GB added) */
@@ -3702,6 +3807,108 @@ function buildCarrierMultiSelect(obj, compact){
 
 function buildRuleCarrierPicker(draft){ return buildCarrierMultiSelect(draft, false); }
 
+/* Searchable single-select — returns wrapper div.
+   getVal/setVal: getter/setter for the current string value.
+   options: string[] list. placeholder shown when empty. compact = smaller size. */
+function buildSearchSelect(getVal, setVal, options, placeholder, compact){
+  const wrapper=el('div',{class:'rule-multisel-wrap'});
+  const trigger=el('div',{class:'rule-multisel-trigger'+(compact?' compact':'')});
+  const arrowEl=el('span',{class:'rule-multisel-arrow',html:'<svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'});
+  const dropdown=el('div',{class:'rule-multisel-dropdown'});
+  const searchWrap=el('div',{class:'rule-multisel-search-wrap'});
+  const searchInp=el('input',{type:'text',class:'rule-multisel-search',placeholder:'Search…'});
+  searchWrap.appendChild(searchInp);
+  const list=el('div',{class:'rule-multisel-list'});
+
+  const updateTrigger=()=>{
+    trigger.innerHTML='';
+    const v=getVal();
+    if(!v){
+      trigger.appendChild(el('span',{class:'rule-multisel-placeholder'},placeholder||'Select…'));
+    } else {
+      trigger.appendChild(el('span',{style:'font-size:'+(compact?'12px':'13px')+';color:var(--text)'},v));
+    }
+    trigger.appendChild(arrowEl);
+  };
+  updateTrigger();
+
+  const renderList=(filter)=>{
+    list.innerHTML='';
+    const f=filter.trim().toLowerCase();
+    const noneOpt=el('div',{class:'rule-multisel-opt'+(!getVal()?' sel':'')});
+    const noneChk=el('span',{class:'rule-multisel-check'}); if(!getVal()) noneChk.textContent='✓';
+    noneOpt.appendChild(noneChk);
+    noneOpt.appendChild(el('span',{style:'color:var(--muted)'},placeholder||'Any'));
+    noneOpt.onclick=()=>{ setVal(''); updateTrigger(); setOpen(false); };
+    list.appendChild(noneOpt);
+    list.appendChild(el('div',{class:'rule-multisel-divider'}));
+    options.filter(o=>!f||o.toLowerCase().includes(f)).forEach(o=>{
+      const on=getVal()===o;
+      const opt=el('div',{class:'rule-multisel-opt'+(on?' sel':'')});
+      const chk=el('span',{class:'rule-multisel-check'}); if(on) chk.textContent='✓';
+      opt.appendChild(chk);
+      opt.appendChild(el('span',{},o));
+      opt.onclick=()=>{ setVal(o); updateTrigger(); setOpen(false); };
+      list.appendChild(opt);
+    });
+    if(!options.filter(o=>!f||o.toLowerCase().includes(f)).length){
+      list.appendChild(el('div',{style:'padding:10px 14px;color:var(--muted);font-size:12px'},'No results'));
+    }
+  };
+  renderList('');
+  searchInp.oninput=e=>renderList(e.target.value);
+
+  dropdown.appendChild(searchWrap);
+  dropdown.appendChild(list);
+
+  let open=false;
+  const setOpen=(v)=>{
+    open=v;
+    trigger.classList.toggle('open',open);
+    arrowEl.classList.toggle('open',open);
+    dropdown.classList.toggle('open',open);
+    if(open){ searchInp.value=''; renderList(''); setTimeout(()=>searchInp.focus(),30); }
+  };
+  trigger.onclick=(e)=>{ e.stopPropagation(); setOpen(!open); };
+  document.addEventListener('click',()=>{ if(open) setOpen(false); });
+  wrapper.addEventListener('click',e=>e.stopPropagation());
+  wrapper.appendChild(trigger);
+  wrapper.appendChild(dropdown);
+  return wrapper;
+}
+
+function destOptionsFor(type){ return type==='DTW'?DTW_DESTINATIONS:type==='DTP'?DTP_DESTINATIONS:type==='DTR'?DTR_DESTINATIONS:[]; }
+
+/* Build a two-part destination field: Type selector + conditional Name picker */
+function buildDestField(draft, compact){
+  const wrap=el('div',{style:'display:flex;flex-direction:column;gap:6px'});
+  const typeSel=el('select',{class:compact?'rtbl-sel':'rule-form-select'});
+  typeSel.appendChild(el('option',{value:''},'— Select type —'));
+  [['DTW','DTW — ReBound Warehouse'],['DTR','DTR — Client Facility'],['DTP','DTP — ReBound Partners']].forEach(([v,n])=>
+    typeSel.appendChild(el('option',{value:v,selected:(draft.destinationType||draft.destination||'')===v},n)));
+
+  const nameWrap=el('div');
+  const refreshName=()=>{
+    nameWrap.innerHTML='';
+    const t=draft.destinationType||'';
+    if(!t) return;
+    const opts=destOptionsFor(t);
+    nameWrap.appendChild(buildSearchSelect(
+      ()=>draft.destinationName||'',
+      v=>{ draft.destinationName=v; },
+      opts, 'Select destination…', compact
+    ));
+  };
+  // migrate old .destination field
+  if(!draft.destinationType && draft.destination){ draft.destinationType=draft.destination; draft.destination=''; }
+  refreshName();
+
+  typeSel.addEventListener('change',e=>{ draft.destinationType=e.target.value; draft.destinationName=''; refreshName(); });
+  wrap.appendChild(typeSel);
+  wrap.appendChild(nameWrap);
+  return wrap;
+}
+
 function buildRuleInlineForm(draft, onSave, onCancel){
   const form=el('div',{class:'rule-inline-form'});
 
@@ -3740,19 +3947,19 @@ function buildRuleInlineForm(draft, onSave, onCancel){
 
   form.appendChild(divider());
 
-  // Row 3: SKU + EAN + Value Min + Value Max + Destination
-  const destSel=el('select',{class:'rule-form-select'});
-  destSel.appendChild(el('option',{value:''},'Any destination'));
-  [['DTW','ReBound Warehouse (DTW)'],['DTR','Client Facility / Warehouse (DTR)'],['DTP','ReBound Partners (DTP)']].forEach(([v,n])=>
-    destSel.appendChild(el('option',{value:v,selected:draft.destination===v},n)));
-  destSel.addEventListener('change',e=>draft.destination=e.target.value);
-
-  form.appendChild(el('div',{class:'rule-form-row rule-form-row-5'},
+  // Row 3: SKU + EAN + Value Min + Value Max
+  form.appendChild(el('div',{class:'rule-form-row rule-form-row-4'},
     ruleField('SKU', el('input',{class:'rule-form-input',type:'text',placeholder:'e.g. SKU-001',value:draft.sku,oninput:e=>draft.sku=e.target.value})),
     ruleField('EAN', el('input',{class:'rule-form-input',type:'text',placeholder:'1234567890123',value:draft.ean,oninput:e=>draft.ean=e.target.value})),
     ruleField('Min Value (€)', el('input',{class:'rule-form-input',type:'number',placeholder:'0',value:draft.minValue,oninput:e=>draft.minValue=e.target.value})),
-    ruleField('Max Value (€)', el('input',{class:'rule-form-input',type:'number',placeholder:'∞',value:draft.maxValue,oninput:e=>draft.maxValue=e.target.value})),
-    ruleField('Destination', destSel)
+    ruleField('Max Value (€)', el('input',{class:'rule-form-input',type:'number',placeholder:'∞',value:draft.maxValue,oninput:e=>draft.maxValue=e.target.value}))
+  ));
+
+  form.appendChild(divider());
+
+  // Row 4: Destination Type + Destination Name
+  form.appendChild(el('div',{class:'rule-form-row'},
+    ruleField('Destination Type', buildDestField(draft, false))
   ));
 
   // Actions
@@ -3785,10 +3992,11 @@ function buildRulesTabularSection(){
     el('th',{},'Return Reason'),
     el('th',{},'SKU'),
     el('th',{},'EAN'),
-    el('th',{},'Value Min'),
-    el('th',{},'Value Max'),
+    el('th',{},'Min €'),
+    el('th',{},'Max €'),
     el('th',{},'Carrier'),
-    el('th',{},'Destination'),
+    el('th',{},'Dest Type'),
+    el('th',{style:'min-width:180px'},'Destination'),
     el('th',{style:'width:36px'},'')
   ));
   tbl.appendChild(thead);
@@ -3796,29 +4004,60 @@ function buildRulesTabularSection(){
 
   const addRow=(rule)=>{
     const tr=el('tr');
-    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'Rule name…',value:rule.name||'',oninput:e=>rule.name=e.target.value})));
-    tr.appendChild(el('td',{style:'min-width:120px'},makeRuleCountryCell(rule)));
+    tr.appendChild(el('td',{style:'min-width:130px'},el('input',{type:'text',class:'rtbl-inp',placeholder:'Rule name…',value:rule.name||'',oninput:e=>rule.name=e.target.value})));
+    tr.appendChild(el('td',{style:'min-width:130px'},makeRuleCountryCell(rule)));
+
+    // Product Category — native select, stop propagation so no parent rerender
     const catSel=el('select',{class:'rtbl-sel'});
     catSel.appendChild(el('option',{value:''},'—'));
-    ROUTING_PRODUCT_CATEGORIES.forEach(g=>{ const grp=el('optgroup',{label:g.group}); g.items.forEach(c=>grp.appendChild(el('option',{value:c,selected:rule.productCategory===c},c))); catSel.appendChild(grp); });
-    catSel.addEventListener('change',e=>rule.productCategory=e.target.value);
-    tr.appendChild(el('td',{},catSel));
+    ROUTING_PRODUCT_CATEGORIES.forEach(g=>{
+      const grp=el('optgroup',{label:g.group});
+      g.items.forEach(c=>grp.appendChild(el('option',{value:c,selected:rule.productCategory===c},c)));
+      catSel.appendChild(grp);
+    });
+    catSel.addEventListener('change',e=>{ e.stopPropagation(); rule.productCategory=e.target.value; });
+    tr.appendChild(el('td',{style:'min-width:120px'},catSel));
+
+    // Return Reason
     const rrSel=el('select',{class:'rtbl-sel'});
     rrSel.appendChild(el('option',{value:''},'—'));
     ROUTING_RETURN_REASONS.forEach(r=>rrSel.appendChild(el('option',{value:r,selected:rule.returnReason===r},r)));
-    rrSel.addEventListener('change',e=>rule.returnReason=e.target.value);
-    tr.appendChild(el('td',{},rrSel));
-    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'SKU…',value:rule.sku||'',oninput:e=>rule.sku=e.target.value})));
-    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'EAN…',value:rule.ean||'',oninput:e=>rule.ean=e.target.value})));
-    tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'0',value:rule.minValue||'',oninput:e=>rule.minValue=e.target.value,style:'width:70px'})));
-    tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'∞',value:rule.maxValue||'',oninput:e=>rule.maxValue=e.target.value,style:'width:70px'})));
+    rrSel.addEventListener('change',e=>{ e.stopPropagation(); rule.returnReason=e.target.value; });
+    tr.appendChild(el('td',{style:'min-width:110px'},rrSel));
+
+    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'SKU…',value:rule.sku||'',oninput:e=>rule.sku=e.target.value,style:'width:80px'})));
+    tr.appendChild(el('td',{},el('input',{type:'text',class:'rtbl-inp',placeholder:'EAN…',value:rule.ean||'',oninput:e=>rule.ean=e.target.value,style:'width:80px'})));
+    tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'0',value:rule.minValue||'',oninput:e=>rule.minValue=e.target.value,style:'width:64px'})));
+    tr.appendChild(el('td',{},el('input',{type:'number',class:'rtbl-inp',placeholder:'∞',value:rule.maxValue||'',oninput:e=>rule.maxValue=e.target.value,style:'width:64px'})));
     tr.appendChild(el('td',{style:'min-width:150px'},makeRuleCarrierCell(rule)));
-    const destSel=el('select',{class:'rtbl-sel'});
-    destSel.appendChild(el('option',{value:''},'—'));
-    [['DTW','DTW'],['DTR','DTR'],['DTP','DTP']].forEach(([v,n])=>destSel.appendChild(el('option',{value:v,selected:rule.destination===v},n)));
-    destSel.addEventListener('change',e=>rule.destination=e.target.value);
-    tr.appendChild(el('td',{},destSel));
-    tr.appendChild(el('td',{},el('button',{class:'rule-del',html:icon('trash'),onclick:()=>{ tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id); rerenderE(); }})));
+
+    // Destination Type (compact select)
+    const dtypeSel=el('select',{class:'rtbl-sel'});
+    dtypeSel.appendChild(el('option',{value:''},'—'));
+    [['DTW','DTW'],['DTR','DTR'],['DTP','DTP']].forEach(([v,n])=>dtypeSel.appendChild(el('option',{value:v,selected:(rule.destinationType||rule.destination||'')===v},n)));
+    const destNameTd=el('td',{style:'min-width:180px'});
+    const refreshDestName=()=>{
+      destNameTd.innerHTML='';
+      const t=rule.destinationType||'';
+      if(!t){ destNameTd.appendChild(el('span',{style:'color:var(--muted);font-size:12px;padding:4px 8px;display:block'},'Select type first')); return; }
+      destNameTd.appendChild(buildSearchSelect(
+        ()=>rule.destinationName||'',
+        v=>{ rule.destinationName=v; },
+        destOptionsFor(t), 'Select destination…', true
+      ));
+    };
+    if(!rule.destinationType && rule.destination){ rule.destinationType=rule.destination; rule.destination=''; }
+    refreshDestName();
+    dtypeSel.addEventListener('change',e=>{ e.stopPropagation(); rule.destinationType=e.target.value; rule.destinationName=''; refreshDestName(); });
+    tr.appendChild(el('td',{style:'min-width:90px'},dtypeSel));
+    tr.appendChild(destNameTd);
+
+    // Delete — remove row from DOM directly, no full rerender
+    const delBtn=el('button',{class:'rule-del',html:icon('trash'),onclick:()=>{
+      tabState.routingRules=tabState.routingRules.filter(r=>r.id!==rule.id);
+      tr.remove();
+    }});
+    tr.appendChild(el('td',{},delBtn));
     tbody.appendChild(tr);
   };
 
