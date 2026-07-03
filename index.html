@@ -1648,13 +1648,23 @@ const DTR_DESTINATIONS = [
 ];
 
 /* region lookup for the variant-E pickup countries (reuses PREF regions; GB added) */
+const EU_CODES = new Set(['DE','FR','ES','PT','IE','IT','BE','AT','NL','SE',
+  'CH','DK','NO','FI','PL','CZ','HU','RO','SK','HR','GR','BG','SI','LU','LT','LV','EE']);
 const E_REGION_BY_CODE = (() => {
   const m = {};
-  COUNTRIES.forEach(c => { m[c.code] = (PREF_COUNTRY_BY_CODE[c.code] && PREF_COUNTRY_BY_CODE[c.code].region) || null; });
-  m['GB'] = 'United Kingdom'; // not in PREF regions
+  COUNTRIES.forEach(c => {
+    if(EU_CODES.has(c.code)) m[c.code] = 'European Union';
+    else m[c.code] = (PREF_COUNTRY_BY_CODE[c.code] && PREF_COUNTRY_BY_CODE[c.code].region) || null;
+  });
+  m['GB'] = 'United Kingdom';
+  m['AU'] = 'Pacific'; m['NZ'] = 'Pacific';
+  m['US'] = 'North America'; m['CA'] = 'North America'; m['MX'] = 'North America';
+  m['JP'] = 'Asia'; m['SG'] = 'Asia'; m['HK'] = 'Asia'; m['KR'] = 'Asia';
+  m['AE'] = 'Middle East & Africa'; m['ZA'] = 'Middle East & Africa';
+  m['BR'] = 'South America';
   return m;
 })();
-const E_REGION_ORDER = ['European Union','United Kingdom','North America','Pacific'];
+const E_REGION_ORDER = ['European Union','United Kingdom','North America','Asia','Pacific','Middle East & Africa','South America'];
 
 /* dummy ReBound-managed contract ids per carrier (Variant E, lane type = Managed) */
 const MANAGED_CONTRACTS = {
