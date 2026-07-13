@@ -178,6 +178,21 @@ a{color:inherit;text-decoration:none}
 @keyframes landRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes landFade{from{opacity:0}to{opacity:1}}
 
+/* saved flows (landing) */
+.saved-section{text-align:left;margin-bottom:30px;animation:landFade .5s ease both}
+.saved-list{display:flex;flex-direction:column;gap:10px}
+.saved-card{position:relative;display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border-radius:14px;text-align:left;cursor:pointer;border:1px solid var(--border);background:var(--card);box-shadow:var(--shadow-1);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.saved-card:hover{transform:translateY(-1px);border-color:var(--brand-2);box-shadow:var(--shadow-2)}
+.saved-ic{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;background:var(--brand-soft);color:var(--brand)}
+.saved-ic svg{width:19px;height:19px}
+.saved-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.saved-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.saved-meta{font-size:12px;color:var(--muted)}
+.saved-del{flex-shrink:0;width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--dim);opacity:0;transition:all .12s}
+.saved-del svg{width:15px;height:15px}
+.saved-card:hover .saved-del{opacity:1}
+.saved-del:hover{background:var(--red-soft);color:var(--red)}
+
 /* ─── client-name modal ─── */
 .modal-overlay{
   position:fixed;inset:0;z-index:100;background:rgba(15,23,42,.42);
@@ -804,6 +819,8 @@ tr.lane-row.unavail:hover{background:transparent}
 .toast-x{flex-shrink:0;width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:var(--dim);transition:all .12s}
 .toast-x svg{width:12px;height:12px}
 .toast-x:hover{background:var(--border-soft);color:var(--text)}
+.app-toast.ok{border-left-color:var(--green)}
+.app-toast.ok .toast-ic{color:var(--green)}
 
 /* ─── Routing Rules ─── */
 .rule-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
@@ -1066,6 +1083,10 @@ tr.lane-row.unavail:hover{background:transparent}
 }
 .json-fab:hover{border-color:#CBD5E1;box-shadow:var(--shadow-2);transform:translateY(-1px)}
 .json-fab svg{width:15px;height:15px}
+.save-flow-btn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 15px;border-radius:999px;border:1px solid var(--brand);background:var(--brand);color:#fff;font-size:12.5px;font-weight:700;transition:all .16s ease}
+.save-flow-btn:hover{background:var(--brand-2);border-color:var(--brand-2);box-shadow:var(--shadow-2);transform:translateY(-1px)}
+.save-flow-btn svg{width:15px;height:15px}
+.save-flow-btn.saving{opacity:.7;pointer-events:none}
 body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]) .json-fab,
 body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]) .json-panel,
 body[data-view="landing"] .json-fab,
@@ -1195,6 +1216,10 @@ body[data-view="wizard"] #view-landing{display:none}
     </div>
   </div>
   <div class="header-right">
+    <button class="save-flow-btn" onclick="saveFlow()" title="Save this flow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save flow
+    </button>
     <button class="json-fab" onclick="toggleJsonPanel()" title="View configuration JSON">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       Preview JSON
@@ -1208,6 +1233,9 @@ body[data-view="wizard"] #view-landing{display:none}
     <div class="landing-mark"><img src="rebound-icon.png" alt="" /></div>
     <h1 class="landing-title">First Mile Configurator</h1>
     <p class="landing-sub">Configure first mile lanes for a client, i.e. carrier, service, routing type and account numbers for each pickup country.</p>
+    <!-- Saved flows (populated from /api/flows; hidden when empty) -->
+    <div id="saved-flows"></div>
+
     <!-- Hero: Tabular 2 (single-select) -->
     <button class="hero-card" onclick="startVariant('G')">
       <span class="hero-glow"></span>
@@ -2127,6 +2155,7 @@ function icon(name){
     globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
     flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
     warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
   };
   return icons[name] || '';
 }
@@ -2254,6 +2283,7 @@ function goHome(){
   if(jp) jp.classList.remove('open');
   setView('landing');
   document.getElementById('wizard').innerHTML = '';
+  loadSavedFlows();
 }
 
 /* ─────────────────────────────────────────────────
@@ -3570,10 +3600,11 @@ function rerenderE(){ renderWizard(); }
 
 /* lightweight toast (used for row delete + undo) */
 let _toastTimer = null;
-function showToast(message, actionLabel, onAction){
+function showToast(message, actionLabel, onAction, opts){
+  opts = opts || {};
   const old = document.getElementById('app-toast'); if(old) old.remove();
-  const t = el('div',{id:'app-toast', class:'app-toast'},
-    el('span',{class:'toast-ic', html:icon('trash')}),
+  const t = el('div',{id:'app-toast', class:'app-toast'+(opts.tone?(' '+opts.tone):'')},
+    el('span',{class:'toast-ic', html:icon(opts.icon || 'trash')}),
     el('span',{class:'toast-msg'}, message),
     onAction ? el('button',{class:'toast-action', onclick:()=>{ onAction(); t.remove(); }}, actionLabel) : null,
     el('button',{class:'toast-x', title:'Dismiss', html:icon('close'), onclick:()=>t.remove()})
@@ -3582,6 +3613,87 @@ function showToast(message, actionLabel, onAction){
   requestAnimationFrame(()=> t.classList.add('show'));
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(()=>{ const n=document.getElementById('app-toast'); if(n){ n.classList.remove('show'); setTimeout(()=>n.remove(),250); } }, 6000);
+}
+
+/* ─────────────────────────────────────────────────
+   SAVE / LOAD FLOWS (shared backend via /api/flows)
+   ───────────────────────────────────────────────── */
+const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2' };
+
+function captureFlowState(){
+  const s = {};
+  if(['E','F','G'].includes(state.variant)) s.tabState = JSON.parse(JSON.stringify(tabState));
+  else if(state.variant === 'D') s.prefState = JSON.parse(JSON.stringify(prefState));
+  else s.lanes = JSON.parse(JSON.stringify(state.lanes || {}));
+  return s;
+}
+
+async function saveFlow(){
+  if(!state.variant || !state.client){ showToast('Nothing to save yet.', null, null, {icon:'info'}); return; }
+  const btn = document.querySelector('.save-flow-btn');
+  const name = state.client + ' · ' + (VARIANT_NAMES[state.variant] || state.variant);
+  const payload = { name, client: state.client, variant: state.variant, state: captureFlowState() };
+  if(btn) btn.classList.add('saving');
+  try{
+    const res = await fetch('/api/flows', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    if(res.ok) showToast('Saved “'+name+'”.', null, null, {icon:'check', tone:'ok'});
+    else showToast('Could not save flow.', null, null, {icon:'warn'});
+  }catch(e){ showToast('Could not save flow (offline).', null, null, {icon:'warn'}); }
+  if(btn) btn.classList.remove('saving');
+}
+
+/* restore counters so newly-added rows/addresses don't collide with loaded ids */
+function _seqFrom(list, prefix){
+  let max = 0; (list||[]).forEach(x => { const n = parseInt(String(x.id||'').replace(/\D/g,'')) || 0; if(n>max) max=n; }); return max;
+}
+function loadFlow(flow){
+  state.variant = flow.variant;
+  state.client = flow.client;
+  const s = flow.state || {};
+  if(['E','F','G'].includes(flow.variant)){
+    tabState = s.tabState || {};
+    _tabSeq = Math.max(_seqFrom(tabState.rows,'r'), 0);
+    _addrSeq = Math.max(_seqFrom(tabState.addresses,'a'), 0);
+  } else if(flow.variant === 'D'){
+    prefState = s.prefState || {};
+  } else {
+    state.lanes = s.lanes || {};
+  }
+  const jp = document.getElementById('json-panel'); if(jp) jp.classList.remove('open');
+  setView('wizard');
+  renderWizard();
+}
+
+/* landing "Saved flows" list */
+async function loadSavedFlows(){
+  const wrap = document.getElementById('saved-flows'); if(!wrap) return;
+  wrap.innerHTML = '';
+  let flows = [];
+  try{ const res = await fetch('/api/flows'); if(res.ok) flows = (await res.json()).flows || []; else { return; } }
+  catch(e){ return; }
+  if(!flows.length){ return; } // nothing saved yet → keep section hidden
+  const section = el('div',{class:'saved-section'});
+  section.appendChild(el('div',{class:'legacy-head'}, el('span',{class:'legacy-title'}, 'Saved flows')));
+  const list = el('div',{class:'saved-list'});
+  flows.forEach(f => {
+    const when = f.savedAt ? new Date(f.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
+    const card = el('button',{class:'saved-card', onclick:()=>loadFlow(f)},
+      el('span',{class:'saved-ic', html:icon('save')}),
+      el('span',{class:'saved-info'},
+        el('span',{class:'saved-name'}, f.name || (f.client+' · '+(VARIANT_NAMES[f.variant]||f.variant))),
+        el('span',{class:'saved-meta'}, (VARIANT_NAMES[f.variant]||f.variant) + (when ? ' · saved '+when : ''))
+      ),
+      el('span',{class:'saved-del', title:'Delete', html:icon('trash'), onclick:(e)=>{ e.stopPropagation(); deleteFlow(f); }})
+    );
+    list.appendChild(card);
+  });
+  section.appendChild(list);
+  wrap.appendChild(section);
+}
+async function deleteFlow(f){
+  try{ await fetch('/api/flows?id='+encodeURIComponent(f.id), { method:'DELETE' }); }catch(e){}
+  loadSavedFlows();
+  showToast('Deleted “'+(f.name||'flow')+'”.', null, null, {icon:'trash'});
 }
 
 /* ─── carrier-service-selector refresh cycle ───
@@ -5121,6 +5233,7 @@ document.addEventListener('click', e => {
 
 /* ─── Init ─── */
 setView('landing');
+loadSavedFlows();
 </script>
 </body>
 </html>
