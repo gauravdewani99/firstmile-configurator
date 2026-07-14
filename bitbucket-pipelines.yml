@@ -1,0 +1,29 @@
+# Reverse mirror: pushes Bitbucket `main` → GitHub, so commits made by engineers on
+# Bitbucket also land on GitHub (which auto-deploys to Vercel).
+#
+# Pairs with the GitHub Action (.github/workflows/mirror-to-bitbucket.yml) for the
+# other direction. Mirrors are fast-forward only, so a mirror that re-pushes a commit
+# the other side already has is a no-op — the loop terminates naturally.
+#
+# One-time setup (Bitbucket repo → Repository settings):
+#   1. Pipelines → Settings → Enable Pipelines.
+#   2. Pipelines → SSH keys → "Generate keys", then add github.com under Known hosts
+#      (fetch it). Copy the PUBLIC key.
+#   3. On GitHub: repo → Settings → Deploy keys → "Add deploy key", paste that public
+#      key, and TICK "Allow write access".
+# The private key stays inside Bitbucket Pipelines (never leaves it).
+
+image: atlassian/default-image:4
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Mirror main to GitHub
+          clone:
+            depth: full
+          script:
+            - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+            - ssh-keyscan -t ed25519,rsa github.com >> ~/.ssh/known_hosts 2>/dev/null
+            - git remote add github git@github.com:gauravdewani99/firstmile-configurator.git || git remote set-url github git@github.com:gauravdewani99/firstmile-configurator.git
+            - git push github HEAD:main

@@ -4,6 +4,9 @@
 > [firstmile-myrebound.vercel.app](https://firstmile-myrebound.vercel.app).
 > Use the live app as the source of truth for UX behaviour; this doc is the source of truth for
 > *what the app captures, how it's modelled, and what gets stored*.
+>
+> **Owner / contact:** Gaurav Dewani — [gaurav.dewani@reboundreturns.com](mailto:gaurav.dewani@reboundreturns.com).
+> Questions during review, or anything unclear? Reach out to Gaurav.
 
 ---
 

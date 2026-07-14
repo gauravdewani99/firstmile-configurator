@@ -11,6 +11,11 @@ backend for saving flows and collecting feedback — there is no database or ser
 The app hosts several UI *variants* explored during the POC. The two current focal points are
 **Tabular 2** and **Manisha Tabular**; **Tabular 1** and the earlier versions remain accessible.
 
+## Ownership & contact
+
+Maintained by **Gaurav Dewani** — [gaurav.dewani@reboundreturns.com](mailto:gaurav.dewani@reboundreturns.com).
+Reviewing the code or hit an issue? Please reach out to Gaurav directly.
+
 ## Live URL
 
 | Service  | URL                                        | Hosted on |
