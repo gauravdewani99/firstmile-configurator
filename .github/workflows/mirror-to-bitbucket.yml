@@ -1,0 +1,45 @@
+name: Mirror to Bitbucket
+
+# Keeps the Bitbucket mirror (cycleon_team/fm-myrb-poc-screens) in sync with GitHub.
+# Runs on every push to main — so commits from anyone (any author) are mirrored automatically.
+#
+# One-time setup required (see docs/handover.md / README):
+#   1. Add repo secret BITBUCKET_SSH_KEY = a private SSH key whose public half is on a
+#      Bitbucket account with write access to the mirror repo.
+#      e.g.  gh secret set BITBUCKET_SSH_KEY --repo gauravdewani99/firstmile-configurator < /path/to/private_key
+#   2. Add that public key to Bitbucket (Personal settings → SSH keys).
+# Until the secret is set, this workflow safely no-ops.
+
+on:
+  push:
+    branches: [ main ]
+
+concurrency:
+  group: mirror-bitbucket
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push main to Bitbucket
+        env:
+          SSH_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
+        run: |
+          if [ -z "$SSH_KEY" ]; then
+            echo "BITBUCKET_SSH_KEY not set — skipping mirror. See README for setup."
+            exit 0
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519,rsa bitbucket.org >> ~/.ssh/known_hosts 2>/dev/null
+          git remote add bitbucket git@bitbucket.org:cycleon_team/fm-myrb-poc-screens.git || \
+            git remote set-url bitbucket git@bitbucket.org:cycleon_team/fm-myrb-poc-screens.git
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/id_ed25519 -o UserKnownHostsFile=~/.ssh/known_hosts -o StrictHostKeyChecking=accept-new" \
+            git push bitbucket HEAD:main
