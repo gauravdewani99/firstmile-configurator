@@ -13,6 +13,10 @@ const VARIANT_NAMES = {
   C: 'v3 Inline Grid',
   D: 'v4 Client Preferences',
   E: 'v5 Tabular',
+  F: 'Manisha Tabular',
+  G: 'Tabular 2',
+  I: 'Carrier Priority',
+  J: 'POC Phase 1',
 };
 
 export default async function handler(req, res) {

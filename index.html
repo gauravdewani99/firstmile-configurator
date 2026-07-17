@@ -95,6 +95,7 @@ a{color:inherit;text-decoration:none}
 .pc-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .pc-name{font-size:16px;font-weight:800;letter-spacing:-.2px;color:var(--text);display:flex;align-items:center;gap:8px}
 .pc-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:var(--green-soft);color:#065F46;font-size:10px;font-weight:800;letter-spacing:.3px}
+.pc-badge.phase{background:var(--brand-soft);color:var(--brand)}
 .pc-desc{font-size:12.5px;color:var(--muted);line-height:1.45}
 .primary-card .variant-arrow{margin-top:0;color:var(--dim);flex-shrink:0}
 .primary-card:hover .variant-arrow{color:var(--brand)}
@@ -578,6 +579,8 @@ body[data-variant="E"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="H"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
+body[data-variant="I"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
+body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 
 /* ─── Variant E: left navigation panel ─── */
 .e-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:30px;align-items:start}
@@ -808,6 +811,22 @@ body[data-variant="H"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .minichip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
 .minichip.nocarrier{opacity:.5;text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:1.5px}
 .minichip.nocarrier.on{opacity:1}
+/* POC Phase 1 (variant J): one draggable row per carrier × postal-product */
+tr.rank-row{cursor:grab}
+tr.rank-row:active{cursor:grabbing}
+tr.rank-row.dragging{opacity:.4}
+tr.rank-row.drop-before td{box-shadow:inset 0 3px 0 var(--brand)}
+.grip-td{white-space:nowrap}
+.grip-td .cell-svc{display:inline-flex}
+.rank-grip{display:inline-flex;align-items:center;vertical-align:middle;margin-right:7px;color:var(--dim)}
+.rank-grip svg{width:13px;height:13px}
+.rank-p{font-size:10px;font-weight:800;letter-spacing:.3px;color:var(--brand);background:var(--brand-soft);border-radius:5px;padding:2px 7px}
+.rank-name{font-size:12.5px;font-weight:600;color:var(--text)}
+.pp-readonly{font-size:12.5px;color:var(--text)}
+.dim-repeat{opacity:.45}
+.rank-x{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:5px;color:var(--dim);cursor:pointer;transition:color .12s,background .12s}
+.rank-x:hover{color:var(--red);background:rgba(239,68,68,.08)}
+.rank-x svg{width:12px;height:12px}
 
 /* ─── carrier-service-selector: refresh banner, skeleton, review highlight, unavailable rows ─── */
 .carrier-refresh{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:11px;margin-bottom:14px;font-size:12.5px;line-height:1.45}
@@ -1125,8 +1144,8 @@ tr.lane-row.unavail:hover{background:transparent}
 .save-flow-btn:hover{background:var(--brand-2);border-color:var(--brand-2);box-shadow:var(--shadow-2);transform:translateY(-1px)}
 .save-flow-btn svg{width:15px;height:15px}
 .save-flow-btn.saving{opacity:.7;pointer-events:none}
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]) .json-fab,
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]) .json-panel,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]) .json-fab,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]) .json-panel,
 body[data-view="landing"] .json-fab,
 body[data-view="landing"] .json-panel{display:none}
 .json-panel{
@@ -1225,6 +1244,28 @@ body[data-view="wizard"] #view-landing{display:none}
 .pp-opt.pp-add:hover{background:var(--brand-soft)}
 .pp-opt.pp-add svg{width:12px;height:12px;vertical-align:middle;margin-right:5px}
 .pp-empty{padding:10px 12px;font-size:12px;color:var(--dim);font-style:italic}
+.pp-opt.inactive{opacity:.45;cursor:not-allowed;pointer-events:none}
+.pp-opt-row{display:flex;align-items:center;gap:8px;width:100%}
+.pp-opt-check{flex-shrink:0;width:14px;height:14px;border:1.5px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff}
+.pp-opt.selected .pp-opt-check{background:var(--brand);border-color:var(--brand)}
+.pp-opt-check svg{width:10px;height:10px}
+.pp-opt-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pp-opt-tag{flex-shrink:0;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--dim);background:var(--border-soft);border-radius:4px;padding:2px 6px}
+
+/* ─── carrier add row (variant I: manual multi-carrier picker) ─── */
+.add-carrier-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1.5px dashed var(--border);border-radius:var(--r-xs);font:inherit;font-size:12px;font-weight:600;color:var(--brand-2);background:transparent;cursor:pointer;transition:border-color .12s,background .12s}
+.add-carrier-btn:hover{border-color:var(--brand-2);background:var(--brand-soft)}
+.add-carrier-btn svg{width:12px;height:12px}
+.carrier-inactive-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--red);background:rgba(239,68,68,.1);border-radius:4px;padding:2px 6px;margin-left:6px}
+
+/* ─── country search + multi-select filter (Lane Review) ─── */
+.country-filter{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cf-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cf-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 6px 4px 9px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-size:12px;font-weight:600}
+.cf-chip button{display:flex;color:var(--brand);opacity:.7}
+.cf-chip button:hover{opacity:1}
+.cf-chip button svg{width:11px;height:11px}
+.cf-combo{max-width:260px}
 
 /* ─── scrollbar ─── */
 ::-webkit-scrollbar{width:6px;height:6px}
@@ -1293,6 +1334,24 @@ body[data-view="wizard"] #view-landing{display:none}
           <span class="pc-info">
             <span class="pc-name">Tabular 2 <span class="pc-badge">Latest</span></span>
             <span class="pc-desc">One return service &amp; label, one row per country — add extra configs per country as needed.</span>
+          </span>
+          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>
+
+        <button class="primary-card" onclick="startVariant('J')">
+          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+          <span class="pc-info">
+            <span class="pc-name">POC Phase 1 <span class="pc-badge phase">Phase 1</span></span>
+            <span class="pc-desc">Tabular 2 trimmed to Phase 1 — return service &amp; label, one row per country, ranked carriers.</span>
+          </span>
+          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>
+
+        <button class="primary-card" onclick="startVariant('I')">
+          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+          <span class="pc-info">
+            <span class="pc-name">Carrier Priority <span class="pc-badge">New</span></span>
+            <span class="pc-desc">Tabular 2 without destination, lane type or contract — pick and rank multiple carriers per country, each linked to a unique postal product.</span>
           </span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
@@ -1967,13 +2026,14 @@ function ppCombobox(r){
 }
 
 const CARRIER_CATALOG = [
-  { id:'DHL',        name:'DHL',            badge:'cb-dhl',        services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America','Pacific'] },
-  { id:'PostNL',     name:'PostNL',         badge:'cb-postnl',     services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union'] },
-  { id:'PostItalia', name:'Poste Italiane', badge:'cb-postitalia', services:['Drop-off'],            labels:['Printed label'],                       regions:['European Union'], countries:['IT'] },
-  { id:'FedEx',      name:'FedEx',          badge:'cb-fedex',      services:['Pickup','Drop-off'],   labels:['Printed label'],                       regions:['North America','Asia','South America'] },
-  { id:'GLS',        name:'GLS',            badge:'cb-generic',    services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America'] },
-  { id:'Evri',       name:'Evri',           badge:'cb-generic',    services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union','United Kingdom'] },
+  { id:'DHL',        name:'DHL',            badge:'cb-dhl',        services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America','Pacific'], postalProducts:['DHL Retoure','DHL Connect Return'], active:true },
+  { id:'PostNL',     name:'PostNL',         badge:'cb-postnl',     services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union'], postalProducts:['PostNL Return Standard'], active:true },
+  { id:'PostItalia', name:'Poste Italiane', badge:'cb-postitalia', services:['Drop-off'],            labels:['Printed label'],                       regions:['European Union'], countries:['IT'], postalProducts:['Poste Italiane Reverse'], active:true },
+  { id:'FedEx',      name:'FedEx',          badge:'cb-fedex',      services:['Pickup','Drop-off'],   labels:['Printed label'],                       regions:['North America','Asia','South America'], postalProducts:['FedEx Ground Returns'], active:true },
+  { id:'GLS',        name:'GLS',            badge:'cb-generic',    services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America'], postalProducts:['GLS ShopReturn'], active:true },
+  { id:'Evri',       name:'Evri',           badge:'cb-generic',    services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union','United Kingdom'], postalProducts:['Evri Returns'], active:false },
 ];
+function carrierActive(id){ const c = CARRIER_CATALOG.find(x => x.id === id); return !c || c.active !== false; }
 function carrierServesCountry(carrier, country, service, label){
   if(service && !carrier.services.includes(service)) return false;
   if(label && !carrier.labels.includes(label)) return false;
@@ -2052,6 +2112,7 @@ function initTabular(){
     deleted:        {},     // key -> true (combo removed for a country)
     carrierPhase:   'idle', // 'idle' | 'refreshing' | 'review' — drives the carrier-refresh banner
     routingRules:   [],    // [{id,name,productCategory,returnReason,sku,ean,minValue,maxValue,countries:[],carrierServices:[{carrierId,service}],destination}]
+    reviewCountries: [],   // variant I — search+multi-select filter on the Lane Review table, avoids scrolling every country
   };
 }
 
@@ -2070,8 +2131,52 @@ function eCarriersFor(code, service, label){
   return CARRIER_CATALOG.filter(c => carrierServesCountry(c, eCountryObj(code), service, label));
 }
 
-/* Tabular 2 (variant G) = single-select service & label, one row per country */
-function eSingle(){ return state.variant === 'G' || state.variant === 'H'; }
+/* Tabular 2 (variant G) + First Mile MVP Ready (H) + POC Phase 1 (J) + Carrier Priority (I) = single-select service & label, one row per country */
+function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I'; }
+/* POC Phase 1 (variant J) drops the destination step/column and ranks carriers, one row per carrier×postal-product */
+function ePoc(){ return state.variant === 'J'; }
+/* Carrier Priority (variant I) — Tabular 2 minus destination/lane type/contract, with a manual, ranked, multi-carrier picker */
+function eManual(){ return state.variant === 'I'; }
+/* both J and I share the trimmed ranked-carrier column layout (no destination/laneType/contract columns) */
+function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
+/* every variant driven by tabState / renderVariantE */
+const TABULAR_VARIANTS = ['E','F','G','H','I','J'];
+function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
+/* postal products derived from a carrier (each carrier → one or more products) */
+function ePostalProductsFor(carrierId){
+  const c = CARRIER_CATALOG.find(x => x.id === carrierId);
+  return (c && c.postalProducts && c.postalProducts.length) ? c.postalProducts : [null];
+}
+/* POC Phase 1: seed a lane's ranked entries — one per carrier × postal-product, in lookup order */
+function eSeedCarrierRows(code, service, label){
+  const out = [];
+  eCarriersFor(code, service, label).forEach(c => ePostalProductsFor(c.id).forEach(pp => out.push({ id:c.id, pp })));
+  return out;
+}
+function eCarrierEntryKey(e){ return e.id + '::' + (e.pp || ''); }
+/* reconcile a lane's ranked entries against the current lookup: drop stale, append new, keep user order */
+function eSyncCarrierRows(r){
+  const seed = eSeedCarrierRows(r.code, r.service, r.label);
+  const seedKeys = new Set(seed.map(eCarrierEntryKey));
+  const kept = (r.carriers || []).filter(e => e && e.id && seedKeys.has(eCarrierEntryKey(e)));
+  const have = new Set(kept.map(eCarrierEntryKey));
+  seed.forEach(e => { if(!have.has(eCarrierEntryKey(e))) kept.push(e); });
+  r.carriers = kept;
+  return kept;
+}
+/* variant I: drop entries for carriers no longer serviceable; never auto-adds — the user picks carriers manually */
+function eSyncManualCarrierRows(r){
+  const avail = new Set(eCarriersFor(r.code, r.service, r.label).map(c => c.id));
+  r.carriers = (r.carriers || []).filter(e => e && e.id && avail.has(e.id));
+  return r.carriers;
+}
+/* postal products for a carrier in a given country, from the country×carrier catalog (falls back to the carrier's generic list) */
+function ePostalProductsForCountry(countryCode, carrierId){
+  const byCountry = (POSTAL_PRODUCTS[countryCode] || {})[carrierId];
+  if(byCountry && byCountry.length) return byCountry;
+  const c = CARRIER_CATALOG.find(x => x.id === carrierId);
+  return (c && c.postalProducts) ? c.postalProducts.map((name,i) => ({ id:carrierId+'-'+i, name })) : [];
+}
 
 /* selected services split: which need a label vs Self-post (label-less) */
 function eNonSelfServices(){ return tabState.returnServices.filter(s => s !== 'Self-post'); }
@@ -2097,6 +2202,7 @@ function makeERow(code, service, label){
     id:'r'+(++_tabSeq), code, service, label,
     destType:null, dtwType:null, partner:null, addressId:null, // null destType = inherit global
     carrier,
+    carriers: ePoc() ? eSeedCarrierRows(code, service, label) : eManual() ? [] : av.map(c => c.id),   // J: auto-seeded carrier×postal-product entries. I: starts empty, added manually.
     laneType:'managed', contract: eDefaultContract(carrier),
     postalProduct: null,
     custom:false,
@@ -2300,7 +2406,7 @@ function confirmClient(){
   state.variant = pendingVariant;
   closeClientModal();
   if(state.variant === 'D'){ initPrefs(); }
-  else if(state.variant === 'E' || state.variant === 'F' || state.variant === 'G' || state.variant === 'H'){ initTabular(); }
+  else if(isTabularVariant(state.variant)){ initTabular(); }
   else { initLanes(); }
   setView('wizard');
   renderWizard();
@@ -2325,7 +2431,7 @@ function setView(v){
   if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
   else document.body.removeAttribute('data-variant');
   document.getElementById('meta-client').textContent = state.client || '—';
-  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready' };
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'Carrier Priority', J:'POC Phase 1' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
   const flowEl = document.getElementById('meta-flow');
   if(flowEl) flowEl.style.display = state.variant ? '' : 'none';
@@ -2349,7 +2455,7 @@ function renderWizard(){
   root.innerHTML = '';
 
   if(state.variant === 'D'){ renderVariantD(root); updateJson(); return; }
-  if(state.variant === 'E' || state.variant === 'F' || state.variant === 'G' || state.variant === 'H'){ renderVariantE(root); updateJson(); return; }
+  if(isTabularVariant(state.variant)){ renderVariantE(root); updateJson(); return; }
 
   const header = el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config'),
@@ -3586,6 +3692,64 @@ function tabLaneDestJson(r){
 }
 function buildTabJson(){
   const unserviceable = tabState.rows.filter(r => eCarriersFor(r.code, r.service, r.label).length === 0).length;
+  if(ePoc()){
+    // POC Phase 1 (variant J) — trimmed Tabular 2 shape: no destination / laneType / contract.
+    // One lane per country; each ranked entry is a carrier × postal-product row.
+    return {
+      client: state.client || null,
+      variant: 'poc-tabula',
+      selectionMode: 'single-select',
+      flowType: 'B2C',
+      returnServices: tabState.returnServices,
+      returnLabels: eNonSelfServices().length ? tabState.returnLabels : [],
+      lanes: tabState.rows.map(r => {
+        const c = COUNTRIES.find(x => x.code === r.code);
+        const seedKeys = new Set(eSeedCarrierRows(r.code, r.service, r.label).map(eCarrierEntryKey));
+        const ordered = (r.carriers || []).filter(e => e && e.id && seedKeys.has(eCarrierEntryKey(e)));
+        return {
+          country: r.code,
+          countryName: c.name,
+          returnService: r.service,
+          returnLabel: r.label,
+          carriers: ordered.map((e, i) => ({ name: (CARRIER_CATALOG.find(x => x.id === e.id) || {}).name || e.id, postalProduct: e.pp || null, priority: i + 1 })),
+          serviceable: seedKeys.size > 0,
+        };
+      }),
+      summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
+    };
+  }
+  if(eManual()){
+    // Carrier Priority (variant I) — Tabular 2 minus destination/laneType/contract; carriers are
+    // hand-picked (search + multi-select) and ranked, each with its own unique postal product id.
+    return {
+      client: state.client || null,
+      variant: 'simple-tabular',
+      selectionMode: 'single-select',
+      flowType: 'B2C',
+      returnServices: tabState.returnServices,
+      returnLabels: eNonSelfServices().length ? tabState.returnLabels : [],
+      lanes: tabState.rows.map(r => {
+        const c = COUNTRIES.find(x => x.code === r.code);
+        const validIds = new Set(eCarriersFor(r.code, r.service, r.label).map(x => x.id));
+        const ordered = (r.carriers || []).filter(e => e && e.id && validIds.has(e.id));
+        return {
+          country: r.code,
+          countryName: c.name,
+          returnService: r.service,
+          returnLabel: r.label,
+          carriers: ordered.map((e, i) => ({
+            name: (CARRIER_CATALOG.find(x => x.id === e.id) || {}).name || e.id,
+            active: carrierActive(e.id),
+            postalProductId: e.ppId != null ? e.ppId : null,
+            postalProduct: e.pp || null,
+            priority: i + 1,
+          })),
+          serviceable: validIds.size > 0,
+        };
+      }),
+      summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
+    };
+  }
   const variantName = state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
   return {
     client: state.client || null,
@@ -3616,7 +3780,7 @@ function buildTabJson(){
     summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
   };
 }
-function buildActiveJson(){ return (state.variant === 'E' || state.variant === 'F' || state.variant === 'G' || state.variant === 'H') ? buildTabJson() : buildPrefJson(); }
+function buildActiveJson(){ return isTabularVariant(state.variant) ? buildTabJson() : buildPrefJson(); }
 
 function highlightJson(obj){
   const str = JSON.stringify(obj, null, 2);
@@ -3630,7 +3794,7 @@ function highlightJson(obj){
     });
 }
 function updateJson(){
-  if(!['D','E','F','G','H'].includes(state.variant)) return;
+  if(state.variant !== 'D' && !isTabularVariant(state.variant)) return;
   const out = document.getElementById('json-out');
   if(out) out.innerHTML = highlightJson(buildActiveJson());
 }
@@ -3673,11 +3837,11 @@ function showToast(message, actionLabel, onAction, opts){
 /* ─────────────────────────────────────────────────
    SAVE / LOAD FLOWS (shared backend via /api/flows)
    ───────────────────────────────────────────────── */
-const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready' };
+const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'Carrier Priority', J:'POC Phase 1' };
 
 function captureFlowState(){
   const s = {};
-  if(['E','F','G','H'].includes(state.variant)) s.tabState = JSON.parse(JSON.stringify(tabState));
+  if(isTabularVariant(state.variant)) s.tabState = JSON.parse(JSON.stringify(tabState));
   else if(state.variant === 'D') s.prefState = JSON.parse(JSON.stringify(prefState));
   else s.lanes = JSON.parse(JSON.stringify(state.lanes || {}));
   return s;
@@ -3685,6 +3849,10 @@ function captureFlowState(){
 
 async function saveFlow(){
   if(!state.variant || !state.client){ showToast('Nothing to save yet.', null, null, {icon:'info'}); return; }
+  if(eManual() && tabState.rows.some(r => (r.carriers||[]).some(e => !carrierActive(e.id)))){
+    showToast('Remove inactive carriers before saving this configuration.', null, null, {icon:'warn'});
+    return;
+  }
   const btn = document.querySelector('.save-flow-btn');
   const name = state.client + ' · ' + (VARIANT_NAMES[state.variant] || state.variant);
   const payload = { name, client: state.client, variant: state.variant, state: captureFlowState() };
@@ -3705,7 +3873,7 @@ function loadFlow(flow){
   state.variant = flow.variant;
   state.client = flow.client;
   const s = flow.state || {};
-  if(['E','F','G','H'].includes(flow.variant)){
+  if(isTabularVariant(flow.variant)){
     tabState = s.tabState || {};
     _tabSeq = Math.max(_seqFrom(tabState.rows,'r'), 0);
     _addrSeq = Math.max(_seqFrom(tabState.addresses,'a'), 0);
@@ -3763,6 +3931,14 @@ function eRefreshCarriers(){
     // re-resolve each lane's carrier from the (country × service × label) lookup
     tabState.rows.forEach(r => {
       const av = eCarriersFor(r.code, r.service, r.label);
+      if(ePoc()){
+        eSyncCarrierRows(r);   // drop stale carrier×pp entries, append newly available ones, keep order
+        return;
+      }
+      if(eManual()){
+        eSyncManualCarrierRows(r);   // drop stale carrier entries only — never auto-adds
+        return;
+      }
       if(!av.some(c => c.id === r.carrier)){
         r.carrier = av.length ? av[0].id : null;
         if(r.laneType === 'managed') r.contract = eDefaultContract(r.carrier);
@@ -3779,7 +3955,7 @@ function eAfterSelectionChange(wasReady){
 }
 /* scroll to + pulse the first serviceable carrier control */
 function eGotoCarriers(){
-  const cell = document.querySelector('.config-table.compact .carrier-cell select, .config-table.compact .carrier-cell .minichip');
+  const cell = document.querySelector('.config-table.compact .carrier-cell select, .config-table.compact .carrier-cell .minichip, .config-table.compact .rank-row .rank-name');
   const target = cell ? cell.closest('.carrier-cell') : document.querySelector('.config-table.compact th:last-child');
   if(target){ target.scrollIntoView({block:'center', behavior:'smooth'}); }
 }
@@ -3796,7 +3972,7 @@ function eDestReady(){
   if(tabState.destination === 'DTR') return tabState.addresses.some(a => a.city.trim() && a.countryCode);
   return true;
 }
-function eTableReady(){ return eServiceReady() && eLabelReady() && eDestReady(); }
+function eTableReady(){ return eServiceReady() && eLabelReady() && (eRanked() || eDestReady()); }
 
 // effective destination for a row: explicit per-row override, else the global Q3 answer
 function eEffectiveDest(r){
@@ -3830,7 +4006,11 @@ function eDestCellInfo(r){
 function eScrollTo(id){ const elm = document.getElementById(id); if(elm) elm.scrollIntoView({ behavior:'smooth', block:'start' }); }
 
 function eNav(){
-  const steps = [
+  const steps = eRanked() ? [
+    { id:'sec-service', n:1, label:'Return Service', done:eServiceReady(), locked:false },
+    { id:'sec-label',   n:2, label:'Label Option',   done:eLabelReady(),   locked:!eServiceReady() },
+    { id:'sec-review',  n:3, label:'Lane Review',     done:false,           locked:!eLabelReady() },
+  ] : [
     { id:'sec-service', n:1, label:'Return Service',       done:eServiceReady(), locked:false },
     { id:'sec-label',   n:2, label:'Label Option',         done:eLabelReady(),   locked:!eServiceReady() },
     { id:'sec-dest',    n:3, label:'First Mile Destination',done:eDestReady(),    locked:!eLabelReady() },
@@ -4400,10 +4580,16 @@ function renderVariantE(root){
   const main = el('div',{class:'e-main'});
   const svc = eCardService(false);                 svc.id = 'sec-service';
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
-  const dst = eCardDestination(!eLabelReady());     dst.id = 'sec-dest';
-  const rev = eCardTable(!eDestReady());            rev.id = 'sec-review';
-  main.appendChild(svc); main.appendChild(lbl); main.appendChild(dst); main.appendChild(rev);
-  if(state.variant === 'F'){ const rls = eCardRules(); rls.id = 'sec-rules'; main.appendChild(rls); }
+  main.appendChild(svc); main.appendChild(lbl);
+  if(eRanked()){
+    const rev = eCardTable(!eLabelReady());          rev.id = 'sec-review';
+    main.appendChild(rev);
+  } else {
+    const dst = eCardDestination(!eLabelReady());     dst.id = 'sec-dest';
+    const rev = eCardTable(!eDestReady());            rev.id = 'sec-review';
+    main.appendChild(dst); main.appendChild(rev);
+    if(state.variant === 'F'){ const rls = eCardRules(); rls.id = 'sec-rules'; main.appendChild(rls); }
+  }
   layout.appendChild(main);
 
   root.appendChild(layout);
@@ -4794,6 +4980,317 @@ function eContractCell(r){
     oninput:(e)=>{ r.contract = e.target.value; e.target.classList.toggle('need-fill', !e.target.value.trim()); }});
 }
 
+/* POC Phase 1 (variant J): reorder a lane's ranked carrier entries by moving one entry
+   (by composite key) before another (targetKey null = move to the end). Shared by drag-and-drop. */
+function eReorderCarrier(r, dragKey, targetKey){
+  if(dragKey === targetKey) return;
+  const list = r.carriers.slice();
+  const from = list.findIndex(e => eCarrierEntryKey(e) === dragKey);
+  if(from === -1) return;
+  const [moved] = list.splice(from, 1);
+  const to = targetKey == null ? list.length : list.findIndex(e => eCarrierEntryKey(e) === targetKey);
+  list.splice(to === -1 ? list.length : to, 0, moved);
+  r.carriers = list;
+}
+
+/* POC Phase 1 (variant J): append one table row per carrier × postal-product for a combo.
+   Priority = row order; whole rows drag to reorder; × removes that carrier entry. */
+function ePocAppendCarrierRows(tbody, r){
+  const isSelfPost = r.service === 'Self-post';
+  const refreshing = tabState.carrierPhase === 'refreshing';
+  const cP = COUNTRIES.find(x => x.code === r.code);
+  const svcCell = () => el('td',{}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service));
+  const lblCell = () => r.label
+    ? el('td',{}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label))
+    : el('td',{}, el('span',{class:'cell-dim'}, 'N/A'));
+
+  if(isSelfPost){
+    const tr = el('tr',{class:'lane-row'});
+    tr.appendChild(svcCell());
+    tr.appendChild(el('td',{}, el('span',{class:'cell-na'}, 'Not applicable')));   // label
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));               // priority
+    tr.appendChild(el('td',{}, el('span',{class:'cell-na'}, 'Not applicable')));   // carrier
+    const ppc = el('td',{class:'carrier-cell'}, el('span',{class:'cell-na'}, 'Not applicable')); // postal product
+    ppc.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    tr.appendChild(ppc);
+    tbody.appendChild(tr);
+    return;
+  }
+
+  if(refreshing){
+    const tr = el('tr',{class:'lane-row'});
+    tr.appendChild(svcCell()); tr.appendChild(lblCell());
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+    tr.appendChild(el('td',{class:'carrier-cell'}, el('span',{class:'carrier-skeleton'}, el('span',{class:'cs-bar'}), el('span',{class:'cs-dot'}))));
+    tr.appendChild(el('td',{class:'carrier-cell'}, el('span',{class:'carrier-skeleton'}, el('span',{class:'cs-bar'}))));
+    tbody.appendChild(tr);
+    return;
+  }
+
+  const seedKeys = new Set(eSeedCarrierRows(r.code, r.service, r.label).map(eCarrierEntryKey));
+  const entries = (r.carriers || []).filter(e => e && e.id && seedKeys.has(eCarrierEntryKey(e)));
+
+  if(!entries.length){
+    // no serviceable carrier — unavailable treatment (blur + fix/delete), same as G
+    const unavail = seedKeys.size === 0;
+    const tr = el('tr',{class:'lane-row'+(unavail?' unavail':'')});
+    tr.appendChild(svcCell()); tr.appendChild(lblCell());
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+    const ppc = el('td',{class:'carrier-cell'}, el('span',{class:'cell-dim'}, unavail ? '—' : 'No carriers selected'));
+    ppc.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    tr.appendChild(ppc);
+    if(unavail){
+      tr.firstChild.appendChild(el('div',{class:'lane-unavailable-overlay'},
+        el('span',{class:'lua-ic', html:icon('warn')}),
+        el('span',{class:'lua-tx'}, 'No carrier ships ', el('b',{}, r.service + (r.label ? ' + ' + r.label : '')), ' from ', el('b',{}, cP.name), ' — choose a different service or label for this country.'),
+        el('button',{class:'lua-btn', onclick:()=>openLaneFixModal(r.id)}, 'Change'),
+        el('button',{class:'lua-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})
+      ));
+    }
+    tbody.appendChild(tr);
+    return;
+  }
+
+  entries.forEach((e, i) => {
+    const key = eCarrierEntryKey(e);
+    const cr = CARRIER_CATALOG.find(x => x.id === e.id);
+    const tr = el('tr',{class:'lane-row rank-row', draggable:'true',
+      ondragstart:(ev)=>{ ev.dataTransfer.effectAllowed='move'; ev.dataTransfer.setData('text/plain', key); tr.classList.add('dragging'); },
+      ondragend:()=>{ tr.classList.remove('dragging'); const t=tr.closest('tbody'); if(t) t.querySelectorAll('.drop-before').forEach(n=>n.classList.remove('drop-before')); },
+      ondragover:(ev)=>{ ev.preventDefault(); ev.dataTransfer.dropEffect='move'; tr.classList.add('drop-before'); },
+      ondragleave:()=>tr.classList.remove('drop-before'),
+      ondrop:(ev)=>{
+        ev.preventDefault(); tr.classList.remove('drop-before');
+        const dragKey = ev.dataTransfer.getData('text/plain');
+        if(!dragKey || dragKey === key) return;
+        eReorderCarrier(r, dragKey, key);   // no-op if dragKey belongs to another combo
+        rerenderE();
+      }});
+    // Return service / label — repeated per carrier row, muted after the first for scannability
+    const dim = i > 0 ? ' dim-repeat' : '';
+    tr.appendChild(el('td',{class:'grip-td'+dim}, el('span',{class:'rank-grip', title:'Drag to reorder', html:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>'}), el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
+    tr.appendChild(el('td',{class:dim.trim()}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
+    // Priority
+    tr.appendChild(el('td',{}, el('span',{class:'rank-p'}, 'P' + (i + 1))));
+    // Carrier (read-only)
+    tr.appendChild(el('td',{}, el('span',{class:'rank-name'}, cr ? cr.name : e.id)));
+    // Postal product (read-only, derived from carrier) + remove
+    const ppc = el('td',{class:'carrier-cell'}, el('span',{class:'pp-readonly'}, e.pp || '—'));
+    ppc.appendChild(el('button',{class:'rank-x', title:'Remove this carrier', onclick:()=>{
+      r.carriers = r.carriers.filter(x => eCarrierEntryKey(x) !== key);
+      rerenderE();
+    }, html:icon('close')}));
+    tr.appendChild(ppc);
+    tbody.appendChild(tr);
+  });
+}
+
+/* Postal-product picker for one manual carrier entry — scoped to that carrier's own products for this
+   country, excluding ids already used elsewhere in the same lane (one product per entry). */
+function ppEntryCombobox(r, e){
+  const wrap = el('div',{class:'pp-combo'});
+  const products = ePostalProductsForCountry(r.code, e.id);
+  const usedIds = new Set(r.carriers.filter(x => x !== e && x.ppId != null).map(x => x.ppId));
+  const options = products.filter(p => !usedIds.has(p.id) || p.id === e.ppId);
+
+  const trigger = el('button',{class:'pp-trigger'+(e.pp?'':' empty'), type:'button'});
+  trigger.textContent = e.pp || '— select postal product —';
+  trigger.appendChild(el('span',{class:'pp-trigger-ic', html:icon('chevDown')}));
+
+  const drop = el('div',{class:'pp-drop'});
+  const searchWrap = el('div',{class:'pp-search-wrap'});
+  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search by ID or name…'});
+  searchWrap.appendChild(searchInput);
+  const list = el('div',{class:'pp-list'});
+  drop.appendChild(searchWrap); drop.appendChild(list);
+
+  function setVal(p){
+    e.ppId = p ? p.id : null;
+    e.pp = p ? (p.id + ' - ' + p.name) : null;
+    rerenderE();
+  }
+  function buildList(q){
+    list.innerHTML = '';
+    const lq = q.trim().toLowerCase();
+    const filtered = options.filter(p => !lq || String(p.id).includes(lq) || p.name.toLowerCase().includes(lq));
+    if(!filtered.length){ list.appendChild(el('div',{class:'pp-empty'}, options.length ? 'No matches' : 'No postal products configured for this carrier in this country')); return; }
+    filtered.forEach(p => {
+      const label = p.id + ' - ' + p.name;
+      const opt = el('button',{class:'pp-opt'+(e.ppId===p.id?' selected':''), type:'button'});
+      opt.textContent = label; opt.title = label;
+      opt.addEventListener('click', () => setVal(p));
+      list.appendChild(opt);
+    });
+  }
+  searchInput.addEventListener('input', () => buildList(searchInput.value));
+  trigger.addEventListener('click', ev => {
+    ev.stopPropagation();
+    const isOpen = drop.classList.contains('open');
+    document.querySelectorAll('.pp-drop.open').forEach(d=>d.classList.remove('open'));
+    document.querySelectorAll('.pp-trigger.open').forEach(t=>t.classList.remove('open'));
+    if(!isOpen){ drop.classList.add('open'); trigger.classList.add('open'); searchInput.value=''; buildList(''); setTimeout(()=>searchInput.focus(),30); }
+  });
+  document.addEventListener('click', () => {
+    if(!wrap.contains(document.activeElement) && !wrap.matches(':hover')){ drop.classList.remove('open'); trigger.classList.remove('open'); }
+  });
+  buildList('');
+  wrap.appendChild(trigger); wrap.appendChild(drop);
+  return wrap;
+}
+
+/* Search + multi-select carrier picker (variant I) — pick several carriers for this lane at once.
+   Inactive carriers are shown greyed out and cannot be selected. */
+let _openCarrierPickerRow = null; // r.id of the lane whose "Add carrier" popover is open — survives the full rerenderE() so picking several carriers in a row doesn't keep re-closing it
+function carrierPickerCombobox(r){
+  const wrap = el('div',{class:'pp-combo'});
+  const isOpen = _openCarrierPickerRow === r.id;
+  const trigger = el('button',{class:'add-carrier-btn', type:'button'}, el('span',{html:icon('plus')}), 'Add carrier');
+  const drop = el('div',{class:'pp-drop'+(isOpen?' open':'')});
+  const searchWrap = el('div',{class:'pp-search-wrap'});
+  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search carriers…', value:_carrierPickerQuery});
+  searchWrap.appendChild(searchInput);
+  const list = el('div',{class:'pp-list'});
+  drop.appendChild(searchWrap); drop.appendChild(list);
+
+  function toggle(carrierId){
+    const has = r.carriers.some(e => e.id === carrierId);
+    if(has){ r.carriers = r.carriers.filter(e => e.id !== carrierId); }
+    else { r.carriers = [...r.carriers, { id:carrierId, pp:null, ppId:null }]; }
+    _openCarrierPickerRow = r.id;   // keep the popover open — multi-select without re-clicking "Add carrier" each time
+    rerenderE();
+  }
+  function buildList(q){
+    list.innerHTML = '';
+    const lq = q.trim().toLowerCase();
+    const avail = eCarriersFor(r.code, r.service, r.label).filter(c => !lq || c.name.toLowerCase().includes(lq));
+    if(!avail.length){ list.appendChild(el('div',{class:'pp-empty'}, 'No matches')); return; }
+    avail.forEach(c => {
+      const active = carrierActive(c.id);
+      const selected = r.carriers.some(e => e.id === c.id);
+      const opt = el('button',{class:'pp-opt'+(selected?' selected':'')+(active?'':' inactive'), type:'button'},
+        el('span',{class:'pp-opt-row'},
+          el('span',{class:'pp-opt-check', html: selected ? icon('check') : ''}),
+          el('span',{class:'pp-opt-name'}, c.name),
+          active ? null : el('span',{class:'pp-opt-tag'}, 'Inactive')
+        )
+      );
+      if(active) opt.addEventListener('click', (ev) => { ev.stopPropagation(); toggle(c.id); });
+      list.appendChild(opt);
+    });
+  }
+  searchInput.addEventListener('input', (ev) => { ev.stopPropagation(); _carrierPickerQuery = searchInput.value; buildList(searchInput.value); });
+  trigger.addEventListener('click', ev => {
+    ev.stopPropagation();
+    _openCarrierPickerRow = isOpen ? null : r.id;
+    if(!isOpen) _carrierPickerQuery = '';
+    rerenderE();
+  });
+  document.addEventListener('click', () => {
+    if(!wrap.contains(document.activeElement) && !wrap.matches(':hover') && _openCarrierPickerRow === r.id){ _openCarrierPickerRow = null; rerenderE(); }
+  });
+  buildList(_carrierPickerQuery);
+  if(isOpen) setTimeout(()=>{ if(document.body.contains(searchInput)) searchInput.focus(); }, 30);
+  wrap.appendChild(trigger); wrap.appendChild(drop);
+  return wrap;
+}
+let _carrierPickerQuery = '';
+
+/* variant I: manual carrier priority — ranked rows the user builds via search + multi-select,
+   drag-reorders for priority, and picks a unique postal product per carrier. */
+function eManualAppendCarrierRows(tbody, r){
+  const isSelfPost = r.service === 'Self-post';
+  const cP = COUNTRIES.find(x => x.code === r.code);
+  const svcCell = (dim) => el('td',{class:dim?'dim-repeat':''}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service));
+  const lblCell = (dim) => r.label
+    ? el('td',{class:dim?'dim-repeat':''}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label))
+    : el('td',{class:dim?'dim-repeat':''}, el('span',{class:'cell-dim'}, 'N/A'));
+
+  if(isSelfPost){
+    const tr = el('tr',{class:'lane-row'});
+    tr.appendChild(svcCell(false));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-na'}, 'Not applicable')));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-na'}, 'Not applicable')));
+    const ppc = el('td',{class:'carrier-cell'}, el('span',{class:'cell-na'}, 'Not applicable'));
+    ppc.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    tr.appendChild(ppc);
+    tbody.appendChild(tr);
+    return;
+  }
+
+  const avail = eCarriersFor(r.code, r.service, r.label);
+  const availIds = new Set(avail.map(c => c.id));
+  const entries = (r.carriers || []).filter(e => e && e.id && availIds.has(e.id));
+
+  if(!avail.length){
+    const tr = el('tr',{class:'lane-row unavail'});
+    tr.appendChild(svcCell(false)); tr.appendChild(lblCell(false));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+    const ppc = el('td',{class:'carrier-cell'}, el('span',{class:'cell-dim'}, '—'));
+    ppc.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    tr.appendChild(ppc);
+    tr.firstChild.appendChild(el('div',{class:'lane-unavailable-overlay'},
+      el('span',{class:'lua-ic', html:icon('warn')}),
+      el('span',{class:'lua-tx'}, 'No carrier ships ', el('b',{}, r.service + (r.label ? ' + ' + r.label : '')), ' from ', el('b',{}, cP.name), ' — choose a different service or label for this country.'),
+      el('button',{class:'lua-btn', onclick:()=>openLaneFixModal(r.id)}, 'Change'),
+      el('button',{class:'lua-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})
+    ));
+    tbody.appendChild(tr);
+    return;
+  }
+
+  if(!entries.length){
+    const tr = el('tr',{class:'lane-row'});
+    tr.appendChild(svcCell(false)); tr.appendChild(lblCell(false));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, 'No carriers selected')));
+    const ppc = el('td',{class:'carrier-cell'}, carrierPickerCombobox(r));
+    ppc.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    tr.appendChild(ppc);
+    tbody.appendChild(tr);
+    return;
+  }
+
+  entries.forEach((e, i) => {
+    const key = eCarrierEntryKey(e);
+    const cr = CARRIER_CATALOG.find(x => x.id === e.id);
+    const dim = i > 0;
+    const tr = el('tr',{class:'lane-row rank-row', draggable:'true',
+      ondragstart:(ev)=>{ ev.dataTransfer.effectAllowed='move'; ev.dataTransfer.setData('text/plain', key); tr.classList.add('dragging'); },
+      ondragend:()=>{ tr.classList.remove('dragging'); const t=tr.closest('tbody'); if(t) t.querySelectorAll('.drop-before').forEach(n=>n.classList.remove('drop-before')); },
+      ondragover:(ev)=>{ ev.preventDefault(); ev.dataTransfer.dropEffect='move'; tr.classList.add('drop-before'); },
+      ondragleave:()=>tr.classList.remove('drop-before'),
+      ondrop:(ev)=>{
+        ev.preventDefault(); tr.classList.remove('drop-before');
+        const dragKey = ev.dataTransfer.getData('text/plain');
+        if(!dragKey || dragKey === key) return;
+        eReorderCarrier(r, dragKey, key);
+        rerenderE();
+      }});
+    tr.appendChild(el('td',{class:'grip-td'+(dim?' dim-repeat':'')}, el('span',{class:'rank-grip', title:'Drag to reorder', html:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>'}), el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
+    tr.appendChild(el('td',{class:dim?'dim-repeat':''}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
+    tr.appendChild(el('td',{}, el('span',{class:'rank-p'}, 'P' + (i + 1))));
+    const nameCell = el('td',{}, el('span',{class:'rank-name'}, cr ? cr.name : e.id));
+    if(!carrierActive(e.id)) nameCell.appendChild(el('span',{class:'carrier-inactive-tag'}, 'Inactive'));
+    tr.appendChild(nameCell);
+    const ppc = el('td',{class:'carrier-cell'}, ppEntryCombobox(r, e));
+    ppc.appendChild(el('button',{class:'rank-x', title:'Remove this carrier', onclick:()=>{
+      r.carriers = r.carriers.filter(x => eCarrierEntryKey(x) !== key);
+      rerenderE();
+    }, html:icon('close')}));
+    tr.appendChild(ppc);
+    tbody.appendChild(tr);
+  });
+
+  const addTr = el('tr',{class:'lane-row'});
+  addTr.appendChild(el('td',{colspan:4}));
+  const addCell = el('td',{class:'carrier-cell'}, carrierPickerCombobox(r));
+  addCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+  addTr.appendChild(addCell);
+  tbody.appendChild(addTr);
+}
+
 /* one combo row */
 function eRow(r){
   const isSelfPost = r.service === 'Self-post';
@@ -4886,7 +5383,63 @@ function eAppendCountryGroup(tbody, code, rows, colCount){
     headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=>openAddConfigModal(code), html:icon('plus')}));
   }
   tbody.appendChild(el('tr',{class:'grp-country'}, headCell));
-  rows.forEach(r => tbody.appendChild(eRow(r)));
+  rows.forEach(r => eManual() ? eManualAppendCarrierRows(tbody, r) : ePoc() ? ePocAppendCarrierRows(tbody, r) : tbody.appendChild(eRow(r)));
+}
+
+/* country search + multi-select filter for the Lane Review table (variant I) — avoids scrolling every country */
+let _countryFilterOpen = false, _countryFilterQuery = ''; // survive the full rerenderE() so picking several countries doesn't keep re-closing the popover
+function eCountryFilterBar(){
+  const wrap = el('div',{class:'country-filter'});
+  const chips = el('div',{class:'cf-chips'});
+  tabState.reviewCountries.forEach(code => {
+    const c = COUNTRIES.find(x => x.code === code); if(!c) return;
+    chips.appendChild(el('span',{class:'cf-chip'}, c.flag + ' ' + c.name,
+      el('button',{title:'Remove filter', onclick:()=>{ tabState.reviewCountries = tabState.reviewCountries.filter(x=>x!==code); rerenderE(); }, html:icon('close')})
+    ));
+  });
+
+  const combo = el('div',{class:'pp-combo cf-combo'});
+  const trigger = el('button',{class:'pp-trigger empty'+(_countryFilterOpen?' open':''), type:'button'});
+  trigger.textContent = tabState.reviewCountries.length ? 'Add another country…' : 'Search countries…';
+  trigger.appendChild(el('span',{class:'pp-trigger-ic', html:icon('chevDown')}));
+  const drop = el('div',{class:'pp-drop'+(_countryFilterOpen?' open':'')});
+  const searchWrap = el('div',{class:'pp-search-wrap'});
+  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search by country name or code…', value:_countryFilterQuery});
+  searchWrap.appendChild(searchInput);
+  const list = el('div',{class:'pp-list'});
+  drop.appendChild(searchWrap); drop.appendChild(list);
+
+  function buildList(q){
+    list.innerHTML = '';
+    const lq = q.trim().toLowerCase();
+    const options = COUNTRIES.filter(c => !tabState.reviewCountries.includes(c.code))
+      .filter(c => !lq || c.name.toLowerCase().includes(lq) || c.code.toLowerCase().includes(lq));
+    if(!options.length){ list.appendChild(el('div',{class:'pp-empty'}, 'No matches')); return; }
+    options.forEach(c => {
+      const opt = el('button',{class:'pp-opt', type:'button'}, c.flag + ' ' + c.name);
+      opt.addEventListener('click', (ev) => { ev.stopPropagation(); tabState.reviewCountries = [...tabState.reviewCountries, c.code]; _countryFilterOpen = true; rerenderE(); });
+      list.appendChild(opt);
+    });
+  }
+  searchInput.addEventListener('input', (ev) => { ev.stopPropagation(); _countryFilterQuery = searchInput.value; buildList(searchInput.value); });
+  trigger.addEventListener('click', e => {
+    e.stopPropagation();
+    _countryFilterOpen = !_countryFilterOpen;
+    if(_countryFilterOpen) _countryFilterQuery = '';
+    rerenderE();
+  });
+  document.addEventListener('click', () => {
+    if(!combo.contains(document.activeElement) && !combo.matches(':hover') && _countryFilterOpen){ _countryFilterOpen = false; rerenderE(); }
+  });
+  buildList(_countryFilterQuery);
+  if(_countryFilterOpen) setTimeout(()=>{ if(document.body.contains(searchInput)) searchInput.focus(); }, 30);
+  combo.appendChild(trigger); combo.appendChild(drop);
+
+  wrap.appendChild(chips); wrap.appendChild(combo);
+  if(tabState.reviewCountries.length){
+    wrap.appendChild(el('button',{class:'add-carrier-btn', type:'button', onclick:()=>{ tabState.reviewCountries=[]; rerenderE(); }}, 'Clear'));
+  }
+  return wrap;
 }
 
 /* Table — grouped, compact, no horizontal scroll */
@@ -4895,7 +5448,7 @@ function eCardTable(locked){
 
   const card = el('div',{class:'q-card'+(locked?' locked':'')},
     el('div',{class:'q-card-head'},
-      el('div',{class:'q-num'}, '4'),
+      el('div',{class:'q-num'}, eRanked() ? '3' : '4'),
       el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
     )
   );
@@ -4927,6 +5480,8 @@ function eCardTable(locked){
     )
   ));
 
+  if(eManual()) body.appendChild(eCountryFilterBar());
+
   if(!tabState.rows.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
       el('span',{html:icon('info')}), el('span',{html:'No lanes left. Adjust the service or label selections above to repopulate the table.'})));
@@ -4938,7 +5493,9 @@ function eCardTable(locked){
   const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')});
   const showAddBtn = !locked && (eSingle() || state.variant === 'F');
-  const headerCols = [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
+  const headerCols = eRanked()
+    ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Priority'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
+    : [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
        el('th',{},'Postal Product')];
   if(showAddBtn) headerCols.push(el('th',{class:'th-add-col'}));
@@ -4948,9 +5505,17 @@ function eCardTable(locked){
   // rows grouped by country, in COUNTRIES order
   const rowsByCode = {};
   tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
-  const codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
+  let codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
+  if(eManual() && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
-  const colCount = showAddBtn ? 8 : 7;
+  const baseCols = eRanked() ? 5 : 7;
+  const colCount = showAddBtn ? baseCols + 1 : baseCols;
+  if(!codes.length){
+    body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
+      el('span',{html:icon('info')}), el('span',{html:'No countries match your filter. Clear it to see all lanes.'})));
+    card.appendChild(body);
+    return card;
+  }
   if(tabState.groupBy === 'region'){
     const regions = [...E_REGION_ORDER, ...codes.map(c=>regionOf(c)).filter(r=>!E_REGION_ORDER.includes(r))];
     const seen = {};
@@ -5119,6 +5684,8 @@ function openLaneFixModal(id){
       }
       r.service = draft.service; r.label = draft.label; r.custom = true; tabState.deleted[origKey] = true;
       eSetCarrier(r, draft.carrier);
+      if(ePoc()) r.carriers = eSeedCarrierRows(r.code, r.service, r.label);
+      if(eManual()) eSyncManualCarrierRows(r);
       closeModal(ref.o); rerenderE();
     }}, 'Apply')
   ));
