@@ -1350,7 +1350,7 @@ body[data-view="wizard"] #view-landing{display:none}
         <button class="primary-card" onclick="startVariant('I')">
           <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
           <span class="pc-info">
-            <span class="pc-name">Carrier Priority <span class="pc-badge">New</span></span>
+            <span class="pc-name">MyRebound FM POC <span class="pc-badge">New</span></span>
             <span class="pc-desc">Tabular 2 without destination, lane type or contract — pick and rank multiple carriers per country, each linked to a unique postal product.</span>
           </span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -2139,6 +2139,8 @@ function ePoc(){ return state.variant === 'J'; }
 function eManual(){ return state.variant === 'I'; }
 /* both J and I share the trimmed ranked-carrier column layout (no destination/laneType/contract columns) */
 function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
+/* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
+function eSingleSvc(){ return eSingle() && !eManual(); }
 /* every variant driven by tabState / renderVariantE */
 const TABULAR_VARIANTS = ['E','F','G','H','I','J'];
 function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
@@ -2431,7 +2433,7 @@ function setView(v){
   if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
   else document.body.removeAttribute('data-variant');
   document.getElementById('meta-client').textContent = state.client || '—';
-  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'Carrier Priority', J:'POC Phase 1' };
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
   const flowEl = document.getElementById('meta-flow');
   if(flowEl) flowEl.style.display = state.variant ? '' : 'none';
@@ -3754,7 +3756,7 @@ function buildTabJson(){
   return {
     client: state.client || null,
     variant: variantName,
-    selectionMode: eSingle() ? 'single-select' : 'multi-select',
+    selectionMode: eSingleSvc() ? 'single-select' : 'multi-select',
     flowType: 'B2C',
     returnServices: tabState.returnServices,
     returnLabels: eNonSelfServices().length ? tabState.returnLabels : [],
@@ -3837,7 +3839,7 @@ function showToast(message, actionLabel, onAction, opts){
 /* ─────────────────────────────────────────────────
    SAVE / LOAD FLOWS (shared backend via /api/flows)
    ───────────────────────────────────────────────── */
-const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'Carrier Priority', J:'POC Phase 1' };
+const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1' };
 
 function captureFlowState(){
   const s = {};
@@ -3955,8 +3957,8 @@ function eAfterSelectionChange(wasReady){
 }
 /* scroll to + pulse the first serviceable carrier control */
 function eGotoCarriers(){
-  const cell = document.querySelector('.config-table.compact .carrier-cell select, .config-table.compact .carrier-cell .minichip, .config-table.compact .rank-row .rank-name');
-  const target = cell ? cell.closest('.carrier-cell') : document.querySelector('.config-table.compact th:last-child');
+  const cell = document.querySelector('.config-table.compact .carrier-cell select, .config-table.compact .carrier-cell .minichip, .config-table.compact .rank-row .rank-name, .config-table.compact .rank-row select');
+  const target = cell ? cell.closest('td') : document.querySelector('.config-table.compact th:last-child');
   if(target){ target.scrollIntoView({block:'center', behavior:'smooth'}); }
 }
 
@@ -4623,7 +4625,7 @@ function eCardService(locked){
     const on = tabState.returnServices.includes(s);
     g.appendChild(eChip(on, serviceIcon(s), s, ()=>{
       const wasReady = eTableReady();
-      if(eSingle()){
+      if(eSingleSvc()){
         if(on) return;                          // single-select: keep current selection
         tabState.returnServices = [s];
         if(s === 'Self-post') tabState.returnLabels = []; // self-post needs no label
@@ -4654,7 +4656,7 @@ function eCardLabel(locked){
       const on = tabState.returnLabels.includes(l);
       g.appendChild(eChip(on, labelIcon(l), l, ()=>{
         const wasReady = eTableReady();
-        if(eSingle()){
+        if(eSingleSvc()){
           if(on) return;                       // single-select: keep current selection
           tabState.returnLabels = [l];
         } else {
@@ -5196,8 +5198,18 @@ function carrierPickerCombobox(r){
 }
 let _carrierPickerQuery = '';
 
-/* variant I: manual carrier priority — ranked rows the user builds via search + multi-select,
-   drag-reorders for priority, and picks a unique postal product per carrier. */
+/* variant I: append the next unused serviceable carrier as a new ranked row (carrier then picked inline via the row dropdown) */
+function eAddCarrierBtn(r, avail, entries){
+  const remaining = avail.filter(c => !entries.some(e => e.id === c.id));
+  if(!remaining.length) return el('span',{class:'cell-dim'}, 'All carriers added');
+  return el('button',{class:'add-carrier-btn', type:'button', onclick:()=>{
+    r.carriers = [...(r.carriers||[]), { id:remaining[0].id, pp:null, ppId:null }];
+    rerenderE();
+  }}, el('span',{html:icon('plus')}), 'Add carrier');
+}
+
+/* variant I: manual carrier priority — ranked rows, each carrier picked inline via dropdown,
+   drag-reorders for priority, and a unique postal product per carrier. */
 function eManualAppendCarrierRows(tbody, r){
   const isSelfPost = r.service === 'Self-post';
   const cP = COUNTRIES.find(x => x.code === r.code);
@@ -5244,8 +5256,8 @@ function eManualAppendCarrierRows(tbody, r){
     const tr = el('tr',{class:'lane-row'});
     tr.appendChild(svcCell(false)); tr.appendChild(lblCell(false));
     tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
-    tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, 'No carriers selected')));
-    const ppc = el('td',{class:'carrier-cell'}, carrierPickerCombobox(r));
+    tr.appendChild(el('td',{}, eAddCarrierBtn(r, avail, entries)));   // Carrier column: add inline
+    const ppc = el('td',{class:'carrier-cell'}, el('span',{class:'cell-dim'}, '—'));
     ppc.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
     tr.appendChild(ppc);
     tbody.appendChild(tr);
@@ -5271,7 +5283,13 @@ function eManualAppendCarrierRows(tbody, r){
     tr.appendChild(el('td',{class:'grip-td'+(dim?' dim-repeat':'')}, el('span',{class:'rank-grip', title:'Drag to reorder', html:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>'}), el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
     tr.appendChild(el('td',{class:dim?'dim-repeat':''}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
     tr.appendChild(el('td',{}, el('span',{class:'rank-p'}, 'P' + (i + 1))));
-    const nameCell = el('td',{}, el('span',{class:'rank-name'}, cr ? cr.name : e.id));
+    const usedByOthers = new Set(entries.filter(x => x !== e).map(x => x.id));
+    const carrierOpts = avail.filter(c => c.id === e.id || !usedByOthers.has(c.id)).map(c => ({value:c.id, text:c.name}));
+    const nameCell = el('td',{}, eSelect(e.id, carrierOpts, v => {
+      if(!v || v === e.id) return;
+      e.id = v; e.pp = null; e.ppId = null;   // postal product is carrier-specific — reset on carrier change
+      rerenderE();
+    }));
     if(!carrierActive(e.id)) nameCell.appendChild(el('span',{class:'carrier-inactive-tag'}, 'Inactive'));
     tr.appendChild(nameCell);
     const ppc = el('td',{class:'carrier-cell'}, ppEntryCombobox(r, e));
@@ -5284,8 +5302,9 @@ function eManualAppendCarrierRows(tbody, r){
   });
 
   const addTr = el('tr',{class:'lane-row'});
-  addTr.appendChild(el('td',{colspan:4}));
-  const addCell = el('td',{class:'carrier-cell'}, carrierPickerCombobox(r));
+  addTr.appendChild(el('td',{colspan:3}));                          // service, label, priority
+  addTr.appendChild(el('td',{}, eAddCarrierBtn(r, avail, entries))); // Carrier column: add inline
+  const addCell = el('td',{class:'carrier-cell'});
   addCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
   addTr.appendChild(addCell);
   tbody.appendChild(addTr);
