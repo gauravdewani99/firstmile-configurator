@@ -2204,7 +2204,7 @@ function makeERow(code, service, label){
     id:'r'+(++_tabSeq), code, service, label,
     destType:null, dtwType:null, partner:null, addressId:null, // null destType = inherit global
     carrier,
-    carriers: ePoc() ? eSeedCarrierRows(code, service, label) : eManual() ? [] : av.map(c => c.id),   // J: auto-seeded carrier×postal-product entries. I: starts empty, added manually.
+    carriers: ePoc() ? eSeedCarrierRows(code, service, label) : eManual() ? (av.length ? [{ id:av[0].id, pp:null, ppId:null }] : []) : av.map(c => c.id),   // J: auto-seeded carrier×postal-product entries. I: seed the first available carrier as P1 default (like other views' av[0]); user adds/reassigns via dropdown.
     laneType:'managed', contract: eDefaultContract(carrier),
     postalProduct: null,
     custom:false,
@@ -5293,10 +5293,6 @@ function eManualAppendCarrierRows(tbody, r){
     if(!carrierActive(e.id)) nameCell.appendChild(el('span',{class:'carrier-inactive-tag'}, 'Inactive'));
     tr.appendChild(nameCell);
     const ppc = el('td',{class:'carrier-cell'}, ppEntryCombobox(r, e));
-    ppc.appendChild(el('button',{class:'rank-x', title:'Remove this carrier', onclick:()=>{
-      r.carriers = r.carriers.filter(x => eCarrierEntryKey(x) !== key);
-      rerenderE();
-    }, html:icon('close')}));
     tr.appendChild(ppc);
     tbody.appendChild(tr);
   });
