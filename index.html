@@ -1259,6 +1259,11 @@ body[data-view="wizard"] #view-landing{display:none}
 .add-carrier-btn:hover{border-color:var(--brand-2);background:var(--brand-soft)}
 .add-carrier-btn svg{width:12px;height:12px}
 .carrier-inactive-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:var(--red);background:rgba(239,68,68,.1);border-radius:4px;padding:2px 6px;margin-left:6px}
+/* First Mile - MVP Ready: carrier active badge + lane priority control */
+.carrier-active-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;color:#15803D;background:rgba(34,197,94,.13);border-radius:4px;padding:2px 6px;margin-left:6px}
+.prio-cell{display:inline-flex;align-items:center;gap:6px}
+.prio-select{min-width:60px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r-xs);background:var(--card);font:inherit;font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer}
+.prio-select:focus{border-color:var(--brand-2);outline:none;box-shadow:0 0 0 3px rgba(45,95,138,.12)}
 
 /* ─── country search + multi-select filter (Lane Review) ─── */
 .country-filter{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -1267,6 +1272,11 @@ body[data-view="wizard"] #view-landing{display:none}
 .cf-chip button{display:flex;color:var(--brand);opacity:.7}
 .cf-chip button:hover{opacity:1}
 .cf-chip button svg{width:11px;height:11px}
+/* First Mile - MVP Ready: country filter sits inline (before Group by) in the table-tools row */
+.table-tools.cf-tools{flex-wrap:wrap;row-gap:10px}
+.table-tools.cf-tools .country-filter{margin-bottom:0;align-items:center;flex-wrap:nowrap}
+.table-tools .cf-label{margin-right:2px}
+.pp-opt.cf-all{border-bottom:1px solid var(--border-soft);font-weight:600}
 .cf-combo{max-width:260px}
 
 /* ─── scrollbar ─── */
@@ -2202,6 +2212,7 @@ function makeERow(code, service, label){
     carriers: ePoc() ? eSeedCarrierRows(code, service, label) : eManual() ? (av.length ? [{ id:av[0].id, pp:null, ppId:null }] : []) : av.map(c => c.id),   // J: auto-seeded carrier×postal-product entries. I: seed the first available carrier as P1 default (like other views' av[0]); user adds/reassigns via dropdown.
     laneType:'managed', contract: eDefaultContract(carrier),
     postalProduct: null,
+    priority: 0,          // First Mile - MVP Ready lane priority; 0 = none, only used when a country has >1 lane
     custom:false,
   };
 }
@@ -5281,8 +5292,35 @@ function eManualAppendCarrierRows(tbody, r){
   });
 }
 
+/* First Mile - MVP Ready: set a lane's priority (0 = none). Non-zero priorities stay unique per
+   country (swap on clash) so two lanes can't share one. Only P1 is significant. */
+function eSetPriority(code, rowId, val){
+  const newP = parseInt(val, 10) || 0;
+  const row = tabState.rows.find(r => r.id === rowId);
+  if(!row) return;
+  const old = row.priority || 0;
+  if(newP > 0){
+    const clash = tabState.rows.find(r => r.code === code && r.id !== rowId && (r.priority || 0) === newP);
+    if(clash) clash.priority = old;   // hand the clashing lane this lane's previous priority (may be 0/none)
+  }
+  row.priority = newP;
+  rerenderE();
+}
+/* Priority cell for First Mile - MVP Ready — editable P-level (— = 0/none); appears only when a country has >1 lane */
+function ePrioCell(r, prio){
+  const td = el('td',{class:'prio-td'});
+  if(!prio || prio.laneCount <= 1){ td.appendChild(el('span',{class:'cell-dim'}, '—')); return td; }
+  const cur = String(r.priority || 0);
+  const sel = el('select',{class:'prio-select', onchange:(e)=>eSetPriority(r.code, r.id, e.target.value)});
+  const add = (v, t) => { const o = el('option',{value:v}, t); if(cur===v) o.selected = true; sel.appendChild(o); };
+  add('0', '—');
+  for(let n = 1; n <= prio.laneCount; n++) add(String(n), 'P' + n);
+  td.appendChild(el('div',{class:'prio-cell'}, sel));
+  return td;
+}
+
 /* one combo row */
-function eRow(r){
+function eRow(r, prio){
   const isSelfPost = r.service === 'Self-post';
   const refreshing = tabState.carrierPhase === 'refreshing';
   const av = isSelfPost ? [] : eCarriersFor(r.code, r.service, r.label);
@@ -5297,6 +5335,8 @@ function eRow(r){
   if(isSelfPost){
     // Return Label — not applicable
     tr.appendChild(naCell());
+    // Priority (First Mile - MVP Ready)
+    if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
     // Return Destination (hidden for First Mile - MVP Ready)
     if(!eMvp()){
       const di = eDestCellInfo(r);
@@ -5322,6 +5362,9 @@ function eRow(r){
     // Standard lanes
     tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
 
+    // Priority (First Mile - MVP Ready)
+    if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
+
     if(!eMvp()){
       const di = eDestCellInfo(r);
       tr.appendChild(el('td',{class:'dest-cell'},
@@ -5341,12 +5384,17 @@ function eRow(r){
     } else {
       carrierCell.appendChild(eSelect(r.carrier, av.map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
     }
+    // Carrier active/inactive — from the Carrier Service Catalogue (representation only), First Mile - MVP Ready
+    if(eMvp() && !refreshing && !unavailable && r.carrier){
+      const on = carrierActive(r.carrier);
+      carrierCell.appendChild(el('span',{class: on ? 'carrier-active-tag' : 'carrier-inactive-tag'}, on ? 'Active' : 'Inactive'));
+    }
     carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
     tr.appendChild(carrierCell);
     tr.appendChild(el('td',{}, eLaneToggle(r)));
     if(!eMvp()) tr.appendChild(el('td',{}, eContractCell(r)));
 
-    const ppCell = el('td',{class:'pp-td'});
+    const ppCell = el('td',{class:'pp-td'+(eMvp()?' carrier-cell':'')});
     ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
     tr.appendChild(ppCell);
 
@@ -5364,7 +5412,7 @@ function eRow(r){
 }
 
 /* append a country group (header + its combo rows) */
-function eAppendCountryGroup(tbody, code, rows, colCount){
+function eAppendCountryGroup(tbody, code, rows, colCount, prioOn){
   colCount = colCount || 7;
   const c = COUNTRIES.find(x => x.code === code);
   const headCell = el('td',{colspan:colCount},
@@ -5377,17 +5425,49 @@ function eAppendCountryGroup(tbody, code, rows, colCount){
     headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=>openAddConfigModal(code), html:icon('plus')}));
   }
   tbody.appendChild(el('tr',{class:'grp-country'}, headCell));
-  rows.forEach(r => eManual() ? eManualAppendCarrierRows(tbody, r) : ePoc() ? ePocAppendCarrierRows(tbody, r) : tbody.appendChild(eRow(r)));
+  rows.forEach((r, i) => eManual() ? eManualAppendCarrierRows(tbody, r) : ePoc() ? ePocAppendCarrierRows(tbody, r) : tbody.appendChild(eRow(r, prioOn ? { n:i+1, laneCount:rows.length } : null)));
 }
 
 /* country search + multi-select filter for the Lane Review table (variant I) — avoids scrolling every country */
+/* ─── Client country scope (STUB) ───────────────────────────────────────
+   Returns a client's country scope as [{code, name}] (ISO 3166-1 alpha-2).
+   Seeded here with Arsenal's European scope. To wire the real client-scope
+   service later, replace ONLY the body of getClientCountryScope() with a
+   call to the endpoint — the UI just needs the same [{code,name}] shape.
+   e.g.  return fetch(`/api/client-scope?clientId=${clientId}`).then(r=>r.json()) */
+const CLIENT_COUNTRY_SCOPE = {
+  arsenal: [
+    { code:'AT', name:'Austria' },  { code:'BE', name:'Belgium' },  { code:'BG', name:'Bulgaria' },
+    { code:'CY', name:'Cyprus' },   { code:'CZ', name:'Czech Republic' }, { code:'DE', name:'Germany' },
+    { code:'ES', name:'Spain' },    { code:'FI', name:'Finland' },  { code:'FR', name:'France' },
+    { code:'GB', name:'Great Britain' }, { code:'GR', name:'Greece' }, { code:'HU', name:'Hungary' },
+    { code:'IE', name:'Ireland' },  { code:'IT', name:'Italy' },    { code:'LU', name:'Luxembourg' },
+    { code:'LV', name:'Latvia' },   { code:'PL', name:'Poland' },   { code:'PT', name:'Portugal' },
+    { code:'RO', name:'Romania' },  { code:'SE', name:'Sweden' },   { code:'SI', name:'Slovenia' },
+    { code:'SK', name:'Slovakia' },
+  ],
+};
+function getClientCountryScope(clientId){
+  // STUB: every client currently resolves to Arsenal's scope. Swap the body
+  // for the real client-scope endpoint (see comment above) without touching the UI.
+  const key = (clientId || '').toString().trim().toLowerCase();
+  return CLIENT_COUNTRY_SCOPE[key] || CLIENT_COUNTRY_SCOPE.arsenal;
+}
+
 let _countryFilterOpen = false, _countryFilterQuery = ''; // survive the full rerenderE() so picking several countries doesn't keep re-closing the popover
 function eCountryFilterBar(){
+  // Option pool: First Mile - MVP Ready (H) uses the client's country scope; variant I keeps full COUNTRIES (unchanged)
+  const pool = eMvp()
+    ? getClientCountryScope(state.client).map(s => { const c = COUNTRIES.find(x => x.code === s.code); return { code:s.code, name:s.name, flag: c ? c.flag : '' }; })
+    : COUNTRIES;
+  const cfInfo = code => pool.find(x => x.code === code) || COUNTRIES.find(x => x.code === code);
+  const cfText = c => eMvp() ? (c.code + ' ' + c.name) : ((c.flag ? c.flag + ' ' : '') + c.name);
   const wrap = el('div',{class:'country-filter'});
+  if(eMvp()) wrap.appendChild(el('span',{class:'tt-label cf-label'}, 'Country'));
   const chips = el('div',{class:'cf-chips'});
   tabState.reviewCountries.forEach(code => {
-    const c = COUNTRIES.find(x => x.code === code); if(!c) return;
-    chips.appendChild(el('span',{class:'cf-chip'}, c.flag + ' ' + c.name,
+    const c = cfInfo(code); if(!c) return;
+    chips.appendChild(el('span',{class:'cf-chip'}, cfText(c),
       el('button',{title:'Remove filter', onclick:()=>{ tabState.reviewCountries = tabState.reviewCountries.filter(x=>x!==code); rerenderE(); }, html:icon('close')})
     ));
   });
@@ -5406,11 +5486,35 @@ function eCountryFilterBar(){
   function buildList(q){
     list.innerHTML = '';
     const lq = q.trim().toLowerCase();
-    const options = COUNTRIES.filter(c => !tabState.reviewCountries.includes(c.code))
-      .filter(c => !lq || c.name.toLowerCase().includes(lq) || c.code.toLowerCase().includes(lq));
+    const matches = pool.filter(c => !lq || c.name.toLowerCase().includes(lq) || c.code.toLowerCase().includes(lq));
+    if(eMvp()){
+      // First Mile - MVP Ready — checkbox multi-select with an "All countries" select-all
+      const allOn = pool.length > 0 && pool.every(c => tabState.reviewCountries.includes(c.code));
+      const allRow = el('button',{class:'pp-opt cf-all'+(allOn?' selected':''), type:'button'},
+        el('span',{class:'pp-opt-row'},
+          el('span',{class:'pp-opt-check', html: allOn ? svgCheck() : ''}),
+          el('span',{class:'pp-opt-name'}, 'All countries')
+        ));
+      allRow.addEventListener('click', ev => { ev.stopPropagation(); tabState.reviewCountries = allOn ? [] : pool.map(c=>c.code); _countryFilterOpen = true; rerenderE(); });
+      list.appendChild(allRow);
+      if(!matches.length){ list.appendChild(el('div',{class:'pp-empty'}, 'No matches')); return; }
+      matches.forEach(c => {
+        const on = tabState.reviewCountries.includes(c.code);
+        const opt = el('button',{class:'pp-opt'+(on?' selected':''), type:'button'},
+          el('span',{class:'pp-opt-row'},
+            el('span',{class:'pp-opt-check', html: on ? svgCheck() : ''}),
+            el('span',{class:'pp-opt-name'}, c.code + ' — ' + c.name)
+          ));
+        opt.addEventListener('click', ev => { ev.stopPropagation(); tabState.reviewCountries = on ? tabState.reviewCountries.filter(x=>x!==c.code) : [...tabState.reviewCountries, c.code]; _countryFilterOpen = true; rerenderE(); });
+        list.appendChild(opt);
+      });
+      return;
+    }
+    // variant I — unchanged: click-to-add options (already-selected are hidden)
+    const options = matches.filter(c => !tabState.reviewCountries.includes(c.code));
     if(!options.length){ list.appendChild(el('div',{class:'pp-empty'}, 'No matches')); return; }
     options.forEach(c => {
-      const opt = el('button',{class:'pp-opt', type:'button'}, c.flag + ' ' + c.name);
+      const opt = el('button',{class:'pp-opt', type:'button'}, cfText(c));
       opt.addEventListener('click', (ev) => { ev.stopPropagation(); tabState.reviewCountries = [...tabState.reviewCountries, c.code]; _countryFilterOpen = true; rerenderE(); });
       list.appendChild(opt);
     });
@@ -5431,7 +5535,7 @@ function eCountryFilterBar(){
 
   wrap.appendChild(chips); wrap.appendChild(combo);
   if(tabState.reviewCountries.length){
-    wrap.appendChild(el('button',{class:'add-carrier-btn', type:'button', onclick:()=>{ tabState.reviewCountries=[]; rerenderE(); }}, 'Clear'));
+    wrap.appendChild(el('button',{class:'add-carrier-btn', type:'button', onclick:()=>{ tabState.reviewCountries=[]; rerenderE(); }}, eMvp() ? 'Clear all' : 'Clear'));
   }
   return wrap;
 }
@@ -5465,16 +5569,20 @@ function eCardTable(locked){
     ));
   }
 
-  // group-by toggle
-  body.appendChild(el('div',{class:'table-tools'},
+  // group-by toggle (First Mile - MVP Ready shows the country filter inline, before Group by)
+  const groupByEls = [
     el('span',{class:'tt-label'}, 'Group by'),
     el('div',{class:'seg'},
       el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
       el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
     )
-  ));
-
-  if(eManual()) body.appendChild(eCountryFilterBar());
+  ];
+  if(eMvp()){
+    body.appendChild(el('div',{class:'table-tools cf-tools'}, eCountryFilterBar(), ...groupByEls));
+  } else {
+    body.appendChild(el('div',{class:'table-tools'}, ...groupByEls));
+    if(eManual()) body.appendChild(eCountryFilterBar());
+  }
 
   if(!tabState.rows.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
@@ -5485,6 +5593,8 @@ function eCardTable(locked){
 
   const isSelfPostOnly = tabState.returnServices.length > 0 && tabState.returnServices.every(s => s === 'Self-post');
   const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
+  // First Mile - MVP Ready: a Priority column appears once any country has more than one lane (carrier & service)
+  const prioOn = eMvp() && Object.values(tabState.rows.reduce((m,r)=>{ m[r.code]=(m[r.code]||0)+1; return m; },{})).some(n => n > 1);
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')});
   const showAddBtn = !locked && (eSingle() || state.variant === 'F');
   const headerCols = eManual()
@@ -5492,6 +5602,7 @@ function eCardTable(locked){
     : eRanked()
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Priority'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
     : [el('th',{},'Return service'), el('th',{},'Return label'),
+       ...(prioOn ? [el('th',{},'Priority')] : []),
        ...(eMvp() ? [] : [el('th',{},'Destination')]),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'),
        ...(eMvp() ? [] : [el('th',{},'Contract')]),
@@ -5504,9 +5615,9 @@ function eCardTable(locked){
   const rowsByCode = {};
   tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
   let codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
-  if(eManual() && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
+  if((eManual() || eMvp()) && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
-  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? 5 : 7;
+  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) : 7;
   const colCount = showAddBtn ? baseCols + 1 : baseCols;
   if(!codes.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
@@ -5522,10 +5633,10 @@ function eCardTable(locked){
       const inRegion = codes.filter(code => regionOf(code) === region);
       if(!inRegion.length) return;
       tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:colCount}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
-      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount));
+      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount, prioOn));
     });
   } else {
-    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount));
+    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount, prioOn));
   }
 
   table.appendChild(tbody);
