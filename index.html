@@ -2036,7 +2036,7 @@ const CARRIER_CATALOG = [
   { id:'GLS',        name:'GLS',            badge:'cb-generic',    services:['Pickup','Drop-off'],   labels:['Printed label','Paperless / QR code'], regions:['European Union','United Kingdom','North America'], postalProducts:['GLS ShopReturn'], active:true },
   { id:'Evri',       name:'Evri',           badge:'cb-generic',    services:['Drop-off','Self-post'],labels:['Paperless / QR code'],                 regions:['European Union','United Kingdom'], postalProducts:['Evri Returns'], active:false },
 ];
-function carrierActive(id){ const c = CARRIER_CATALOG.find(x => x.id === id); return !c || c.active !== false; }
+function carrierActive(id){ const c = CARRIER_CATALOG.find(x => x.id === id) || MVP_GB_CARRIERS.find(x => x.id === id); return !c || c.active !== false; }
 function carrierServesCountry(carrier, country, service, label){
   if(service && !carrier.services.includes(service)) return false;
   if(label && !carrier.labels.includes(label)) return false;
@@ -2130,7 +2130,26 @@ function eCountryObj(code){ const c = COUNTRIES.find(x => x.code === code); retu
 
 /* carrier-service-selector(country × service × label) → carriers.
    This is the authoritative, country-aware lookup the table relies on. */
+/* First Mile - MVP Ready: GB uses a dedicated carrier set (from the GB carrier sheet). Scoped to
+   variant H via eCarriersFor / carrierActive, so every other variant keeps the shared CARRIER_CATALOG
+   intact. Each carrier lists the exact return service + label combinations it supports, so the carrier
+   options stay in sync with the service/label chosen for a lane.
+   Sheet mapping: DROP_OFF→Drop-off, PICK_UP→Pickup, REGULAR→Printed label, PAPERLESS→Paperless / QR code. */
+const MVP_GB_CARRIERS = [
+  { id:'gb-evri',        name:'Evri',         active:true, combos:[{service:'Drop-off',label:'Printed label'},{service:'Drop-off',label:'Paperless / QR code'},{service:'Pickup',label:'Printed label'}] },
+  { id:'gb-dpd',         name:'DPD UK',       active:true, combos:[{service:'Drop-off',label:'Printed label'},{service:'Drop-off',label:'Paperless / QR code'},{service:'Pickup',label:'Printed label'}] },
+  { id:'gb-royalmail',   name:'Royal Mail',   active:true, combos:[{service:'Drop-off',label:'Printed label'},{service:'Drop-off',label:'Paperless / QR code'},{service:'Pickup',label:'Paperless / QR code'}] },
+  { id:'gb-parcelforce', name:'Parcel Force', active:true, combos:[{service:'Drop-off',label:'Printed label'},{service:'Pickup',label:'Printed label'}] },
+  { id:'gb-yodel',       name:'Yodel',        active:true, combos:[{service:'Drop-off',label:'Printed label'},{service:'Drop-off',label:'Paperless / QR code'}] },
+  { id:'gb-inpost',      name:'InPost',       active:true, combos:[{service:'Drop-off',label:'Paperless / QR code'}] },
+  { id:'gb-asdatoyou',   name:'ASDAtoyou',    active:true, combos:[{service:'Drop-off',label:'Paperless / QR code'}] },
+  { id:'gb-ups',         name:'UPS',          active:true, combos:[{service:'Pickup',label:'Printed label'}] },
+];
+function eCarrierName(id){ if(!id) return id; const c = CARRIER_CATALOG.find(x => x.id === id) || MVP_GB_CARRIERS.find(x => x.id === id); return c ? c.name : id; }
 function eCarriersFor(code, service, label){
+  if(eMvp() && code === 'GB'){
+    return MVP_GB_CARRIERS.filter(c => c.combos.some(cb => cb.service === service && cb.label === label));
+  }
   return CARRIER_CATALOG.filter(c => carrierServesCountry(c, eCountryObj(code), service, label));
 }
 
@@ -3780,7 +3799,7 @@ function buildTabJson(){
         returnLabel: r.label,
         ...(mvp ? {} : { destination: tabLaneDestJson(r) }),
         laneType: r.laneType,
-        carrier: r.carrier,
+        carrier: mvp ? eCarrierName(r.carrier) : r.carrier,
         ...(mvp ? {} : { contract: r.contract || null }),
         postalProduct: r.postalProduct || null,
         serviceable: eCarriersFor(r.code, r.service, r.label).length > 0,
@@ -5461,7 +5480,7 @@ function eCountryFilterBar(){
     ? getClientCountryScope(state.client).map(s => { const c = COUNTRIES.find(x => x.code === s.code); return { code:s.code, name:s.name, flag: c ? c.flag : '' }; })
     : COUNTRIES;
   const cfInfo = code => pool.find(x => x.code === code) || COUNTRIES.find(x => x.code === code);
-  const cfText = c => eMvp() ? (c.code + ' ' + c.name) : ((c.flag ? c.flag + ' ' : '') + c.name);
+  const cfText = c => eMvp() ? c.code : ((c.flag ? c.flag + ' ' : '') + c.name);
   const wrap = el('div',{class:'country-filter'});
   if(eMvp()) wrap.appendChild(el('span',{class:'tt-label cf-label'}, 'Country'));
   const chips = el('div',{class:'cf-chips'});
@@ -5601,7 +5620,7 @@ function eCardTable(locked){
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
     : eRanked()
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Priority'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
-    : [el('th',{},'Return service'), el('th',{},'Return label'),
+    : [el('th',{},'Return service'), el('th',{}, eMvp() ? 'Label Option' : 'Return label'),
        ...(prioOn ? [el('th',{},'Priority')] : []),
        ...(eMvp() ? [] : [el('th',{},'Destination')]),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'),
