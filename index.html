@@ -2223,6 +2223,9 @@ function eCombos(){
   return combos;
 }
 function eComboKey(code, service, label){ return code + '|' + service + '|' + (label || '∅'); }
+/* First Mile - MVP Ready: a lane's identity includes the carrier, so a country can hold several lanes
+   with the same service + label but different carriers (each full config must still be unique). */
+function eLaneKey(r){ return eComboKey(r.code, r.service, r.label) + '|' + (r.carrier || '∅'); }
 
 /* rebuild rows for the current country × combo grid, preserving edits & honoring deletions */
 function eDefaultContract(carrier){ return (MANAGED_CONTRACTS[carrier]||[])[0] || ''; }
@@ -2241,6 +2244,7 @@ function makeERow(code, service, label){
   };
 }
 function tabBuildRows(){
+  if(eMvp()){ tabBuildRowsMvp(); return; }
   const combos = eCombos();
   const byKey = {}; tabState.rows.forEach(r => { byKey[eComboKey(r.code, r.service, r.label)] = r; });
   const next = [], used = {};
@@ -2263,9 +2267,57 @@ function tabBuildRows(){
   next.sort((a,b) => COUNTRIES.findIndex(c=>c.code===a.code) - COUNTRIES.findIndex(c=>c.code===b.code));
   tabState.rows = next;
 }
+/* First Mile - MVP Ready row builder: lanes are keyed by carrier, so a country can hold several lanes
+   with the same service+label. Base (auto) lanes exist for each active service×label combo; user-added
+   carrier lanes (custom) are preserved regardless of the top-level selection. */
+function tabBuildRowsMvp(){
+  const combos = eCombos();
+  const comboSet = new Set(combos.map(cb => cb.service + '|' + (cb.label || '∅')));
+  const next = [], used = {};
+  // preserve existing lanes (base lanes only for still-active combos; custom lanes always), unless deleted
+  tabState.rows.forEach(r => {
+    const comboK = r.service + '|' + (r.label || '∅');
+    if(!r.custom && !comboSet.has(comboK)) return;   // base lane for a de-selected combo → drop
+    const lk = eLaneKey(r);
+    if(tabState.deleted[lk] || used[lk]) return;
+    next.push(r); used[lk] = true;
+  });
+  // ensure each active country × combo has at least one (base) lane, unless the combo was fully removed
+  COUNTRIES.forEach(c => {
+    combos.forEach(cb => {
+      const comboKey = eComboKey(c.code, cb.service, cb.label);
+      if(tabState.deleted[comboKey]) return;
+      const hasLane = next.some(r => r.code === c.code && r.service === cb.service && (r.label || null) === (cb.label || null));
+      if(hasLane) return;
+      const baseRow = makeERow(c.code, cb.service, cb.label);
+      if(tabState.deleted[eLaneKey(baseRow)]) return;
+      next.push(baseRow); used[eLaneKey(baseRow)] = true;
+    });
+  });
+  next.sort((a,b) => COUNTRIES.findIndex(c=>c.code===a.code) - COUNTRIES.findIndex(c=>c.code===b.code));
+  tabState.rows = next;
+}
 function tabDeleteCombo(id){
   const r = tabState.rows.find(x => x.id === id); if(!r) return;
   const c = COUNTRIES.find(x => x.code === r.code);
+  if(eMvp()){
+    // Delete just this carrier lane; if it was the last lane for the combo, block the base from regenerating
+    const laneK = eLaneKey(r);
+    const comboKey = eComboKey(r.code, r.service, r.label);
+    tabState.deleted[laneK] = true;
+    const siblings = tabState.rows.filter(x => x.id!==r.id && x.code===r.code && x.service===r.service && (x.label||null)===(r.label||null));
+    if(!siblings.length) tabState.deleted[comboKey] = true;
+    const snapshot = { ...r };
+    tabBuildRows(); rerenderE();
+    const lane = r.service + (r.label ? ' + ' + r.label : '') + ' · ' + eCarrierName(r.carrier);
+    showToast('Removed ' + lane + ' lane for ' + c.name + '.', 'Add back', () => {
+      delete tabState.deleted[laneK]; delete tabState.deleted[comboKey];
+      snapshot.id = 'r' + (++_tabSeq);
+      tabState.rows.push(snapshot);
+      tabBuildRows(); rerenderE();
+    });
+    return;
+  }
   const key = eComboKey(r.code, r.service, r.label);
   tabState.deleted[key] = true;
   const snapshot = { ...r };
@@ -5406,7 +5458,13 @@ function eRow(r, prio){
     } else if(unavailable){
       carrierCell.appendChild(el('span',{class:'cell-dim'}, '—'));
     } else {
-      carrierCell.appendChild(eSelect(r.carrier, av.map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
+      let carrierOpts = av;
+      if(eMvp()){
+        // don't offer a carrier already used by another lane of the same country+service+label (keeps each config unique)
+        const usedByOthers = new Set(tabState.rows.filter(x => x.id!==r.id && x.code===r.code && x.service===r.service && (x.label||null)===(r.label||null)).map(x => x.carrier));
+        carrierOpts = av.filter(cr => cr.id === r.carrier || !usedByOthers.has(cr.id));
+      }
+      carrierCell.appendChild(eSelect(r.carrier, carrierOpts.map(cr=>({value:cr.id,text:cr.name})), v=>{ eSetCarrier(r, v); rerenderE(); }));
     }
     // Carrier active/inactive — from the Carrier Service Catalogue (representation only), First Mile - MVP Ready
     if(eMvp() && !refreshing && !unavailable && r.carrier){
@@ -5901,12 +5959,19 @@ function openAddConfigModal(code){
     el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
     el('button',{class:'btn btn-primary', onclick:()=>{
       const tCode = draft.targetCode;
-      const key = eComboKey(tCode, draft.service, draft.label);
       if(draft.service !== 'Self-post' && !draft.carrier){ hint.textContent='No carrier ships this combination. Choose another service or label.'; hint.classList.add('err'); return; }
-      if(tabState.rows.some(r => eComboKey(r.code, r.service, r.label) === key)){ hint.textContent='That configuration already exists for this country.'; hint.classList.add('err'); return; }
-      delete tabState.deleted[key];
       const row = makeERow(tCode, draft.service, draft.label);
       row.custom = true; if(draft.carrier) eSetCarrier(row, draft.carrier);
+      if(eMvp()){
+        // First Mile - MVP Ready: a config is unique by service + label + carrier, so a different carrier for the same combo is allowed
+        const laneK = eLaneKey(row);
+        if(tabState.rows.some(r => eLaneKey(r) === laneK)){ hint.textContent='That configuration already exists for this country.'; hint.classList.add('err'); return; }
+        delete tabState.deleted[laneK]; delete tabState.deleted[eComboKey(tCode, draft.service, draft.label)];
+      } else {
+        const key = eComboKey(tCode, draft.service, draft.label);
+        if(tabState.rows.some(r => eComboKey(r.code, r.service, r.label) === key)){ hint.textContent='That configuration already exists for this country.'; hint.classList.add('err'); return; }
+        delete tabState.deleted[key];
+      }
       tabState.rows.push(row);
       tabBuildRows(); closeModal(ref.o); rerenderE();
     }}, 'Add configuration')
