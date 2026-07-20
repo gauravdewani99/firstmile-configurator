@@ -2132,6 +2132,8 @@ function ePoc(){ return state.variant === 'J'; }
 function eManual(){ return state.variant === 'I'; }
 /* both J and I share the trimmed ranked-carrier column layout (no destination/laneType/contract columns) */
 function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
+/* First Mile - MVP Ready (H): Tabular 2 without the First Mile Destination step, the Destination column, or the Contract column (Lane type IS kept) */
+function eMvp(){ return state.variant === 'H'; }
 /* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
 function eSingleSvc(){ return eSingle() && !eManual(); }
 /* every variant driven by tabState / renderVariantE */
@@ -3746,6 +3748,7 @@ function buildTabJson(){
     };
   }
   const variantName = state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
+  const mvp = eMvp(); // First Mile - MVP Ready: no destination or contract in the payload (lane type kept)
   return {
     client: state.client || null,
     variant: variantName,
@@ -3753,10 +3756,10 @@ function buildTabJson(){
     flowType: 'B2C',
     returnServices: tabState.returnServices,
     returnLabels: eNonSelfServices().length ? tabState.returnLabels : [],
-    destination: tabGlobalDestJson(),
-    clientAddresses: tabState.destination === 'DTR'
+    ...(mvp ? {} : { destination: tabGlobalDestJson() }),
+    ...(mvp ? {} : { clientAddresses: tabState.destination === 'DTR'
       ? tabState.addresses.filter(a => a.city.trim() && a.countryCode).map(a => ({ line1:a.line1, line2:a.line2 || undefined, city:a.city, postalCode:a.postal || undefined, country:a.countryCode, appliesToCountries:(a.countries||[]) }))
-      : [],
+      : [] }),
     lanes: tabState.rows.map(r => {
       const c = COUNTRIES.find(x => x.code === r.code);
       return {
@@ -3764,10 +3767,10 @@ function buildTabJson(){
         countryName: c.name,
         returnService: r.service,
         returnLabel: r.label,
-        destination: tabLaneDestJson(r),
+        ...(mvp ? {} : { destination: tabLaneDestJson(r) }),
         laneType: r.laneType,
         carrier: r.carrier,
-        contract: r.contract || null,
+        ...(mvp ? {} : { contract: r.contract || null }),
         postalProduct: r.postalProduct || null,
         serviceable: eCarriersFor(r.code, r.service, r.label).length > 0,
       };
@@ -3967,7 +3970,7 @@ function eDestReady(){
   if(tabState.destination === 'DTR') return tabState.addresses.some(a => a.city.trim() && a.countryCode);
   return true;
 }
-function eTableReady(){ return eServiceReady() && eLabelReady() && (eRanked() || eDestReady()); }
+function eTableReady(){ return eServiceReady() && eLabelReady() && (eRanked() || eMvp() || eDestReady()); }
 
 // effective destination for a row: explicit per-row override, else the global Q3 answer
 function eEffectiveDest(r){
@@ -4001,7 +4004,7 @@ function eDestCellInfo(r){
 function eScrollTo(id){ const elm = document.getElementById(id); if(elm) elm.scrollIntoView({ behavior:'smooth', block:'start' }); }
 
 function eNav(){
-  const steps = eRanked() ? [
+  const steps = (eRanked() || eMvp()) ? [
     { id:'sec-service', n:1, label:'Return Service', done:eServiceReady(), locked:false },
     { id:'sec-label',   n:2, label:'Label Option',   done:eLabelReady(),   locked:!eServiceReady() },
     { id:'sec-review',  n:3, label:'Lane Review',     done:false,           locked:!eLabelReady() },
@@ -4576,7 +4579,7 @@ function renderVariantE(root){
   const svc = eCardService(false);                 svc.id = 'sec-service';
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
   main.appendChild(svc); main.appendChild(lbl);
-  if(eRanked()){
+  if(eRanked() || eMvp()){
     const rev = eCardTable(!eLabelReady());          rev.id = 'sec-review';
     main.appendChild(rev);
   } else {
@@ -5294,21 +5297,23 @@ function eRow(r){
   if(isSelfPost){
     // Return Label — not applicable
     tr.appendChild(naCell());
-    // Return Destination
-    const di = eDestCellInfo(r);
-    tr.appendChild(el('td',{class:'dest-cell'},
-      el('span',{class:'dest-wrap'},
-        el('span',{class:'dest-ic-slot', html:di.iconHtml}),
-        el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
-        el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
-      )
-    ));
+    // Return Destination (hidden for First Mile - MVP Ready)
+    if(!eMvp()){
+      const di = eDestCellInfo(r);
+      tr.appendChild(el('td',{class:'dest-cell'},
+        el('span',{class:'dest-wrap'},
+          el('span',{class:'dest-ic-slot', html:di.iconHtml}),
+          el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
+          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
+        )
+      ));
+    }
     // Carrier — not applicable
     tr.appendChild(naCell());
     // Lane Type — not applicable
     tr.appendChild(naCell());
-    // Contract — not applicable
-    tr.appendChild(naCell());
+    // Contract — not applicable (hidden for First Mile - MVP Ready)
+    if(!eMvp()) tr.appendChild(naCell());
     // Postal Product
     const spPp = el('td',{class:'pp-td carrier-cell'}, ppCombobox(r));
     spPp.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
@@ -5317,14 +5322,16 @@ function eRow(r){
     // Standard lanes
     tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
 
-    const di = eDestCellInfo(r);
-    tr.appendChild(el('td',{class:'dest-cell'},
-      el('span',{class:'dest-wrap'},
-        el('span',{class:'dest-ic-slot', html:di.iconHtml}),
-        el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
-        el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
-      )
-    ));
+    if(!eMvp()){
+      const di = eDestCellInfo(r);
+      tr.appendChild(el('td',{class:'dest-cell'},
+        el('span',{class:'dest-wrap'},
+          el('span',{class:'dest-ic-slot', html:di.iconHtml}),
+          el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
+          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
+        )
+      ));
+    }
 
     const carrierCell = el('td',{class:'carrier-cell'});
     if(refreshing){
@@ -5337,7 +5344,7 @@ function eRow(r){
     carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
     tr.appendChild(carrierCell);
     tr.appendChild(el('td',{}, eLaneToggle(r)));
-    tr.appendChild(el('td',{}, eContractCell(r)));
+    if(!eMvp()) tr.appendChild(el('td',{}, eContractCell(r)));
 
     const ppCell = el('td',{class:'pp-td'});
     ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
@@ -5435,7 +5442,7 @@ function eCardTable(locked){
 
   const card = el('div',{class:'q-card'+(locked?' locked':'')},
     el('div',{class:'q-card-head'},
-      el('div',{class:'q-num'}, eRanked() ? '3' : '4'),
+      el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4'),
       el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
     )
   );
@@ -5484,8 +5491,10 @@ function eCardTable(locked){
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
     : eRanked()
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Priority'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
-    : [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Destination'),
-       el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'), el('th',{},'Contract'),
+    : [el('th',{},'Return service'), el('th',{},'Return label'),
+       ...(eMvp() ? [] : [el('th',{},'Destination')]),
+       el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'),
+       ...(eMvp() ? [] : [el('th',{},'Contract')]),
        el('th',{},'Postal Product')];
   if(showAddBtn) headerCols.push(el('th',{class:'th-add-col'}));
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
@@ -5497,7 +5506,7 @@ function eCardTable(locked){
   let codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
   if(eManual() && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
-  const baseCols = eManual() ? 4 : eRanked() ? 5 : 7;
+  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? 5 : 7;
   const colCount = showAddBtn ? baseCols + 1 : baseCols;
   if(!codes.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
