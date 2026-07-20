@@ -1264,6 +1264,11 @@ body[data-view="wizard"] #view-landing{display:none}
 .prio-cell{display:inline-flex;align-items:center;gap:6px}
 .prio-select{min-width:60px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--r-xs);background:var(--card);font:inherit;font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer}
 .prio-select:focus{border-color:var(--brand-2);outline:none;box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+/* First Mile - MVP Ready: let the Postal Product dropdown escape the table's overflow clip, widen it, and anchor it to the trigger's right so it stays on screen */
+.config-table.compact.mvp-table{overflow:visible}
+.config-table.compact.mvp-table .pp-drop{left:auto;right:0;min-width:300px}
+.config-table.compact.mvp-table .th-pp{width:26%}
+.config-table.compact.mvp-table .th-add-col{width:1%}
 
 /* ─── country search + multi-select filter (Lane Review) ─── */
 .country-filter{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -5614,7 +5619,7 @@ function eCardTable(locked){
   const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
   // First Mile - MVP Ready: a Priority column appears once any country has more than one lane (carrier & service)
   const prioOn = eMvp() && Object.values(tabState.rows.reduce((m,r)=>{ m[r.code]=(m[r.code]||0)+1; return m; },{})).some(n => n > 1);
-  const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')});
+  const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')+(eMvp()?' mvp-table':'')});
   const showAddBtn = !locked && (eSingle() || state.variant === 'F');
   const headerCols = eManual()
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
@@ -5625,7 +5630,7 @@ function eCardTable(locked){
        ...(eMvp() ? [] : [el('th',{},'Destination')]),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'),
        ...(eMvp() ? [] : [el('th',{},'Contract')]),
-       el('th',{},'Postal Product')];
+       el('th',{class:'th-pp'},'Postal Product')];
   if(showAddBtn) headerCols.push(el('th',{class:'th-add-col'}));
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
   const tbody = el('tbody',{});
