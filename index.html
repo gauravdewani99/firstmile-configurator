@@ -154,6 +154,7 @@ a{color:inherit;text-decoration:none}
 .variant-icon.e{background:#FEF2F8;color:#DB2777}
 .variant-icon.j{background:#FEFCE8;color:#CA8A04}
 .variant-icon.g{background:#EFF6FF;color:#2563EB}
+.variant-icon.i{background:#ECFEFF;color:#0891B2}
 .variant-info{flex:1;min-width:0}
 .variant-name{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:2px;text-align:left;display:flex;align-items:center;gap:8px}
 .vtag{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;border-radius:5px;background:var(--brand-soft);color:var(--brand);font-size:10.5px;font-weight:800;letter-spacing:.3px;flex-shrink:0}
@@ -581,6 +582,7 @@ body[data-variant="E"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="H"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
+body[data-variant="K"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="I"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 
@@ -1146,8 +1148,8 @@ tr.lane-row.unavail:hover{background:transparent}
 .save-flow-btn:hover{background:var(--brand-2);border-color:var(--brand-2);box-shadow:var(--shadow-2);transform:translateY(-1px)}
 .save-flow-btn svg{width:15px;height:15px}
 .save-flow-btn.saving{opacity:.7;pointer-events:none}
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]) .json-fab,
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]) .json-panel,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]) .json-fab,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]) .json-panel,
 body[data-view="landing"] .json-fab,
 body[data-view="landing"] .json-panel{display:none}
 .json-panel{
@@ -1269,6 +1271,7 @@ body[data-view="wizard"] #view-landing{display:none}
 .config-table.compact.mvp-table .pp-drop{left:auto;right:0;min-width:300px}
 .config-table.compact.mvp-table .th-pp{width:26%}
 .config-table.compact.mvp-table .th-add-col{width:1%}
+.config-table.compact.mvp-table .pp-td .pp-trigger{min-width:210px}
 
 /* ─── country search + multi-select filter (Lane Review) ─── */
 .country-filter{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -1337,20 +1340,20 @@ body[data-view="wizard"] #view-landing{display:none}
       <div class="landing-new">
         <div class="col-label">Create a new flow</div>
 
+        <button class="primary-card" onclick="startVariant('K')">
+          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+          <span class="pc-info">
+            <span class="pc-name">MyRebound FM MVP <span class="pc-badge">MVP Ready</span></span>
+            <span class="pc-desc">MyRebound FM MVP-ready build — one return service &amp; label, one row per country; add extra carriers/configs per country as needed.</span>
+          </span>
+          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>
+
         <button class="primary-card" onclick="startVariant('H')">
           <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
           <span class="pc-info">
             <span class="pc-name">First Mile - MVP Ready <span class="pc-badge">MVP Ready</span></span>
             <span class="pc-desc">MVP-ready build based on Tabular 2 — one return service &amp; label, one row per country; add extra configs per country as needed.</span>
-          </span>
-          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-        </button>
-
-        <button class="primary-card" onclick="startVariant('I')">
-          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
-          <span class="pc-info">
-            <span class="pc-name">MyRebound FM POC <span class="pc-badge">New</span></span>
-            <span class="pc-desc">Tabular 2 without destination, lane type or contract — pick and rank multiple carriers per country, each linked to a unique postal product.</span>
           </span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
@@ -1367,37 +1370,42 @@ body[data-view="wizard"] #view-landing{display:none}
         <div class="legacy-section">
           <div class="legacy-head"><span class="legacy-title">Earlier versions</span></div>
           <div class="legacy-stack">
-            <button class="legacy-card" style="--depth:0" onclick="startVariant('J')">
+            <button class="legacy-card" style="--depth:0" onclick="startVariant('I')">
+              <span class="variant-icon i"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+              <span class="variant-info"><span class="variant-name"><span class="vtag">POC</span>MyRebound FM POC</span><span class="variant-desc">Tabular 2 without destination, lane type or contract — pick and rank multiple carriers per country, each linked to a unique postal product.</span></span>
+              <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </button>
+            <button class="legacy-card" style="--depth:1" onclick="startVariant('J')">
               <span class="variant-icon j"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">P1</span>POC Phase 1</span><span class="variant-desc">Tabular 2 trimmed to Phase 1 — return service &amp; label, one row per country, ranked carriers.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:1" onclick="startVariant('G')">
+            <button class="legacy-card" style="--depth:2" onclick="startVariant('G')">
               <span class="variant-icon g"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">T2</span>Tabular 2</span><span class="variant-desc">One return service &amp; label, one row per country — add extra configs per country as needed.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:2" onclick="startVariant('E')">
+            <button class="legacy-card" style="--depth:3" onclick="startVariant('E')">
               <span class="variant-icon e"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">T1</span>Tabular 1</span><span class="variant-desc">Multi-select service &amp; label — fine-tune every lane in a pre-filled table.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:3" onclick="startVariant('D')">
+            <button class="legacy-card" style="--depth:4" onclick="startVariant('D')">
               <span class="variant-icon d"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v4</span>Client Preferences</span><span class="variant-desc">Guided preference questions derive every lane for you.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:4" onclick="startVariant('C')">
+            <button class="legacy-card" style="--depth:5" onclick="startVariant('C')">
               <span class="variant-icon c"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v3</span>Inline Grid</span><span class="variant-desc">All lanes in one table with inline dropdowns.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:5" onclick="startVariant('B')">
+            <button class="legacy-card" style="--depth:6" onclick="startVariant('B')">
               <span class="variant-icon b"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v2</span>Carrier-First Bulk</span><span class="variant-desc">Pick a carrier first, then assign lanes to it.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:6" onclick="startVariant('A')">
+            <button class="legacy-card" style="--depth:7" onclick="startVariant('A')">
               <span class="variant-icon a"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v1</span>Lane-by-Lane Stepper</span><span class="variant-desc">Configure each country one at a time.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -1964,9 +1972,10 @@ const ALL_POSTAL_PRODUCTS = (()=>{
 /* Searchable combobox for Postal Product — shows all products, search by ID or name */
 function ppCombobox(r){
   const wrap = el('div',{class:'pp-combo'});
+  const ph = eMvp() ? '— select postal product —' : '— select —';  // MVP-Ready variants (H, K) use a descriptive placeholder
 
   const trigger = el('button',{class:'pp-trigger'+(r.postalProduct?'':' empty'), type:'button'});
-  trigger.textContent = r.postalProduct || '— select —';
+  trigger.textContent = r.postalProduct || ph;
   trigger.appendChild(el('span',{class:'pp-trigger-ic', html:icon('chevron-down')}));
 
   const drop = el('div',{class:'pp-drop'});
@@ -1979,7 +1988,7 @@ function ppCombobox(r){
 
   function setVal(val){
     r.postalProduct = val || null;
-    trigger.textContent = val || '— select —';
+    trigger.textContent = val || ph;
     if(val) trigger.classList.remove('empty'); else trigger.classList.add('empty');
     trigger.appendChild(el('span',{class:'pp-trigger-ic', html:icon('chevron-down')}));
     drop.classList.remove('open');
@@ -2159,7 +2168,7 @@ function eCarriersFor(code, service, label){
 }
 
 /* Tabular 2 (variant G) + First Mile MVP Ready (H) + POC Phase 1 (J) + Carrier Priority (I) = single-select service & label, one row per country */
-function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I'; }
+function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I' || state.variant === 'K'; }
 /* POC Phase 1 (variant J) drops the destination step/column and ranks carriers, one row per carrier×postal-product */
 function ePoc(){ return state.variant === 'J'; }
 /* Carrier Priority (variant I) — Tabular 2 minus destination/lane type/contract, with a manual, ranked, multi-carrier picker */
@@ -2167,11 +2176,11 @@ function eManual(){ return state.variant === 'I'; }
 /* both J and I share the trimmed ranked-carrier column layout (no destination/laneType/contract columns) */
 function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
 /* First Mile - MVP Ready (H): Tabular 2 without the First Mile Destination step, the Destination column, or the Contract column (Lane type IS kept) */
-function eMvp(){ return state.variant === 'H'; }
+function eMvp(){ return state.variant === 'H' || state.variant === 'K'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy) */
 /* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
 function eSingleSvc(){ return eSingle() && !eManual(); }
 /* every variant driven by tabState / renderVariantE */
-const TABULAR_VARIANTS = ['E','F','G','H','I','J'];
+const TABULAR_VARIANTS = ['E','F','G','H','I','J','K'];
 function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
 /* postal products derived from a carrier (each carrier → one or more products) */
 function ePostalProductsFor(carrierId){
@@ -2515,7 +2524,7 @@ function setView(v){
   if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
   else document.body.removeAttribute('data-variant');
   document.getElementById('meta-client').textContent = state.client || '—';
-  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1' };
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1', K:'MyRebound FM MVP' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
   const flowEl = document.getElementById('meta-flow');
   if(flowEl) flowEl.style.display = state.variant ? '' : 'none';
@@ -3834,7 +3843,7 @@ function buildTabJson(){
       summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
     };
   }
-  const variantName = state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
+  const variantName = state.variant === 'K' ? 'myrebound-fm-mvp' : state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
   const mvp = eMvp(); // First Mile - MVP Ready: no destination or contract in the payload (lane type kept)
   return {
     client: state.client || null,
@@ -3922,7 +3931,7 @@ function showToast(message, actionLabel, onAction, opts){
 /* ─────────────────────────────────────────────────
    SAVE / LOAD FLOWS (shared backend via /api/flows)
    ───────────────────────────────────────────────── */
-const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1' };
+const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1', K:'MyRebound FM MVP' };
 
 function captureFlowState(){
   const s = {};
