@@ -1222,10 +1222,10 @@ body[data-view="wizard"] #view-landing{display:none}
   position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:200;
   background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);
   box-shadow:var(--shadow-3);overflow:hidden;
-  display:none;flex-direction:column;min-width:260px;
+  display:none;flex-direction:column;min-width:300px;
 }
 .pp-drop.open{display:flex}
-.pp-search-wrap{display:flex;align-items:center;gap:6px;padding:8px 8px 6px;border-bottom:1px solid var(--border-soft)}
+.pp-search-wrap{display:flex;align-items:center;gap:6px;padding:10px 10px 8px;border-bottom:1px solid var(--border-soft)}
 .pp-add-btn{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:6px 10px;border:1.5px solid var(--brand-2);border-radius:var(--r-xs);font:inherit;font-size:11.5px;font-weight:600;color:var(--brand-2);background:transparent;cursor:pointer;white-space:nowrap;transition:background .12s,color .12s}
 .pp-add-btn:hover{background:var(--brand-soft);color:var(--brand)}
 .pp-add-btn svg{width:12px;height:12px}
@@ -1268,7 +1268,7 @@ body[data-view="wizard"] #view-landing{display:none}
 .prio-select:focus{border-color:var(--brand-2);outline:none;box-shadow:0 0 0 3px rgba(45,95,138,.12)}
 /* First Mile - MVP Ready: let the Postal Product dropdown escape the table's overflow clip, widen it, and anchor it to the trigger's right so it stays on screen */
 .config-table.compact.mvp-table{overflow:visible}
-.config-table.compact.mvp-table .pp-drop{left:auto;right:0;min-width:300px}
+.config-table.compact.mvp-table .pp-drop{left:auto;right:0;min-width:340px}
 .config-table.compact.mvp-table .th-pp{width:26%}
 .config-table.compact.mvp-table .th-add-col{width:1%}
 .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:210px}
@@ -2037,7 +2037,7 @@ function ppCombobox(r){
 
   const drop = el('div',{class:'pp-drop'});
   const searchWrap = el('div',{class:'pp-search-wrap'});
-  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search by ID or name…'});
+  const searchInput = el('input',{class:'pp-search', type:'text', placeholder:'Search or add custom…'});
   searchWrap.appendChild(searchInput);
   const list = el('div',{class:'pp-list'});
   drop.appendChild(searchWrap);
@@ -2062,7 +2062,16 @@ function ppCombobox(r){
     clearOpt.addEventListener('click', ()=> setVal(null));
     list.appendChild(clearOpt);
 
-    if(filtered.length === 0){
+    // Free-text: use the typed value as a custom postal product (in addition to picking from the list)
+    const raw = q.trim();
+    if(raw && !filtered.some(p => (p.id+' - '+p.name).toLowerCase() === raw.toLowerCase())){
+      const addOpt = el('button',{class:'pp-opt pp-add', type:'button', html: icon('plus') + ' Use “' + raw.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '”'});
+      addOpt.title = 'Use custom postal product: ' + raw;
+      addOpt.addEventListener('click', ()=> setVal(raw));
+      list.appendChild(addOpt);
+    }
+
+    if(filtered.length === 0 && !raw){
       list.appendChild(el('div',{class:'pp-empty'}, 'No matches'));
     }
     filtered.forEach(p => {
@@ -2075,6 +2084,7 @@ function ppCombobox(r){
   }
 
   searchInput.addEventListener('input',()=> buildList(searchInput.value));
+  searchInput.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); const raw = searchInput.value.trim(); if(raw) setVal(raw); } });
 
   trigger.addEventListener('click', e=>{
     e.stopPropagation();
@@ -4918,7 +4928,7 @@ function renderVariantE(root){
   layout.appendChild(eNav());
 
   const main = el('div',{class:'e-main'});
-  if(eMyr()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }
+  if(eMvp()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }  /* Return flow type on both MVP-Ready variants (H + K) */
   const svc = eCardService(false);                 svc.id = 'sec-service';
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
   main.appendChild(svc); main.appendChild(lbl);
