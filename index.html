@@ -2266,7 +2266,7 @@ function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
 function eMvp(){ return state.variant === 'H' || state.variant === 'K'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy) */
 function eFmMvp(){ return state.variant === 'H'; }  /* First Mile - MVP Ready only: shipping-preferences pane + Carrier Service Catalogue button */
 /* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
-function eSingleSvc(){ return eSingle() && !eManual(); }
+function eSingleSvc(){ return eSingle() && !eManual() && !eFmMvp(); }  /* First Mile - MVP Ready (H) multi-selects service & label like Tabular 1 */
 /* every variant driven by tabState / renderVariantE */
 const TABULAR_VARIANTS = ['E','F','G','H','I','J','K'];
 function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
