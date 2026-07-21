@@ -1274,6 +1274,8 @@ body[data-view="wizard"] #view-landing{display:none}
 .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:210px}
 /* First Mile - MVP Ready: shipping preferences pane */
 .q-card-head .csc-btn{margin-left:auto}
+/* MyRebound FM MVP: disabled (greyed) chip, e.g. B2B return flow */
+.mchip.mchip-off{opacity:.45;cursor:not-allowed;pointer-events:none}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
 @media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
 .ship-col{min-width:0}
@@ -2187,6 +2189,7 @@ function initTabular(){
     reviewCountries: [],   // variant I — search+multi-select filter on the Lane Review table, avoids scrolling every country
     serviceLevel:   'STANDARD', // First Mile - MVP Ready shipping pref — 'STANDARD' | 'PREMIUM'
     returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
+    returnFlow:     'B2C',      // MyRebound FM MVP return flow type — 'B2C' (B2B disabled)
   };
 }
 
@@ -2265,8 +2268,9 @@ function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
 /* First Mile - MVP Ready (H): Tabular 2 without the First Mile Destination step, the Destination column, or the Contract column (Lane type IS kept) */
 function eMvp(){ return state.variant === 'H' || state.variant === 'K'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy) */
 function eFmMvp(){ return state.variant === 'H'; }  /* First Mile - MVP Ready only: shipping-preferences pane + Carrier Service Catalogue button */
+function eMyr(){ return state.variant === 'K'; }   /* MyRebound FM MVP only: Return flow type selector, no Priority column */
 /* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
-function eSingleSvc(){ return eSingle() && !eManual() && !eFmMvp(); }  /* First Mile - MVP Ready (H) multi-selects service & label like Tabular 1 */
+function eSingleSvc(){ return eSingle() && !eManual() && !eMvp(); }  /* First Mile - MVP Ready (H) + MyRebound FM MVP (K) multi-select service & label like Tabular 1 */
 /* every variant driven by tabState / renderVariantE */
 const TABULAR_VARIANTS = ['E','F','G','H','I','J','K'];
 function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
@@ -4755,6 +4759,25 @@ function eCardRules(){
   return card;
 }
 
+/* MyRebound FM MVP: Return flow type — B2C (default, selected), B2B greyed out / not selectable. Shown first. */
+function eCardFlowType(){
+  const card = el('div',{class:'q-card answered'},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, el('span',{html:svgCheck(),style:{width:'13px',height:'13px',display:'flex'}})),
+      el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Return flow type'))
+    )
+  );
+  const body = el('div',{class:'q-body'});
+  const g = el('div',{class:'mchip-group'});
+  g.appendChild(eChip(true, icon('cart'), 'B2C', ()=>{ tabState.returnFlow = 'B2C'; }));
+  const b2b = eChip(false, icon('building'), 'B2B', ()=>{});
+  b2b.classList.add('mchip-off'); b2b.setAttribute('disabled',''); b2b.title = 'B2B — not available yet';
+  g.appendChild(b2b);
+  body.appendChild(g);
+  card.appendChild(body);
+  return card;
+}
+
 /* First Mile - MVP Ready: Shipping preferences pane — Service level + What are you returning?, side by side */
 function eCardShippingPrefs(locked){
   const card = el('div',{class:'q-card'+(locked?' locked':'')},
@@ -4895,6 +4918,7 @@ function renderVariantE(root){
   layout.appendChild(eNav());
 
   const main = el('div',{class:'e-main'});
+  if(eMyr()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }
   const svc = eCardService(false);                 svc.id = 'sec-service';
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
   main.appendChild(svc); main.appendChild(lbl);
@@ -5911,8 +5935,8 @@ function eCardTable(locked){
 
   const isSelfPostOnly = tabState.returnServices.length > 0 && tabState.returnServices.every(s => s === 'Self-post');
   const hasMixed = eHasSelfPost() && eNonSelfServices().length > 0;
-  // First Mile - MVP Ready: a Priority column appears once any country has more than one lane (carrier & service)
-  const prioOn = eMvp() && Object.values(tabState.rows.reduce((m,r)=>{ m[r.code]=(m[r.code]||0)+1; return m; },{})).some(n => n > 1);
+  // First Mile - MVP Ready (H only) shows a Priority column once any country has more than one lane; MyRebound FM MVP (K) does not
+  const prioOn = eFmMvp() && Object.values(tabState.rows.reduce((m,r)=>{ m[r.code]=(m[r.code]||0)+1; return m; },{})).some(n => n > 1);
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')+(eMvp()?' mvp-table':'')});
   const showAddBtn = !locked && (eSingle() || state.variant === 'F');
   const headerCols = eManual()
