@@ -1272,6 +1272,61 @@ body[data-view="wizard"] #view-landing{display:none}
 .config-table.compact.mvp-table .th-pp{width:26%}
 .config-table.compact.mvp-table .th-add-col{width:1%}
 .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:210px}
+/* First Mile - MVP Ready: shipping preferences pane */
+.q-card-head .csc-btn{margin-left:auto}
+.ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
+@media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
+.ship-col{min-width:0}
+.ship-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px}
+.ship-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.ship-cards{grid-template-columns:1fr}}
+.ship-card{text-align:left;border:1.5px solid var(--border);border-radius:14px;padding:14px 16px;background:var(--card);cursor:pointer;transition:border-color .14s,box-shadow .14s,background .14s;display:flex;flex-direction:column;gap:6px}
+.ship-card:hover{border-color:var(--brand-2)}
+.ship-card.on{border-color:var(--brand);background:var(--brand-soft);box-shadow:0 0 0 3px rgba(45,95,138,.1)}
+.ship-card-top{display:flex;align-items:center;gap:8px}
+.ship-ic{display:flex;color:var(--brand)}
+.ship-ic svg{width:16px;height:16px}
+.ship-name{font-size:14px;font-weight:700;color:var(--text)}
+.ship-radio{margin-left:auto;width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+.ship-radio.on{border-color:var(--brand);background:radial-gradient(circle,var(--brand) 0 4px,transparent 5px)}
+.ship-desc{font-size:12px;color:var(--muted);line-height:1.45}
+.ship-seg{display:inline-flex;flex-wrap:wrap;gap:8px}
+.ship-seg-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border:1.5px solid var(--border);border-radius:10px;background:var(--card);font:inherit;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .14s}
+.ship-seg-btn:hover{border-color:var(--brand-2)}
+.ship-seg-btn.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.ship-seg-ic{display:flex}
+.ship-seg-ic svg{width:15px;height:15px}
+/* Carrier Service Catalogue button + modal */
+.csc-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border:1.5px solid var(--brand-2);border-radius:10px;background:var(--card);font:inherit;font-size:12.5px;font-weight:700;color:var(--brand);cursor:pointer;transition:background .14s;white-space:nowrap}
+.csc-btn:hover{background:var(--brand-soft)}
+.csc-btn-ic{display:flex}
+.csc-btn-ic svg{width:14px;height:14px}
+.csc-modal{width:min(920px,calc(100vw - 40px));max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
+.csc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.csc-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.csc-x{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0}
+.csc-x:hover{background:var(--border-soft);color:var(--text)}
+.csc-x svg{width:16px;height:16px}
+.csc-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:16px 0 10px}
+.csc-search{flex:1;min-width:200px;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font:inherit;font-size:13px;color:var(--text);background:var(--bg);outline:none}
+.csc-search:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.1)}
+.csc-chipgroup{display:inline-flex;align-items:center;gap:6px}
+.csc-chip-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dim)}
+.csc-chip{padding:6px 11px;border:1px solid var(--border);border-radius:999px;background:var(--card);font:inherit;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .12s}
+.csc-chip:hover{border-color:var(--brand-2)}
+.csc-chip.on{border-color:var(--brand);background:var(--brand);color:#fff}
+.csc-count{font-size:12px;color:var(--dim);margin-bottom:8px}
+.csc-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:12px;flex:1;min-height:0}
+.csc-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px}
+.csc-table thead th{position:sticky;top:0;background:#F8FAFC;text-align:left;padding:10px 12px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap}
+.csc-table tbody td{padding:10px 12px;border-bottom:1px solid var(--border-soft);color:var(--text);vertical-align:middle}
+.csc-table tbody tr:last-child td{border-bottom:none}
+.csc-table tbody tr:hover{background:#FAFBFC}
+.csc-carrier{font-weight:700}
+.csc-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;background:var(--border-soft);color:var(--muted)}
+.csc-badge.prem{background:#EEF2FF;color:#4F46E5}
+.csc-badge.std{background:#F0FDF4;color:#16A34A}
+.csc-empty{padding:24px;text-align:center;color:var(--dim);font-style:italic}
 
 /* ─── country search + multi-select filter (Lane Review) ─── */
 .country-filter{display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -2130,6 +2185,8 @@ function initTabular(){
     carrierPhase:   'idle', // 'idle' | 'refreshing' | 'review' — drives the carrier-refresh banner
     routingRules:   [],    // [{id,name,productCategory,returnReason,sku,ean,minValue,maxValue,countries:[],carrierServices:[{carrierId,service}],destination}]
     reviewCountries: [],   // variant I — search+multi-select filter on the Lane Review table, avoids scrolling every country
+    serviceLevel:   'STANDARD', // First Mile - MVP Ready shipping pref — 'STANDARD' | 'PREMIUM'
+    returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
   };
 }
 
@@ -2166,6 +2223,36 @@ function eCarriersFor(code, service, label){
   }
   return CARRIER_CATALOG.filter(c => carrierServesCountry(c, eCountryObj(code), service, label));
 }
+/* First Mile - MVP Ready shipping preferences (side-by-side pane) */
+const SHIPPING_SERVICE_LEVELS = [
+  { value:'STANDARD', name:'Standard', icon:'clock',   desc:'3–5 business days. Cost-effective for non-urgent returns.' },
+  { value:'PREMIUM',  name:'Premium',  icon:'rocket',  desc:'Next business day. Priority handling and faster restocking.' },
+];
+const RETURN_PAYLOADS = [
+  { value:'Parcel', icon:'box' },
+  { value:'Box',    icon:'package' },
+  { value:'Pallet', icon:'layers' },
+];
+
+/* Carrier Service Catalogue — First Mile · UK, sourced from the "UK FM POC" tab of CSC LM UK.xlsx (B2C parcels) */
+const CSC_LM = [
+  { carrier:'Evri',         coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'REGULAR',   service:'STANDARD', turnaround:'3',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Evri',         coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'PAPERLESS', service:'PREMIUM',  turnaround:'3',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Evri',         coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'PICK_UP',  label:'REGULAR',   service:'STANDARD', turnaround:'4',  maxParcel:'10', formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'DPD UK',       coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'REGULAR',   service:'STANDARD', turnaround:'2',  maxParcel:'1',  formats:'ZPL, PDF',      team:'SAPI', payload:'b2c' },
+  { carrier:'DPD UK',       coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'PAPERLESS', service:'PREMIUM',  turnaround:'2',  maxParcel:'1',  formats:'PDF, PNG',      team:'SAPI', payload:'b2c' },
+  { carrier:'DPD UK',       coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'PICK_UP',  label:'REGULAR',   service:'STANDARD', turnaround:'3',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Royal Mail',   coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'REGULAR',   service:'STANDARD', turnaround:'2',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Royal Mail',   coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'PAPERLESS', service:'PREMIUM',  turnaround:'2',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Royal Mail',   coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'PICK_UP',  label:'PAPERLESS', service:'PREMIUM',  turnaround:'3',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Parcel Force', coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'REGULAR',   service:'STANDARD', turnaround:'1',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Parcel Force', coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'PICK_UP',  label:'REGULAR',   service:'STANDARD', turnaround:'2',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Yodel',        coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'REGULAR',   service:'STANDARD', turnaround:'99', maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'Yodel',        coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'PAPERLESS', service:'PREMIUM',  turnaround:'99', maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'InPost',       coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'PAPERLESS', service:'PREMIUM',  turnaround:'3',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'ASDAtoyou',    coverage:'U.K. of Great Britain and Northern Ireland', content:'PARCEL', handover:'DROP_OFF', label:'PAPERLESS', service:'PREMIUM',  turnaround:'3',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'SAPI', payload:'b2c' },
+  { carrier:'UPS',          coverage:'Global',                                     content:'PARCEL', handover:'PICK_UP',  label:'REGULAR',   service:'STANDARD', turnaround:'2',  maxParcel:'1',  formats:'ZPL, PDF, PNG', team:'CIT',  payload:'b2c' },
+];
 
 /* Tabular 2 (variant G) + First Mile MVP Ready (H) + POC Phase 1 (J) + Carrier Priority (I) = single-select service & label, one row per country */
 function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I' || state.variant === 'K'; }
@@ -2177,6 +2264,7 @@ function eManual(){ return state.variant === 'I'; }
 function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
 /* First Mile - MVP Ready (H): Tabular 2 without the First Mile Destination step, the Destination column, or the Contract column (Lane type IS kept) */
 function eMvp(){ return state.variant === 'H' || state.variant === 'K'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy) */
+function eFmMvp(){ return state.variant === 'H'; }  /* First Mile - MVP Ready only: shipping-preferences pane + Carrier Service Catalogue button */
 /* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
 function eSingleSvc(){ return eSingle() && !eManual(); }
 /* every variant driven by tabState / renderVariantE */
@@ -2410,6 +2498,11 @@ function icon(name){
     flag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
     warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
     save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+    rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>',
+    box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+    package: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+    layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
   };
   return icons[name] || '';
 }
@@ -4662,6 +4755,136 @@ function eCardRules(){
   return card;
 }
 
+/* First Mile - MVP Ready: Shipping preferences pane — Service level + What are you returning?, side by side */
+function eCardShippingPrefs(locked){
+  const card = el('div',{class:'q-card'+(locked?' locked':'')},
+    el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, el('span',{html:icon('cart'),style:{width:'14px',height:'14px',display:'flex'}})),
+      el('div',{class:'q-titlewrap'},
+        el('div',{class:'q-title'}, 'Shipping preferences'),
+        el('div',{class:'q-sub'}, "Tell us how you'd like your returns handled. You can update these anytime.")
+      )
+    )
+  );
+  if(locked){ return card; }
+  const body = el('div',{class:'q-body'});
+  const grid = el('div',{class:'ship-prefs'});
+
+  // Service level
+  const svcCol = el('div',{class:'ship-col'});
+  svcCol.appendChild(el('div',{class:'ship-label'}, 'Service level'));
+  const svcCards = el('div',{class:'ship-cards'});
+  SHIPPING_SERVICE_LEVELS.forEach(o => {
+    const on = tabState.serviceLevel === o.value;
+    svcCards.appendChild(el('button',{class:'ship-card'+(on?' on':''), type:'button', onclick:()=>{ tabState.serviceLevel = o.value; rerenderE(); }},
+      el('span',{class:'ship-card-top'},
+        el('span',{class:'ship-ic', html:icon(o.icon)}),
+        el('span',{class:'ship-name'}, o.name),
+        el('span',{class:'ship-radio'+(on?' on':'')})
+      ),
+      el('span',{class:'ship-desc'}, o.desc)
+    ));
+  });
+  svcCol.appendChild(svcCards);
+
+  // What are you returning?
+  const payCol = el('div',{class:'ship-col'});
+  payCol.appendChild(el('div',{class:'ship-label'}, 'What are you returning?'));
+  const seg = el('div',{class:'ship-seg'});
+  RETURN_PAYLOADS.forEach(o => {
+    const on = tabState.returnPayload === o.value;
+    seg.appendChild(el('button',{class:'ship-seg-btn'+(on?' on':''), type:'button', onclick:()=>{ tabState.returnPayload = o.value; rerenderE(); }},
+      el('span',{class:'ship-seg-ic', html:icon(o.icon)}), o.value
+    ));
+  });
+  payCol.appendChild(seg);
+
+  grid.appendChild(svcCol); grid.appendChild(payCol);
+  body.appendChild(grid);
+  card.appendChild(body);
+  return card;
+}
+
+/* Carrier Service Catalogue modal — simple, searchable/filterable tabular view of CSC_LM */
+function openCscModal(){
+  const ref = {};
+  let q = '', fHandover = '', fService = '';
+  const card = el('div',{class:'modal-card csc-modal'});
+  card.appendChild(el('div',{class:'csc-head'},
+    el('div',{},
+      el('div',{class:'modal-title'}, 'Carrier Service Catalogue'),
+      el('div',{class:'csc-sub'}, 'First Mile · UK — B2C parcel carrier services')
+    ),
+    el('button',{class:'csc-x', title:'Close', onclick:()=>closeModal(ref.o), html:icon('close')})
+  ));
+
+  const controls = el('div',{class:'csc-controls'});
+  const search = el('input',{class:'csc-search', type:'text', placeholder:'Search carrier or coverage…', value:q});
+  search.addEventListener('input', ()=>{ q = search.value; renderRows(); });
+  controls.appendChild(search);
+  function chipGroup(label, opts, getVal, setVal){
+    const g = el('div',{class:'csc-chipgroup'});
+    g.appendChild(el('span',{class:'csc-chip-label'}, label));
+    [{v:'',t:'All'}, ...opts].forEach(o=>{
+      const btn = el('button',{class:'csc-chip'+(getVal()===o.v?' on':''), type:'button', onclick:()=>{ setVal(o.v); syncChips(); renderRows(); }}, o.t);
+      btn.dataset.group = label; btn.dataset.val = o.v;
+      g.appendChild(btn);
+    });
+    return g;
+  }
+  const handoverGroup = chipGroup('Handover', [{v:'DROP_OFF',t:'Drop-off'},{v:'PICK_UP',t:'Pickup'}], ()=>fHandover, v=>fHandover=v);
+  const serviceGroup  = chipGroup('Service',  [{v:'STANDARD',t:'Standard'},{v:'PREMIUM',t:'Premium'}],   ()=>fService,  v=>fService=v);
+  controls.appendChild(handoverGroup); controls.appendChild(serviceGroup);
+  card.appendChild(controls);
+  function syncChips(){
+    handoverGroup.querySelectorAll('.csc-chip').forEach(b=>b.classList.toggle('on', b.dataset.val===fHandover));
+    serviceGroup.querySelectorAll('.csc-chip').forEach(b=>b.classList.toggle('on', b.dataset.val===fService));
+  }
+
+  const count = el('div',{class:'csc-count'});
+  const tableWrap = el('div',{class:'csc-table-wrap'});
+  card.appendChild(count);
+  card.appendChild(tableWrap);
+
+  const HANDOVER = { DROP_OFF:'Drop-off', PICK_UP:'Pickup' };
+  const LABELS = { REGULAR:'Regular', PAPERLESS:'Paperless' };
+  function title(s){ return s ? s.charAt(0)+s.slice(1).toLowerCase() : ''; }
+  function renderRows(){
+    const lq = q.trim().toLowerCase();
+    const rows = CSC_LM.filter(r =>
+      (!fHandover || r.handover === fHandover) &&
+      (!fService || r.service === fService) &&
+      (!lq || r.carrier.toLowerCase().includes(lq) || r.coverage.toLowerCase().includes(lq))
+    );
+    count.textContent = rows.length + ' of ' + CSC_LM.length + ' services';
+    tableWrap.innerHTML = '';
+    const t = el('table',{class:'csc-table'});
+    t.appendChild(el('thead',{}, el('tr',{},
+      el('th',{},'Carrier'), el('th',{},'Coverage'), el('th',{},'Handover'),
+      el('th',{},'Label'), el('th',{},'Service level'), el('th',{},'Turnaround'),
+      el('th',{},'Max parcels'), el('th',{},'Label formats')
+    )));
+    const tb = el('tbody',{});
+    if(!rows.length){ tb.appendChild(el('tr',{}, el('td',{colspan:8, class:'csc-empty'}, 'No services match your filters.'))); }
+    rows.forEach(r=>{
+      tb.appendChild(el('tr',{},
+        el('td',{class:'csc-carrier'}, r.carrier),
+        el('td',{}, r.coverage),
+        el('td',{}, HANDOVER[r.handover] || r.handover),
+        el('td',{}, LABELS[r.label] || title(r.label)),
+        el('td',{}, el('span',{class:'csc-badge '+(r.service==='PREMIUM'?'prem':'std')}, title(r.service))),
+        el('td',{}, r.turnaround==='' ? '—' : (r.turnaround + (r.turnaround==='1'?' day':' days'))),
+        el('td',{}, r.maxParcel || '—'),
+        el('td',{}, r.formats || '—')
+      ));
+    });
+    t.appendChild(tb);
+    tableWrap.appendChild(t);
+  }
+  renderRows();
+  ref.o = openModal(card);
+}
+
 function renderVariantE(root){
   root.appendChild(el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config · Tabular'),
@@ -4675,6 +4898,7 @@ function renderVariantE(root){
   const svc = eCardService(false);                 svc.id = 'sec-service';
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
   main.appendChild(svc); main.appendChild(lbl);
+  if(eFmMvp()){ const pref = eCardShippingPrefs(!eLabelReady()); pref.id = 'sec-prefs'; main.appendChild(pref); }
   if(eRanked() || eMvp()){
     const rev = eCardTable(!eLabelReady());          rev.id = 'sec-review';
     main.appendChild(rev);
@@ -5635,12 +5859,15 @@ function eCountryFilterBar(){
 function eCardTable(locked){
   if(!locked) tabBuildRows();
 
-  const card = el('div',{class:'q-card'+(locked?' locked':'')},
-    el('div',{class:'q-card-head'},
-      el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4'),
-      el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
-    )
+  const head = el('div',{class:'q-card-head'},
+    el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4'),
+    el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
   );
+  if(eFmMvp() && !locked){
+    head.appendChild(el('button',{class:'csc-btn', type:'button', title:'Browse the Carrier Service Catalogue', onclick:()=>openCscModal()},
+      el('span',{class:'csc-btn-ic', html:icon('globe')}), 'Carrier Service Catalogue'));
+  }
+  const card = el('div',{class:'q-card'+(locked?' locked':'')}, head);
   const body = el('div',{class:'q-body'});
 
   if(locked){ card.appendChild(body); return card; }
