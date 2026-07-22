@@ -5031,7 +5031,7 @@ function eKSetupScreen(root){
       const svcs = enabled.map(id => (fmMethodById(id)||{}).service).filter(Boolean);
       if(svcs.length){
         tabState.returnServices = svcs;
-        if(!tabState.returnLabels.length && svcs.some(s=>s!=='Self-post')) tabState.returnLabels = ['Printed label'];
+        if(!tabState.returnLabels.length && svcs.some(s=>s!=='Self-post')) tabState.returnLabels = ['Paperless / QR code'];
       }
       tabState.setupDone = true;
       rerenderE();
@@ -5157,7 +5157,8 @@ function eCardLabel(locked){
     ));
   } else {
     const g = el('div',{class:'mchip-group'});
-    RETURN_LABELS.forEach(l => {
+    const labelOpts = eMyr() ? ['Paperless / QR code','Printed label'] : RETURN_LABELS;  // K: Paperless first (default); other variants keep RETURN_LABELS order
+    labelOpts.forEach(l => {
       const on = tabState.returnLabels.includes(l);
       g.appendChild(eChip(on, labelIcon(l), l, ()=>{
         const wasReady = eTableReady();
