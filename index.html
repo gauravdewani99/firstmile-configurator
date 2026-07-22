@@ -765,6 +765,10 @@ body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .no-carrier svg{width:13px;height:13px;flex-shrink:0}
 .row-del{position:absolute;top:50%;right:4px;transform:translateY(-50%);width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--dim);background:transparent;opacity:0;transition:all .12s}
 .row-del svg{width:13px;height:13px}
+/* MVP variants: delete icon in its own cell at the right end of the row, right-aligned to match the group "+" (right:12px).
+   Uses a high-specificity selector so it beats `.config-table.compact td{text-align:left}`. */
+.config-table.compact.mvp-table td.row-del-td{text-align:right;padding:0 12px 0 0!important;white-space:nowrap}
+.row-del.row-del-end{position:static;transform:none;top:auto;right:auto;margin:0}
 .lane-row:hover .row-del{opacity:1}
 .row-del:hover{background:var(--red-soft);color:var(--red)}
 /* Tabular 2: lightweight icon-only add-configuration button in the country header */
@@ -1270,12 +1274,53 @@ body[data-view="wizard"] #view-landing{display:none}
 .config-table.compact.mvp-table{overflow:visible}
 .config-table.compact.mvp-table .pp-drop{left:auto;right:0;min-width:340px}
 .config-table.compact.mvp-table .th-pp{width:26%}
-.config-table.compact.mvp-table .th-add-col{width:1%}
+.config-table.compact.mvp-table .th-add-col{width:48px}
 .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:210px}
 /* First Mile - MVP Ready: shipping preferences pane */
 .q-card-head .csc-btn{margin-left:auto}
 /* MyRebound FM MVP: disabled (greyed) chip, e.g. B2B return flow */
 .mchip.mchip-off{opacity:.45;cursor:not-allowed;pointer-events:none}
+/* MyRebound FM MVP: Ship First Mile setup screen */
+.fm-setup{max-width:640px;margin:0 auto;padding:4px 0 28px}
+.fm-setup-card{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-1);padding:18px 20px}
+.fm-setup-head{border-bottom:1px solid var(--border-soft);padding-bottom:10px;margin-bottom:11px}
+.fm-setup-title{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--text)}
+.fm-setup-meta{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:7px}
+.fm-lane-badge{font-size:11px;font-weight:700;color:var(--brand);background:var(--brand-soft);border-radius:999px;padding:3px 9px}
+.fm-meta-item{font-size:12px;color:var(--muted)}
+.fm-setup-intro{font-size:12.5px;color:var(--muted);margin-bottom:2px;line-height:1.45}
+.fm-group-label{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);margin:13px 0 6px}
+.fm-method{display:flex;align-items:center;gap:12px;padding:9px 13px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;background:var(--card);transition:border-color .14s}
+.fm-method.on{border-color:var(--brand-2)}
+.fm-method-info{flex:1;min-width:0}
+.fm-method-name{font-size:13px;font-weight:700;color:var(--text)}
+.fm-method-desc{font-size:11.5px;color:var(--muted);margin-top:1px}
+.fm-method-status{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.3px;flex-shrink:0}
+.fm-method-status.on{color:#15803D}
+.fm-toggle{flex-shrink:0;width:38px;height:21px;border-radius:999px;background:var(--border);position:relative;transition:background .16s;cursor:pointer;padding:0;border:none}
+.fm-toggle.on{background:#22C55E}
+.fm-toggle-knob{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .16s}
+.fm-toggle.on .fm-toggle-knob{transform:translateX(17px)}
+.fm-toggle.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+.fm-method.disabled{opacity:.6}
+.fm-method.disabled .fm-method-name{color:var(--muted)}
+.fm-setup-foot{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--border-soft);margin-top:11px;padding-top:13px}
+.fm-foot-count{font-size:12px;color:var(--muted);font-weight:600}
+.fm-config-btn.is-disabled{opacity:.5;cursor:not-allowed}
+/* MyRebound FM MVP: combined config pane — return business flow + enabled methods only */
+.fm-cpane{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px;padding:14px 16px;background:var(--brand-soft);border-radius:12px}
+.fm-cpane-rows{display:flex;flex-direction:column;gap:8px;min-width:0}
+.fm-cpane-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.fm-cpane-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
+.fm-flow-chip{font-size:12px;font-weight:800;color:#fff;background:var(--brand);border-radius:8px;padding:4px 12px}
+.fm-cpane-empty{font-size:12px;color:var(--dim);font-style:italic}
+.fm-tab-back{font-size:12px;font-weight:700;color:var(--brand);padding:6px 11px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;flex-shrink:0}
+.fm-tab-back:hover{border-color:var(--brand-2)}
+.fm-tab{font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px}
+.fm-tab.on{background:var(--brand);color:#fff}
+.fm-svc-chip{cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all .12s}
+.fm-svc-chip:hover{border-color:var(--brand-2);color:var(--brand)}
+.fm-svc-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
 @media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
 .ship-col{min-width:0}
@@ -2200,6 +2245,15 @@ function initTabular(){
     serviceLevel:   'STANDARD', // First Mile - MVP Ready shipping pref — 'STANDARD' | 'PREMIUM'
     returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
     returnFlow:     'B2C',      // MyRebound FM MVP return flow type — 'B2C' (B2B disabled)
+    setupDone:      false,      // MyRebound FM MVP: has the "Ship First Mile · Setup" screen been completed?
+    methods: {                  // MyRebound FM MVP: return methods enabled on the setup screen (id -> on). B2C on by default; B2B disabled for now
+      'parcel-dropoff':    true,
+      'parcel-pickup':     true,
+      'self-post':         true,
+      'retail-pallet':     false,
+      'retail-multicolli': false,
+      'retail-pallet-cac': false,
+    },
   };
 }
 
@@ -4207,11 +4261,14 @@ function eDestCellInfo(r){
 function eScrollTo(id){ const elm = document.getElementById(id); if(elm) elm.scrollIntoView({ behavior:'smooth', block:'start' }); }
 
 function eNav(){
-  const steps = (eRanked() || eMvp()) ? [
+  const steps = (eRanked() || eMvp()) ? (eMyr() ? [
+    { id:'sec-label',   n:1, label:'Label Option',   done:eLabelReady(),   locked:false },
+    { id:'sec-review',  n:2, label:'Lane Review',     done:false,           locked:!eLabelReady() },
+  ] : [
     { id:'sec-service', n:1, label:'Return Service', done:eServiceReady(), locked:false },
     { id:'sec-label',   n:2, label:'Label Option',   done:eLabelReady(),   locked:!eServiceReady() },
     { id:'sec-review',  n:3, label:'Lane Review',     done:false,           locked:!eLabelReady() },
-  ] : [
+  ]) : [
     { id:'sec-service', n:1, label:'Return Service',       done:eServiceReady(), locked:false },
     { id:'sec-label',   n:2, label:'Label Option',         done:eLabelReady(),   locked:!eServiceReady() },
     { id:'sec-dest',    n:3, label:'First Mile Destination',done:eDestReady(),    locked:!eLabelReady() },
@@ -4918,20 +4975,118 @@ function openCscModal(){
   ref.o = openModal(card);
 }
 
+/* MyRebound FM MVP: return methods for the "Ship First Mile · Setup" screen (grouped B2C / B2B).
+   B2C parcel methods map to a return service so enabling them pre-selects the config. */
+const FM_RETURN_METHODS = [
+  { group:'B2C — Consumer parcels', items:[
+    { id:'parcel-dropoff', name:'Parcel Drop off', desc:'PUDO point, locker or store',   service:'Drop-off' },
+    { id:'parcel-pickup',  name:'Parcel Pick up',  desc:'collected from the customer',    service:'Pickup'   },
+    { id:'self-post',      name:'Self-Post',        desc:'customer posts it back',         service:'Self-post'},
+  ]},
+  { group:'B2B — Retail / bulk', disabled:true, items:[
+    { id:'retail-pallet',     name:'Retail Pallet collection',              desc:'full-pallet pickup' },
+    { id:'retail-multicolli', name:'Retail Multi Colli collection',         desc:'multiple parcels, one booking' },
+    { id:'retail-pallet-cac', name:'Retail Pallet: Customer appointed carrier', desc:'client picks the carrier' },
+  ]},
+];
+function fmMethodById(id){ return FM_RETURN_METHODS.flatMap(g=>g.items).find(m=>m.id===id); }
+
+/* MyRebound FM MVP: Ship First Mile setup screen — enable the return methods the client offers */
+function eKSetupScreen(root){
+  const wrap = el('div',{class:'fm-setup'});
+  const card = el('div',{class:'fm-setup-card'});
+  card.appendChild(el('div',{class:'fm-setup-head'},
+    el('div',{class:'fm-setup-title'}, 'Ship First Mile · Setup'),
+    el('div',{class:'fm-setup-meta'},
+      el('span',{class:'fm-lane-badge'}, 'Lane: Consumer → Client'),
+      el('span',{class:'fm-meta-item'}, 'Client: ' + (state.client || '—')),
+      el('span',{class:'fm-meta-item'}, 'Region: UK')
+    )
+  ));
+  card.appendChild(el('div',{class:'fm-setup-intro'}, 'Turn on the return methods this client offers. Each one you enable becomes a tab to configure.'));
+  FM_RETURN_METHODS.forEach(grp => {
+    const grpDisabled = !!grp.disabled;
+    card.appendChild(el('div',{class:'fm-group-label'}, grp.group));
+    grp.items.forEach(m => {
+      const on = !grpDisabled && !!tabState.methods[m.id];
+      const toggle = el('button',{class:'fm-toggle'+(on?' on':'')+(grpDisabled?' disabled':''), type:'button',
+        title: grpDisabled ? (m.name+' — not available yet') : ((on?'Disable':'Enable')+' '+m.name),
+        onclick:()=>{ if(grpDisabled) return; tabState.methods[m.id] = !tabState.methods[m.id]; rerenderE(); }}, el('span',{class:'fm-toggle-knob'}));
+      card.appendChild(el('div',{class:'fm-method'+(on?' on':'')+(grpDisabled?' disabled':'')},
+        toggle,
+        el('div',{class:'fm-method-info'},
+          el('div',{class:'fm-method-name'}, m.name),
+          el('div',{class:'fm-method-desc'}, m.desc)
+        ),
+        el('span',{class:'fm-method-status'+(on?' on':'')}, on ? 'Enabled' : 'Off')
+      ));
+    });
+  });
+  const enabled = Object.keys(tabState.methods).filter(id => tabState.methods[id]);
+  card.appendChild(el('div',{class:'fm-setup-foot'},
+    el('div',{class:'fm-foot-count'}, enabled.length + (enabled.length===1?' method':' methods') + ' enabled'),
+    el('button',{class:'btn btn-primary fm-config-btn'+(enabled.length===0?' is-disabled':''), type:'button', onclick:()=>{
+      if(!enabled.length) return;
+      // pre-select return services from enabled B2C parcel methods, then enter product configuration
+      const svcs = enabled.map(id => (fmMethodById(id)||{}).service).filter(Boolean);
+      if(svcs.length){
+        tabState.returnServices = svcs;
+        if(!tabState.returnLabels.length && svcs.some(s=>s!=='Self-post')) tabState.returnLabels = ['Printed label'];
+      }
+      tabState.setupDone = true;
+      rerenderE();
+    }}, 'Product Configuration →')
+  ));
+  wrap.appendChild(card);
+  root.appendChild(wrap);
+}
+
 function renderVariantE(root){
+  if(eMyr() && !tabState.setupDone){ eKSetupScreen(root); return; }  // MyRebound FM MVP: setup screen gates the config
   root.appendChild(el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config · Tabular'),
     el('div',{class:'wizard-title'}, `Tabular configuration for ${state.client}`)
   ));
 
+  if(eMyr()){
+    // Combined config pane: B2C flow + a single interactive Return service control (also filters the review lane).
+    // Services come from the consumer-parcel methods enabled on the setup screen; toggling filters which lanes show.
+    const paneServices = [...new Set(FM_RETURN_METHODS.flatMap(g=>g.items).filter(m => tabState.methods[m.id] && m.service).map(m => m.service))];
+    const rows = el('div',{class:'fm-cpane-rows'});
+    rows.appendChild(el('div',{class:'fm-cpane-row'},
+      el('span',{class:'fm-cpane-label'}, 'Return flow'),
+      el('span',{class:'fm-flow-chip'}, 'B2C')
+    ));
+    const srow = el('div',{class:'fm-cpane-row'});
+    srow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service'));
+    if(paneServices.length){
+      paneServices.forEach(s => {
+        const on = tabState.returnServices.includes(s);
+        srow.appendChild(el('button',{class:'fm-tab fm-svc-chip'+(on?' on':''), type:'button', title:(on?'Hide':'Show')+' '+s+' lanes in the review',
+          onclick:()=>{
+            const wasReady = eTableReady();
+            tabState.returnServices = on ? tabState.returnServices.filter(x=>x!==s) : [...tabState.returnServices, s];
+            eAfterSelectionChange(wasReady);
+          }}, s));
+      });
+    } else {
+      srow.appendChild(el('span',{class:'fm-cpane-empty'}, 'No consumer-parcel methods enabled — go back to setup'));
+    }
+    rows.appendChild(srow);
+    root.appendChild(el('div',{class:'fm-cpane'},
+      rows,
+      el('button',{class:'fm-tab-back', type:'button', title:'Back to setup', onclick:()=>{ tabState.setupDone = false; rerenderE(); }}, '← Setup')
+    ));
+  }
+
   const layout = el('div',{class:'e-layout'});
   layout.appendChild(eNav());
 
   const main = el('div',{class:'e-main'});
-  if(eMvp()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }  /* Return flow type on both MVP-Ready variants (H + K) */
-  const svc = eCardService(false);                 svc.id = 'sec-service';
+  if(eFmMvp()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }  /* Return flow type card — H only (K shows it in the combined config pane) */
+  if(!eMyr()){ const svc = eCardService(false); svc.id = 'sec-service'; main.appendChild(svc); }  // K picks service in the combined pane, not a separate card
   const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
-  main.appendChild(svc); main.appendChild(lbl);
+  main.appendChild(lbl);
   if(eFmMvp()){ const pref = eCardShippingPrefs(!eLabelReady()); pref.id = 'sec-prefs'; main.appendChild(pref); }
   if(eRanked() || eMvp()){
     const rev = eCardTable(!eLabelReady());          rev.id = 'sec-review';
@@ -5698,9 +5853,10 @@ function eRow(r, prio){
     // Contract — not applicable (hidden for First Mile - MVP Ready)
     if(!eMvp()) tr.appendChild(naCell());
     // Postal Product
-    const spPp = el('td',{class:'pp-td carrier-cell'}, ppCombobox(r));
-    spPp.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    const spPp = el('td',{class:'pp-td'+(eMyr()?'':' carrier-cell')}, ppCombobox(r));
+    if(!eMyr()) spPp.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
     tr.appendChild(spPp);
+    if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
   } else {
     // Standard lanes
     tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
@@ -5738,14 +5894,15 @@ function eRow(r, prio){
       const on = carrierActive(r.carrier);
       carrierCell.appendChild(el('span',{class: on ? 'carrier-active-tag' : 'carrier-inactive-tag'}, on ? 'Active' : 'Inactive'));
     }
-    carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+    if(!eMyr()) carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
     tr.appendChild(carrierCell);
     tr.appendChild(el('td',{}, eLaneToggle(r)));
     if(!eMvp()) tr.appendChild(el('td',{}, eContractCell(r)));
 
-    const ppCell = el('td',{class:'pp-td'+(eMvp()?' carrier-cell':'')});
+    const ppCell = el('td',{class:'pp-td'+((eMvp() && !eMyr())?' carrier-cell':'')});
     ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
     tr.appendChild(ppCell);
+    if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
 
     if(unavailable){
       tr.firstChild.appendChild(el('div',{class:'lane-unavailable-overlay'},
