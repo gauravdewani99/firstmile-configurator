@@ -704,7 +704,7 @@ body[data-variant="L"] .e-layout{grid-template-columns:minmax(0,1fr)}
 
 /* table tools (group-by segmented toggle) */
 .table-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.tt-label-toggle{display:flex;align-items:center;gap:10px}
+.tt-label-toggle{display:flex;align-items:center;gap:10px;margin-left:14px;padding-left:14px;border-left:1px solid var(--border)}
 .tt-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
 .seg{display:inline-flex;background:var(--brand-soft);border-radius:9px;padding:3px}
 .seg-opt{padding:5px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);transition:all .14s}
@@ -2481,6 +2481,26 @@ function eSetRowServiceLabel(r, service, label){
   tabBuildRows();
   rerenderE();
 }
+/* variant L: Return service cell — only the services enabled on the setup screen are ever offered
+   (never the full RETURN_SERVICES list), and with exactly one enabled there's nothing to choose, so
+   it renders as plain text instead of a single-option dropdown. */
+function eRowServiceCell(r){
+  const opts = tabState.returnServices.length ? tabState.returnServices : RETURN_SERVICES;
+  if(opts.length <= 1){
+    const only = opts[0] || r.service;
+    return el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(only)}), only);
+  }
+  return eSelect(r.service, opts.map(s=>({value:s,text:s})), v => eSetRowServiceLabel(r, v, r.label || tabState.returnLabels[0] || RETURN_LABELS[0]));
+}
+/* variant L: Label option cell — same rule as the service cell, scoped to tabState.returnLabels */
+function eRowLabelCell(r){
+  const opts = tabState.returnLabels.length ? tabState.returnLabels : RETURN_LABELS;
+  if(opts.length <= 1){
+    const only = opts[0] || r.label;
+    return only ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(only)}), only) : el('span',{class:'cell-dim'}, 'N/A');
+  }
+  return eSelect(r.label, opts.map(l=>({value:l,text:l})), v => eSetRowServiceLabel(r, r.service, v));
+}
 /* variant L only: append one new lane (currently selected service/label, first free carrier) to every
    country already in the table — the bulk counterpart to the per-country "+" add-configuration button */
 function eAddAllConfiguration(){
@@ -2510,9 +2530,13 @@ function eAddAllConfiguration(){
   showToast(parts.length ? parts.join(' ') : 'No countries to add to yet.', null, null, {icon:'info'});
 }
 /* variant L only: the per-country "+" inserts a blank row directly — no service/label/carrier yet,
-   filled in via the inline dropdowns — instead of the multi-step add-configuration popup */
+   filled in via the inline dropdowns — instead of the multi-step add-configuration popup. When only
+   one service (or label) is enabled there's nothing to pick, so pre-fill it rather than leaving a
+   dropdown-less cell stuck blank. */
 function eAddEmptyConfigForCountry(code){
-  const row = makeERow(code, null, null);
+  const svc = tabState.returnServices.length === 1 ? tabState.returnServices[0] : null;
+  const lbl = (svc && svc !== 'Self-post' && tabState.returnLabels.length === 1) ? tabState.returnLabels[0] : null;
+  const row = makeERow(code, svc, lbl);
   row.custom = true;
   row.sync = 'New';
   tabState.rows.push(row);
@@ -6067,9 +6091,9 @@ function eRow(r, prio){
   // Priority (variant L only) — first column, rank + move up/down
   if(eLegacy()) tr.appendChild(eRankCell(r));
 
-  // Return service (always shown) — variant L: inline dropdown, since it's a per-lane choice here
+  // Return service (always shown) — variant L: dropdown only when more than one service is enabled
   tr.appendChild(el('td',{}, eLegacy()
-    ? eSelect(r.service, RETURN_SERVICES.map(s=>({value:s,text:s})), v => eSetRowServiceLabel(r, v, r.label || tabState.returnLabels[0] || RETURN_LABELS[0]))
+    ? eRowServiceCell(r)
     : el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
 
   const naCell = ()=>el('td',{}, el('span',{class:'cell-na'}, 'Not applicable'));
@@ -6107,9 +6131,9 @@ function eRow(r, prio){
     }
     if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
   } else {
-    // Standard lanes — variant L: inline dropdown for Label Option too
+    // Standard lanes — variant L: dropdown only when more than one label option is enabled
     tr.appendChild(el('td',{}, eLegacy()
-      ? eSelect(r.label, RETURN_LABELS.map(l=>({value:l,text:l})), v => eSetRowServiceLabel(r, r.service, v))
+      ? eRowLabelCell(r)
       : (r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A'))));
 
     // Priority (First Mile - MVP Ready)
