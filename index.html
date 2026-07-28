@@ -1325,7 +1325,7 @@ body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(2){width:150
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(3),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(3){width:168px}
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(4),
-body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(4){width:170px}
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(4){width:230px}   /* Carrier: dropdown + the Active/Inactive tag now sit side by side, needs the extra room */
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(5),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(5){width:140px}
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(6),
@@ -1337,6 +1337,12 @@ body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(8){width:130
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(9),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(9){width:48px}
 body[data-variant="L"] .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:170px}
+/* variant L: Active/Inactive carrier tag sits beside the dropdown, like the Parcel Type "reused"/
+   "generated" tag — not stacked underneath, which is what select{width:100%} forces by default. */
+body[data-variant="L"] .carrier-cell{display:flex;align-items:center;flex-wrap:nowrap}
+body[data-variant="L"] .carrier-cell select{width:auto;flex:1;min-width:0}
+body[data-variant="L"] .carrier-active-tag,
+body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-space:nowrap}
 /* First Mile - MVP Ready: shipping preferences pane */
 .q-card-head .csc-btn{margin-left:auto}
 /* MyRebound FM MVP: disabled (greyed) chip, e.g. B2B return flow */
