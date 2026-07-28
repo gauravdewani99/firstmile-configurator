@@ -2302,7 +2302,8 @@ function initTabular(){
     returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
     returnFlow:     'B2C',      // MyRebound FM MVP return flow type — 'B2C' (B2B disabled)
     setupDone:      false,      // MyRebound FM MVP: has the "Ship First Mile · Setup" screen been completed?
-    methods: {                  // MyRebound FM MVP: return methods enabled on the setup screen (id -> on). B2C on by default; B2B disabled for now
+    activeCountries: ['GB'],    // variant L only: countries seeded into the table so far — GB pre-added ("POC: GB live"), the rest added one at a time via "+ Add country"
+    methods: {                // MyRebound FM MVP: return methods enabled on the setup screen (id -> on). B2C on by default; B2B disabled for now
       'parcel-dropoff':    true,
       'parcel-pickup':     true,
       'self-post':         true,
@@ -2498,6 +2499,29 @@ function eAddEmptyConfigForCountry(code){
   tabBuildRows();
   rerenderE();
 }
+/* variant L only: bring a new country into the table (rollout country-by-country instead of the
+   whole Country Scope at once). Also clears any earlier "deleted" flags for this country, so a
+   country that was fully removed can be brought back cleanly. */
+function eAddCountry(code){
+  if(!tabState.activeCountries.includes(code)) tabState.activeCountries.push(code);
+  Object.keys(tabState.deleted).forEach(k => { if(k.indexOf(code + '|') === 0) delete tabState.deleted[k]; });
+  tabBuildRows();
+  rerenderE();
+}
+/* variant L only: "+ Add country" — scoped to the client's Country Scope, only offering countries
+   not already in the table (so a re-add after a full delete is still possible). */
+function eAddCountrySelect(){
+  const pool = getClientCountryScope(state.client)
+    .map(s => COUNTRIES.find(c => c.code === s.code))
+    .filter(Boolean);
+  const shown = new Set(tabState.rows.map(r => r.code));
+  const options = pool.filter(c => !shown.has(c.code));
+  const sel = el('select',{class:'add-country-sel', onchange:(e)=>{ const v = e.target.value; if(v) eAddCountry(v); }});
+  sel.appendChild(el('option',{value:''}, options.length ? '+ Add country…' : 'All scoped countries added'));
+  options.forEach(c => sel.appendChild(el('option',{value:c.code}, c.flag + ' ' + c.name)));
+  if(!options.length) sel.disabled = true;
+  return sel;
+}
 /* every variant driven by tabState / renderVariantE */
 const TABULAR_VARIANTS = ['E','F','G','H','I','J','K','L'];
 function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
@@ -2611,8 +2635,11 @@ function tabBuildRowsMvp(){
     if(tabState.deleted[lk] || used[lk]) return;
     next.push(r); used[lk] = true;
   });
-  // ensure each active country × combo has at least one (base) lane, unless the combo was fully removed
-  COUNTRIES.forEach(c => {
+  // ensure each active country × combo has at least one (base) lane, unless the combo was fully removed.
+  // Variant L: only countries the user explicitly added (tabState.activeCountries) get seeded — everyone
+  // else auto-seeds every country up front, which is exactly the "28/31 countries at once" problem L fixes.
+  const scopedCountries = eLegacy() ? COUNTRIES.filter(c => tabState.activeCountries.includes(c.code)) : COUNTRIES;
+  scopedCountries.forEach(c => {
     combos.forEach(cb => {
       const comboKey = eComboKey(c.code, cb.service, cb.label);
       if(tabState.deleted[comboKey]) return;
@@ -6302,7 +6329,10 @@ function eCardTable(locked){
   ];
   if(eMvp()){
     const toolEls = [eCountryFilterBar()];
-    if(eLegacy()){ const lblInline = eCardLabelInline(); if(lblInline) toolEls.push(lblInline); }
+    if(eLegacy()){
+      toolEls.push(eAddCountrySelect());
+      const lblInline = eCardLabelInline(); if(lblInline) toolEls.push(lblInline);
+    }
     toolEls.push(...groupByEls);
     body.appendChild(el('div',{class:'table-tools cf-tools'}, ...toolEls));
   } else {
