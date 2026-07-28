@@ -1245,6 +1245,18 @@ body[data-view="wizard"] #view-landing{display:none}
 .pp-trigger.open{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
 .pp-trigger-ic{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;display:flex}
 .pp-trigger-ic svg{width:12px;height:12px}
+/* variant L: "+ Add country" native select, styled to match the "Search countries…" trigger above */
+.add-country-sel{
+  display:flex;align-items:center;gap:6px;max-width:180px;
+  padding:6px 28px 6px 10px;border:1px solid var(--border);border-radius:var(--r-xs);
+  background:var(--card);font:inherit;font-size:12.5px;font-weight:500;color:var(--dim);
+  cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 8px center;
+}
+.add-country-sel:hover,.add-country-sel:focus{border-color:var(--brand-2);outline:none}
+.add-country-sel:disabled{opacity:.5;cursor:default}
 .pp-drop{
   position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:200;
   background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);
@@ -1302,8 +1314,10 @@ body[data-view="wizard"] #view-landing{display:none}
 /* variant L: 3 extra columns (Priority, Parcel Type, Legacy Sync) collide with the th:nth-child
    percentages above, which were sized for the original 7-column layout — e.g. Parcel Type lands on
    nth-child(7), inheriting the old 24% meant for a completely different column, and Legacy Sync
-   (nth-child 8) gets nothing, squeezing it to ~0 width. Override every column explicitly for L;
-   Postal Product is left unspecified so table-layout:fixed hands it whatever's left over. */
+   (nth-child 8) gets nothing, squeezing it to ~0 width. Override every column explicitly for L, all
+   as a fixed px so no single column (e.g. Postal Product, left unspecified before) balloons to
+   absorb the table's full remaining width — table-layout:fixed scales all of these up together,
+   proportionally, to fill the table's actual rendered width. */
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(1),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(1){width:64px}
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(2),
@@ -1315,7 +1329,7 @@ body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(4){width:170
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(5),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(5){width:140px}
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(6),
-body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(6){width:auto}
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(6){width:220px}
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(7),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(7){width:180px}
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(8),
@@ -6288,7 +6302,7 @@ function eCardTable(locked){
   if(!locked) tabBuildRows();
 
   const head = el('div',{class:'q-card-head'},
-    el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4'),
+    ...(eLegacy() ? [] : [el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4')]),   // variant L: no left step panel, so the step number reads as noise here
     el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
   );
   if(eFmMvp() && !locked){
@@ -6329,11 +6343,9 @@ function eCardTable(locked){
   ];
   if(eMvp()){
     const toolEls = [eCountryFilterBar()];
-    if(eLegacy()){
-      toolEls.push(eAddCountrySelect());
-      const lblInline = eCardLabelInline(); if(lblInline) toolEls.push(lblInline);
-    }
+    if(eLegacy()) toolEls.push(eAddCountrySelect());
     toolEls.push(...groupByEls);
+    if(eLegacy()){ const lblInline = eCardLabelInline(); if(lblInline) toolEls.push(lblInline); }
     body.appendChild(el('div',{class:'table-tools cf-tools'}, ...toolEls));
   } else {
     body.appendChild(el('div',{class:'table-tools'}, ...groupByEls));
