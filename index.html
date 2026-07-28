@@ -589,6 +589,8 @@ body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 
 /* ─── Variant E: left navigation panel ─── */
 .e-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:30px;align-items:start}
+/* variant L: no left "Configuration" panel — one screen, full width */
+body[data-variant="L"] .e-layout{grid-template-columns:minmax(0,1fr)}
 .e-nav{position:sticky;top:80px;display:flex;flex-direction:column;gap:3px}
 .e-nav-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);padding:0 12px 10px}
 .e-nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--muted);transition:background .14s,color .14s;text-align:left;width:100%}
@@ -793,6 +795,13 @@ body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .sync-pill.sync-warn{color:#92640A;background:var(--amber-soft)}
 .sync-pill.sync-bad{color:var(--red);background:var(--red-soft)}
 .sync-pill.sync-new{color:var(--brand);background:var(--brand-soft)}
+.th-rank{width:56px}
+.rank-cell{display:flex;align-items:center;gap:6px}
+.rank-n{font-family:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;font-size:12.5px;font-weight:700;color:var(--text);width:14px;text-align:center}
+.rank-btns{display:flex;flex-direction:column;gap:1px}
+.rank-btn{border:0;background:none;color:var(--dim);cursor:pointer;font-size:8px;line-height:1;padding:1px 3px;border-radius:3px}
+.rank-btn:hover:not(:disabled){color:var(--brand);background:var(--brand-soft)}
+.rank-btn:disabled{opacity:.3;cursor:default}
 /* delete affordance visible (not hover-only) in single mode so added configs are clearly removable */
 .config-table.single-mode .row-del{opacity:.5}
 .config-table.single-mode .row-del:hover{opacity:1}
@@ -2387,6 +2396,47 @@ function eLegacySyncPill(status){
   const map = { Synced:['sync-ok','Synced'], Pending:['sync-warn','Pending'], Failed:['sync-bad','Failed'], New:['sync-new','New · on save'] };
   const pair = map[status] || map.Synced;
   return el('span',{class:'sync-pill '+pair[0]}, el('span',{class:'sync-dot'}), pair[1]);
+}
+/* variant L: swap a lane with its neighbour above/below within the same country — this row order
+   is what numbers the generated parcel type, so reordering here renumbers it */
+function eMovePriority(r, dir){
+  const idx = tabState.rows.indexOf(r);
+  const j = idx + dir;
+  if(idx < 0 || j < 0 || j >= tabState.rows.length || tabState.rows[j].code !== r.code) return;
+  const tmp = tabState.rows[idx]; tabState.rows[idx] = tabState.rows[j]; tabState.rows[j] = tmp;
+  rerenderE();
+}
+/* variant L: Priority cell — rank number + move up/down, first column of the table */
+function eRankCell(r){
+  const n = eOrdinalInCountry(r);
+  const siblingCount = tabState.rows.filter(x => x.code === r.code).length;
+  const idx = tabState.rows.indexOf(r);
+  const atTop = idx <= 0 || tabState.rows[idx-1].code !== r.code;
+  const atBottom = idx < 0 || idx >= tabState.rows.length-1 || tabState.rows[idx+1].code !== r.code;
+  // el()'s setAttribute always sets `disabled`, even to the string "undefined" — so the key must
+  // be omitted entirely to leave a button enabled, never set with a falsy value.
+  const upAttrs = Object.assign({class:'rank-btn', title:'Move up', onclick:()=>eMovePriority(r,-1)}, (siblingCount<=1||atTop) ? {disabled:'disabled'} : {});
+  const downAttrs = Object.assign({class:'rank-btn', title:'Move down', onclick:()=>eMovePriority(r,1)}, (siblingCount<=1||atBottom) ? {disabled:'disabled'} : {});
+  return el('td',{}, el('div',{class:'rank-cell'},
+    el('span',{class:'rank-n'}, String(n)),
+    el('span',{class:'rank-btns'},
+      el('button', upAttrs, '▲'),
+      el('button', downAttrs, '▼')
+    )
+  ));
+}
+/* variant L: each row picks its own service/label inline (columns 2 and 3) instead of the shared
+   top-level selection — reconcile the carrier and protect the lane from being pruned as stale */
+function eSetRowServiceLabel(r, service, label){
+  const origKey = eComboKey(r.code, r.service, r.label);
+  r.service = service;
+  r.label = service === 'Self-post' ? null : label;
+  r.custom = true;
+  tabState.deleted[origKey] = true;
+  const av = eCarriersFor(r.code, r.service, r.label);
+  if(!av.some(c => c.id === r.carrier)) eSetCarrier(r, av.length ? av[0].id : null);
+  tabBuildRows();
+  rerenderE();
 }
 /* variant L only: append one new lane (currently selected service/label, first free carrier) to every
    country already in the table — the bulk counterpart to the per-country "+" add-configuration button */
@@ -5144,6 +5194,11 @@ function renderVariantE(root){
     srow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service'));
     if(paneServices.length){
       paneServices.forEach(s => {
+        if(eLegacy()){
+          // variant L: already chosen on the setup screen — show as read-only, like the Return flow chip
+          srow.appendChild(el('span',{class:'fm-flow-chip'}, s));
+          return;
+        }
         const on = tabState.returnServices.includes(s);
         srow.appendChild(el('button',{class:'fm-tab fm-svc-chip'+(on?' on':''), type:'button', title:(on?'Hide':'Show')+' '+s+' lanes in the review',
           onclick:()=>{
@@ -5163,7 +5218,7 @@ function renderVariantE(root){
   }
 
   const layout = el('div',{class:'e-layout'});
-  layout.appendChild(eNav());
+  if(!eLegacy()) layout.appendChild(eNav());  // variant L: no left "Configuration" step panel — this is the only screen
 
   const main = el('div',{class:'e-main'});
   if(eFmMvp()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }  /* Return flow type card — H only (K shows it in the combined config pane) */
@@ -5910,8 +5965,13 @@ function eRow(r, prio){
   const c = COUNTRIES.find(x => x.code === r.code);
   const tr = el('tr',{class:'lane-row'+(unavailable?' unavail':'')});
 
-  // Return service (always shown)
-  tr.appendChild(el('td',{}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
+  // Priority (variant L only) — first column, rank + move up/down
+  if(eLegacy()) tr.appendChild(eRankCell(r));
+
+  // Return service (always shown) — variant L: inline dropdown, since it's a per-lane choice here
+  tr.appendChild(el('td',{}, eLegacy()
+    ? eSelect(r.service, RETURN_SERVICES.map(s=>({value:s,text:s})), v => eSetRowServiceLabel(r, v, r.label || tabState.returnLabels[0] || RETURN_LABELS[0]))
+    : el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
 
   const naCell = ()=>el('td',{}, el('span',{class:'cell-na'}, 'Not applicable'));
   if(isSelfPost){
@@ -5948,8 +6008,10 @@ function eRow(r, prio){
     }
     if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
   } else {
-    // Standard lanes
-    tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
+    // Standard lanes — variant L: inline dropdown for Label Option too
+    tr.appendChild(el('td',{}, eLegacy()
+      ? eSelect(r.label, RETURN_LABELS.map(l=>({value:l,text:l})), v => eSetRowServiceLabel(r, r.service, v))
+      : (r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A'))));
 
     // Priority (First Mile - MVP Ready)
     if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
@@ -6210,7 +6272,8 @@ function eCardTable(locked){
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
     : eRanked()
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Priority'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
-    : [el('th',{},'Return service'), el('th',{}, eMvp() ? 'Label Option' : 'Return label'),
+    : [...(eLegacy() ? [el('th',{class:'th-rank'},'Priority')] : []),
+       el('th',{},'Return service'), el('th',{}, eMvp() ? 'Label Option' : 'Return label'),
        ...(prioOn ? [el('th',{},'Priority')] : []),
        ...(eMvp() ? [] : [el('th',{},'Destination')]),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'),
@@ -6227,7 +6290,7 @@ function eCardTable(locked){
   let codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
   if((eManual() || eMvp()) && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
-  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eLegacy() ? 2 : 0) : 7;
+  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eLegacy() ? 3 : 0) : 7;
   const colCount = showAddBtn ? baseCols + 1 : baseCols;
   if(!codes.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
@@ -6490,6 +6553,7 @@ function openAddConfigModal(code){
       if(draft.service !== 'Self-post' && !draft.carrier){ hint.textContent='No carrier ships this combination. Choose another service or label.'; hint.classList.add('err'); return; }
       const row = makeERow(tCode, draft.service, draft.label);
       row.custom = true; if(draft.carrier) eSetCarrier(row, draft.carrier);
+      if(eLegacy()) row.sync = 'New';   // this lane didn't exist before — always "New · on save", never a random seeded status
       if(eMvp()){
         // First Mile - MVP Ready: a config is unique by service + label + carrier, so a different carrier for the same combo is allowed
         const laneK = eLaneKey(row);
