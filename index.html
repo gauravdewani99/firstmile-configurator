@@ -704,6 +704,7 @@ body[data-variant="L"] .e-layout{grid-template-columns:minmax(0,1fr)}
 
 /* table tools (group-by segmented toggle) */
 .table-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tt-label-toggle{display:flex;align-items:center;gap:10px}
 .tt-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
 .seg{display:inline-flex;background:var(--brand-soft);border-radius:9px;padding:3px}
 .seg-opt{padding:5px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);transition:all .14s}
@@ -1298,8 +1299,29 @@ body[data-view="wizard"] #view-landing{display:none}
 .config-table.compact.mvp-table .th-pp{width:26%}
 .config-table.compact.mvp-table .th-add-col{width:48px}
 .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:210px}
-/* variant L: Parcel Type + Legacy Sync take up two more columns, so give Postal Product back some room */
-body[data-variant="L"] .config-table.compact.mvp-table .th-pp{width:18%}
+/* variant L: 3 extra columns (Priority, Parcel Type, Legacy Sync) collide with the th:nth-child
+   percentages above, which were sized for the original 7-column layout — e.g. Parcel Type lands on
+   nth-child(7), inheriting the old 24% meant for a completely different column, and Legacy Sync
+   (nth-child 8) gets nothing, squeezing it to ~0 width. Override every column explicitly for L;
+   Postal Product is left unspecified so table-layout:fixed hands it whatever's left over. */
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(1),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(1){width:64px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(2),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(2){width:150px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(3),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(3){width:168px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(4),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(4){width:170px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(5),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(5){width:140px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(6),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(6){width:auto}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(7),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(7){width:180px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(8),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(8){width:130px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(9),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(9){width:48px}
 body[data-variant="L"] .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:170px}
 /* First Mile - MVP Ready: shipping preferences pane */
 .q-card-head .csc-btn{margin-left:auto}
@@ -2465,6 +2487,16 @@ function eAddAllConfiguration(){
   if(added) parts.push('Added ' + added + ' configuration' + (added === 1 ? '' : 's') + '.');
   if(skipped) parts.push(skipped + ' ' + (skipped === 1 ? 'country' : 'countries') + ' skipped — no free carrier for the current service/label.');
   showToast(parts.length ? parts.join(' ') : 'No countries to add to yet.', null, null, {icon:'info'});
+}
+/* variant L only: the per-country "+" inserts a blank row directly — no service/label/carrier yet,
+   filled in via the inline dropdowns — instead of the multi-step add-configuration popup */
+function eAddEmptyConfigForCountry(code){
+  const row = makeERow(code, null, null);
+  row.custom = true;
+  row.sync = 'New';
+  tabState.rows.push(row);
+  tabBuildRows();
+  rerenderE();
 }
 /* every variant driven by tabState / renderVariantE */
 const TABULAR_VARIANTS = ['E','F','G','H','I','J','K','L'];
@@ -5223,8 +5255,10 @@ function renderVariantE(root){
   const main = el('div',{class:'e-main'});
   if(eFmMvp()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }  /* Return flow type card — H only (K shows it in the combined config pane) */
   if(!eMyr()){ const svc = eCardService(false); svc.id = 'sec-service'; main.appendChild(svc); }  // K picks service in the combined pane, not a separate card
-  const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
-  main.appendChild(lbl);
+  if(!eLegacy()){                                   // variant L: Label Option moves inline next to Country/Group by, no standalone card
+    const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
+    main.appendChild(lbl);
+  }
   if(eFmMvp()){ const pref = eCardShippingPrefs(!eLabelReady()); pref.id = 'sec-prefs'; main.appendChild(pref); }
   if(eRanked() || eMvp()){
     const rev = eCardTable(!eLabelReady());          rev.id = 'sec-review';
@@ -5316,6 +5350,24 @@ function eCardLabel(locked){
   }
   card.appendChild(body);
   return card;
+}
+
+/* variant L: same Label Option choice as eCardLabel, but as a compact segmented toggle in the
+   table-tools row (next to Country / Group by) instead of its own full-width question card */
+function eCardLabelInline(){
+  if(eHasSelfPost() && eNonSelfServices().length === 0) return null;   // not applicable — nothing to show
+  const wrap = el('div',{class:'tt-label-toggle'});
+  wrap.appendChild(el('span',{class:'tt-label'}, 'Label option'));
+  const seg = el('div',{class:'seg'});
+  ['Paperless / QR code','Printed label'].forEach(l => {
+    const on = tabState.returnLabels.includes(l);
+    seg.appendChild(el('button',{class:'seg-opt'+(on?' on':''), onclick:()=>{
+      tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
+      rerenderE();
+    }}, l));
+  });
+  wrap.appendChild(seg);
+  return wrap;
 }
 
 /* Q3 — destination + dynamic follow-ups */
@@ -5961,7 +6013,7 @@ function eRow(r, prio){
   const isSelfPost = r.service === 'Self-post';
   const refreshing = tabState.carrierPhase === 'refreshing';
   const av = isSelfPost ? [] : eCarriersFor(r.code, r.service, r.label);
-  const unavailable = !isSelfPost && !refreshing && av.length === 0;
+  const unavailable = !isSelfPost && !refreshing && !!r.service && av.length === 0;
   const c = COUNTRIES.find(x => x.code === r.code);
   const tr = el('tr',{class:'lane-row'+(unavailable?' unavail':'')});
 
@@ -6086,7 +6138,7 @@ function eAppendCountryGroup(tbody, code, rows, colCount, prioOn){
   );
   // Tabular 2 + Manisha Tabular: lightweight icon-only "+" to add a configuration
   if(eSingle() || state.variant === 'F'){
-    headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=>openAddConfigModal(code), html:icon('plus')}));
+    headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=> eLegacy() ? eAddEmptyConfigForCountry(code) : openAddConfigModal(code), html:icon('plus')}));
   }
   tbody.appendChild(el('tr',{class:'grp-country'}, headCell));
   rows.forEach((r, i) => eManual() ? eManualAppendCarrierRows(tbody, r) : ePoc() ? ePocAppendCarrierRows(tbody, r) : tbody.appendChild(eRow(r, prioOn ? { n:i+1, laneCount:rows.length } : null)));
@@ -6249,7 +6301,10 @@ function eCardTable(locked){
     )
   ];
   if(eMvp()){
-    body.appendChild(el('div',{class:'table-tools cf-tools'}, eCountryFilterBar(), ...groupByEls));
+    const toolEls = [eCountryFilterBar()];
+    if(eLegacy()){ const lblInline = eCardLabelInline(); if(lblInline) toolEls.push(lblInline); }
+    toolEls.push(...groupByEls);
+    body.appendChild(el('div',{class:'table-tools cf-tools'}, ...toolEls));
   } else {
     body.appendChild(el('div',{class:'table-tools'}, ...groupByEls));
     if(eManual()) body.appendChild(eCountryFilterBar());
