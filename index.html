@@ -1019,6 +1019,9 @@ tr.lane-row.unavail:hover{background:transparent}
 .q-title{font-size:15.5px;font-weight:700;letter-spacing:-.3px;color:var(--text)}
 .q-sub{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.5}
 .q-body{margin-top:16px}
+/* variant L has no .q-card-head, so .q-body is the card's first child — its own top margin would
+   stack on top of .q-card's 22px padding, making the top gap bigger than the left/right padding */
+.q-card>.q-body:first-child{margin-top:0}
 .q-mini-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);margin:16px 0 8px}
 .q-mini-label:first-child{margin-top:0}
 
@@ -1373,13 +1376,17 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-svc-chip:hover{border-color:var(--brand-2);color:var(--brand)}
 .fm-svc-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 /* variant L: everything — Return service / Label option filters, Country, Group by, and the bulk /
-   setup actions — as one wrapping bar instead of a stacked, separately-boxed panel. */
-/* align-items:flex-start (not center): the country filter is taller than the other groups once its
-   own internal "Add another country… / Group by" line wraps below its chips, and centering would
-   shove the shorter groups down to the middle of that extra height instead of keeping everything
-   lined up along one shared top edge */
-.lf-bar{width:100%;display:flex;flex-wrap:wrap;align-items:flex-start;gap:20px 24px;padding:14px 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
-.lf-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px}
+   setup actions — as a fixed bar of stacked rows instead of a stacked, separately-boxed panel.
+   Row 1 = Return service / Label option / Add all configuration (pinned top-right). Row 2 =
+   Country label, search combo, Clear all, Group by — no chips, so it always starts at the same
+   fixed margin. Row 3 (only rendered once a country is picked) = the selected-country chips,
+   wrapping freely on their own line so they never affect rows 1 or 2. */
+.lf-wrap{width:100%;padding:0 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
+.lf-row{display:flex;flex-wrap:wrap;align-items:center;gap:20px 24px}
+.lf-row+.lf-row{margin-top:14px}
+.lf-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* pins "Add all configuration" to the top-right corner of row 1, regardless of how many Return
+   service / Label option chips precede it */
 .lf-add-all{margin-left:auto}
 /* faded, inert chip for a feature never enabled on the setup screen — same treatment as B2B used to
    have — there's nothing to filter by since no lane of that service exists */
@@ -1388,20 +1395,26 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
    distinct from .off, which means "not available at all" */
 .fm-tab.filter-off{background:var(--card);color:var(--text);border:1px solid var(--border);cursor:pointer}
 .fm-tab.filter-off:hover{border-color:var(--brand-2);color:var(--brand)}
-/* force a line break before "Add another country…" (and everything after it — Clear all, Group by)
-   so that group starts its own line, right after the country chips, regardless of how many fit */
-.lf-break{flex-basis:100%;height:0}
 /* Group by's label + its two buttons as one atomic flex item — wrap as a unit, never splitting the
-   label onto one line and the buttons onto another — and centered, not top-aligned */
-.lf-groupby-group{display:flex;align-items:center;gap:10px;align-self:center;margin-left:16px}
-/* "COUNTRY" the label sits beside a taller button (the search trigger); center it on that line
-   instead of the row's default top alignment */
-.lf-bar .cf-label{align-self:center}
-/* country chips sit on their own leading line, above "COUNTRY [Add another country…]" — indent them
-   to start under the search box, not flush with the "COUNTRY" label above them */
-.lf-bar .cf-chips{margin-left:66px}
-/* small step-number badge next to a filter group's label — outline only, no fill */
-.fm-cpane-num{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--dim);color:var(--dim);font-size:8.5px;font-weight:800;background:none;flex-shrink:0}
+   label onto one line and the buttons onto another */
+.lf-groupby-group{display:flex;align-items:center;gap:10px;margin-left:16px}
+/* "COUNTRY" the label sits beside a taller button (the search trigger); center it on row 2 instead
+   of the row's default top alignment */
+.lf-row-country .cf-label{align-self:center}
+/* .country-filter is itself a nested flex container; nesting it inside row 2 (also flex) hits the
+   classic shrink-to-fit sizing bug — the nested box gets assigned a width narrower than its actual
+   content needs, so its children (the search combo, Clear all, Group by) shrink or wrap onto a
+   spurious second line even though row 2 has plenty of room. display:contents removes that nested
+   box from layout entirely so cf-label / cf-combo / Clear all become direct flex children of row 2
+   itself, sized and placed exactly like Group by right next to them. */
+.lf-row-country .country-filter{display:contents}
+/* never let "Clear all" or "Group by" wrap their own text/controls onto a second line, even under
+   flex-shrink pressure */
+.lf-row-country .add-carrier-btn{white-space:nowrap;flex-shrink:0}
+.lf-groupby-group{white-space:nowrap;flex-shrink:0}
+/* the chip row's left edge lines up with the search combo's left edge, not the COUNTRY label's —
+   58px label width + 24px column gap from .lf-row */
+.lf-chips-row{margin-left:82px}
 .fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
 @media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
@@ -5453,14 +5466,17 @@ function eCardLabel(locked){
    read-only — greyed out for whatever wasn't enabled on the setup screen, same treatment as B2B.
    Label option stays a real toggle (its choice belongs on this screen, not the setup screen). */
 function eLegacyFeatureRow(){
-  const numBadge = n => el('span',{class:'fm-cpane-num'}, String(n));
-  const bar = el('div',{class:'lf-bar'});
+  // Fixed two-line layout: row 1 is Return service / Label option filters with "Add all
+  // configuration" pinned to the top-right corner; row 2 is Country (chips + search + Clear all)
+  // with Group by. Each row is its own flex container, so country chips wrapping (however many
+  // there are) can never push into or shift row 1 — the two lines are structurally independent.
+  const row1 = el('div',{class:'lf-row'});
 
   // Return service — no setup screen gating this anymore, so every service is always available;
   // these are pure filters. Selecting one (or more) hides non-matching lanes, and — together with
   // whatever Label option filters are also selected — is exactly what "Add all configuration" uses
   // as the set of service×label combinations to add.
-  const svcGroup = el('div',{class:'lf-group'}, el('span',{class:'fm-cpane-label'}, 'Return service', numBadge(2)));
+  const svcGroup = el('div',{class:'lf-group'}, el('span',{class:'fm-cpane-label'}, 'Return service'));
   RETURN_SERVICES.forEach(s => {
     const on = tabState.serviceFilter.includes(s);
     svcGroup.appendChild(el('button',{class:'fm-tab'+(on?' on':' filter-off'), type:'button', title:'Filter the table to '+s+' lanes', onclick:()=>{
@@ -5468,7 +5484,7 @@ function eLegacyFeatureRow(){
       rerenderE();
     }}, s));
   });
-  bar.appendChild(svcGroup);
+  row1.appendChild(svcGroup);
 
   // Label option — same filter treatment, same role in "Add all configuration". Configuring a lane's
   // actual service/label still only happens via that lane's own dropdown in the table — this row is a
@@ -5481,21 +5497,18 @@ function eLegacyFeatureRow(){
       rerenderE();
     }}, l));
   });
-  bar.appendChild(lblGroup);
+  row1.appendChild(lblGroup);
 
-  // Country chips go on their OWN leading line, indented to start under "Add another country…" (not
-  // flush with "COUNTRY" the label) — then "COUNTRY [Add another country…] [Clear all]  Group by
-  // [Country][Region]  Add all configuration" all together on the line below, same top line as
-  // Return service / Label option. Reorder eCountryFilterBar()'s children: chips move to the very
-  // front with a forced break right after them, "Country" the label stays right before the search
-  // box, and Group by + Add-all get appended at the end (still on that second line).
+  row1.appendChild(el('button',{class:'csc-btn lf-add-all', type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
+    el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration'));
+
+  // Row 2: Country (label, search combo, Clear all) plus Group by — chips are pulled out of this
+  // flow entirely so "Add another country…" always starts at the same fixed margin right after the
+  // COUNTRY label, regardless of how many countries are selected.
+  const row2 = el('div',{class:'lf-row lf-row-country'});
   const countryFilter = eCountryFilterBar();
-  const cfLabelEl = countryFilter.querySelector('.cf-label');
   const cfChipsEl = countryFilter.querySelector('.cf-chips');
-  if(cfChipsEl && cfLabelEl){
-    countryFilter.insertBefore(cfChipsEl, cfLabelEl);          // chips first
-    countryFilter.insertBefore(el('span',{class:'lf-break'}), cfLabelEl);   // forced break right after chips, before the label
-  }
+  if(cfChipsEl) cfChipsEl.remove();
   countryFilter.appendChild(el('div',{class:'lf-groupby-group'},
     el('span',{class:'fm-cpane-label'}, 'Group by'),
     el('div',{class:'seg'},
@@ -5503,11 +5516,14 @@ function eLegacyFeatureRow(){
       el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
     )
   ));
-  countryFilter.appendChild(el('button',{class:'csc-btn lf-add-all', type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
-    el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration'));
-  bar.appendChild(countryFilter);
+  row2.appendChild(countryFilter);
 
-  return bar;
+  // Row 3: the selected-country chips, wrapping freely on their own line below row 2 — omitted
+  // entirely when nothing is selected yet, so there's no empty gap.
+  const rows = [row1, row2];
+  if(cfChipsEl && cfChipsEl.children.length) rows.push(el('div',{class:'lf-row lf-chips-row'}, cfChipsEl));
+
+  return el('div',{class:'lf-wrap'}, ...rows);
 }
 
 /* Q3 — destination + dynamic follow-ups */
@@ -6406,15 +6422,18 @@ function eCountryFilterBar(){
 function eCardTable(locked){
   if(!locked) tabBuildRows();
 
-  const head = el('div',{class:'q-card-head'},
-    ...(eLegacy() ? [] : [el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4')]),   // variant L: no left step panel, so the step number reads as noise here
-    el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
-  );
-  if(eFmMvp() && !locked){
-    head.appendChild(el('button',{class:'csc-btn', type:'button', title:'Browse the Carrier Service Catalogue', onclick:()=>openCscModal()},
-      el('span',{class:'csc-btn-ic', html:icon('globe')}), 'Carrier Service Catalogue'));
+  const card = el('div',{class:'q-card'+(locked?' locked':'')});
+  if(!eLegacy()){    // variant L drops this heading — the row above the table already says everything needed
+    const head = el('div',{class:'q-card-head'},
+      el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4'),
+      el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
+    );
+    if(eFmMvp() && !locked){
+      head.appendChild(el('button',{class:'csc-btn', type:'button', title:'Browse the Carrier Service Catalogue', onclick:()=>openCscModal()},
+        el('span',{class:'csc-btn-ic', html:icon('globe')}), 'Carrier Service Catalogue'));
+    }
+    card.appendChild(head);
   }
-  const card = el('div',{class:'q-card'+(locked?' locked':'')}, head);
   const body = el('div',{class:'q-body'});
 
   if(locked){ card.appendChild(body); return card; }
