@@ -1394,6 +1394,12 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 /* Group by's label + its two buttons as one atomic flex item — wrap as a unit, never splitting the
    label onto one line and the buttons onto another — and centered, not top-aligned */
 .lf-groupby-group{display:flex;align-items:center;gap:10px;align-self:center;margin-left:16px}
+/* "COUNTRY" the label sits beside a taller button (the search trigger); center it on that line
+   instead of the row's default top alignment */
+.lf-bar .cf-label{align-self:center}
+/* country chips sit on their own leading line, above "COUNTRY [Add another country…]" — indent them
+   to start under the search box, not flush with the "COUNTRY" label above them */
+.lf-bar .cf-chips{margin-left:66px}
 /* small step-number badge next to a filter group's label — outline only, no fill */
 .fm-cpane-num{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--dim);color:var(--dim);font-size:8.5px;font-weight:800;background:none;flex-shrink:0}
 .fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
@@ -5477,16 +5483,19 @@ function eLegacyFeatureRow(){
   });
   bar.appendChild(lblGroup);
 
-  // Country + Group by + "Add all configuration" share the same top line as Return service / Label
-  // option; the country CHIPS move to their own line below everything else instead. Reorder
-  // eCountryFilterBar()'s children: label right before "Add another country…", then Group by and
-  // Add-all appended after Clear all (all still on the "top" line) — and only THEN a forced break
-  // followed by the chips, so they land on a trailing line regardless of how many there are.
+  // Country chips go on their OWN leading line, indented to start under "Add another country…" (not
+  // flush with "COUNTRY" the label) — then "COUNTRY [Add another country…] [Clear all]  Group by
+  // [Country][Region]  Add all configuration" all together on the line below, same top line as
+  // Return service / Label option. Reorder eCountryFilterBar()'s children: chips move to the very
+  // front with a forced break right after them, "Country" the label stays right before the search
+  // box, and Group by + Add-all get appended at the end (still on that second line).
   const countryFilter = eCountryFilterBar();
   const cfLabelEl = countryFilter.querySelector('.cf-label');
   const cfChipsEl = countryFilter.querySelector('.cf-chips');
-  const comboEl = countryFilter.querySelector('.cf-combo');
-  if(comboEl && cfLabelEl) countryFilter.insertBefore(cfLabelEl, comboEl);
+  if(cfChipsEl && cfLabelEl){
+    countryFilter.insertBefore(cfChipsEl, cfLabelEl);          // chips first
+    countryFilter.insertBefore(el('span',{class:'lf-break'}), cfLabelEl);   // forced break right after chips, before the label
+  }
   countryFilter.appendChild(el('div',{class:'lf-groupby-group'},
     el('span',{class:'fm-cpane-label'}, 'Group by'),
     el('div',{class:'seg'},
@@ -5496,10 +5505,6 @@ function eLegacyFeatureRow(){
   ));
   countryFilter.appendChild(el('button',{class:'csc-btn lf-add-all', type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
     el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration'));
-  if(cfChipsEl){
-    countryFilter.appendChild(el('span',{class:'lf-break'}));
-    countryFilter.appendChild(cfChipsEl);   // moved to the end, after the forced break — its own trailing line
-  }
   bar.appendChild(countryFilter);
 
   return bar;
