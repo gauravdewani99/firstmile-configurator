@@ -582,12 +582,15 @@ body[data-variant="E"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="H"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
-body[data-variant="K"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
+body[data-variant="K"] .wizard,
+body[data-variant="L"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="I"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 
 /* ─── Variant E: left navigation panel ─── */
 .e-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:30px;align-items:start}
+/* variant L: no left "Configuration" panel — one screen, full width */
+body[data-variant="L"] .e-layout{grid-template-columns:minmax(0,1fr)}
 .e-nav{position:sticky;top:80px;display:flex;flex-direction:column;gap:3px}
 .e-nav-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);padding:0 12px 10px}
 .e-nav-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--muted);transition:background .14s,color .14s;text-align:left;width:100%}
@@ -701,6 +704,7 @@ body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 
 /* table tools (group-by segmented toggle) */
 .table-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tt-label-toggle{display:flex;align-items:center;gap:10px;margin-left:14px;padding-left:14px;border-left:1px solid var(--border)}
 .tt-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
 .seg{display:inline-flex;background:var(--brand-soft);border-radius:9px;padding:3px}
 .seg-opt{padding:5px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);transition:all .14s}
@@ -780,6 +784,25 @@ body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 .grp-add-top{width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;background:var(--brand-soft);border:1px solid var(--brand-2);color:var(--brand-2);opacity:.85;transition:all .12s;padding:0;cursor:pointer}
 .grp-add-top svg{width:14px;height:14px}
 .grp-add-top:hover{opacity:1;background:var(--brand);color:#fff;border-color:var(--brand)}
+/* variant L: Parcel Type + Legacy Sync columns (FM → legacy back-propagation additions) */
+.ptype-td{white-space:nowrap}
+.ptype-code{font-family:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;font-size:12px;color:var(--text)}
+.ptype-tag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;border-radius:4px;padding:2px 5px;margin-left:6px;vertical-align:middle}
+.ptype-tag.reuse{color:var(--dim);background:var(--border-soft)}
+.ptype-tag.gen{color:var(--brand);background:var(--brand-soft)}
+.sync-pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;border-radius:20px;padding:3px 10px;white-space:nowrap}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.sync-pill.sync-ok{color:#15803D;background:var(--green-soft)}
+.sync-pill.sync-warn{color:#92640A;background:var(--amber-soft)}
+.sync-pill.sync-bad{color:var(--red);background:var(--red-soft)}
+.sync-pill.sync-new{color:var(--brand);background:var(--brand-soft)}
+.th-rank{width:56px}
+.rank-cell{display:flex;align-items:center;gap:6px}
+.rank-n{font-family:ui-monospace,"SF Mono","Cascadia Code",Menlo,monospace;font-size:12.5px;font-weight:700;color:var(--text);width:14px;text-align:center}
+.rank-btns{display:flex;flex-direction:column;gap:1px}
+.rank-btn{border:0;background:none;color:var(--dim);cursor:pointer;font-size:8px;line-height:1;padding:1px 3px;border-radius:3px}
+.rank-btn:hover:not(:disabled){color:var(--brand);background:var(--brand-soft)}
+.rank-btn:disabled{opacity:.3;cursor:default}
 /* delete affordance visible (not hover-only) in single mode so added configs are clearly removable */
 .config-table.single-mode .row-del{opacity:.5}
 .config-table.single-mode .row-del:hover{opacity:1}
@@ -1152,8 +1175,8 @@ tr.lane-row.unavail:hover{background:transparent}
 .save-flow-btn:hover{background:var(--brand-2);border-color:var(--brand-2);box-shadow:var(--shadow-2);transform:translateY(-1px)}
 .save-flow-btn svg{width:15px;height:15px}
 .save-flow-btn.saving{opacity:.7;pointer-events:none}
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]) .json-fab,
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]) .json-panel,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]):not([data-variant="L"]) .json-fab,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]):not([data-variant="L"]) .json-panel,
 body[data-view="landing"] .json-fab,
 body[data-view="landing"] .json-panel{display:none}
 .json-panel{
@@ -1222,6 +1245,18 @@ body[data-view="wizard"] #view-landing{display:none}
 .pp-trigger.open{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
 .pp-trigger-ic{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;display:flex}
 .pp-trigger-ic svg{width:12px;height:12px}
+/* variant L: "+ Add country" native select, styled to match the "Search countries…" trigger above */
+.add-country-sel{
+  display:flex;align-items:center;gap:6px;max-width:180px;
+  padding:6px 28px 6px 10px;border:1px solid var(--border);border-radius:var(--r-xs);
+  background:var(--card);font:inherit;font-size:12.5px;font-weight:500;color:var(--dim);
+  cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 8px center;
+}
+.add-country-sel:hover,.add-country-sel:focus{border-color:var(--brand-2);outline:none}
+.add-country-sel:disabled{opacity:.5;cursor:default}
 .pp-drop{
   position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:200;
   background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);
@@ -1276,6 +1311,38 @@ body[data-view="wizard"] #view-landing{display:none}
 .config-table.compact.mvp-table .th-pp{width:26%}
 .config-table.compact.mvp-table .th-add-col{width:48px}
 .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:210px}
+/* variant L: 3 extra columns (Priority, Parcel Type, Legacy Sync) collide with the th:nth-child
+   percentages above, which were sized for the original 7-column layout — e.g. Parcel Type lands on
+   nth-child(7), inheriting the old 24% meant for a completely different column, and Legacy Sync
+   (nth-child 8) gets nothing, squeezing it to ~0 width. Override every column explicitly for L, all
+   as a fixed px so no single column (e.g. Postal Product, left unspecified before) balloons to
+   absorb the table's full remaining width — table-layout:fixed scales all of these up together,
+   proportionally, to fill the table's actual rendered width. */
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(1),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(1){width:64px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(2),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(2){width:150px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(3),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(3){width:168px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(4),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(4){width:230px}   /* Carrier: dropdown + the Active/Inactive tag now sit side by side, needs the extra room */
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(5),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(5){width:140px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(6),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(6){width:220px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(7),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(7){width:180px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(8),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(8){width:130px}
+body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(9),
+body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(9){width:48px}
+body[data-variant="L"] .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:170px}
+/* variant L: Active/Inactive carrier tag sits beside the dropdown, like the Parcel Type "reused"/
+   "generated" tag — not stacked underneath, which is what select{width:100%} forces by default. */
+body[data-variant="L"] .carrier-cell{display:flex;align-items:center;flex-wrap:nowrap}
+body[data-variant="L"] .carrier-cell select{width:auto;flex:1;min-width:0}
+body[data-variant="L"] .carrier-active-tag,
+body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-space:nowrap}
 /* First Mile - MVP Ready: shipping preferences pane */
 .q-card-head .csc-btn{margin-left:auto}
 /* MyRebound FM MVP: disabled (greyed) chip, e.g. B2B return flow */
@@ -1447,6 +1514,15 @@ body[data-view="wizard"] #view-landing{display:none}
           <span class="pc-info">
             <span class="pc-name">MyRebound FM MVP <span class="pc-badge">MVP Ready</span></span>
             <span class="pc-desc">MyRebound FM MVP-ready build — one return service &amp; label, one row per country; add extra carriers/configs per country as needed.</span>
+          </span>
+          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>
+
+        <button class="primary-card" onclick="startVariant('L')">
+          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/><path d="M15 15l3 3"/><circle cx="16" cy="16" r="3"/></svg></span>
+          <span class="pc-info">
+            <span class="pc-name">MyRebound FM MVP + Legacy Sync <span class="pc-badge">POC</span></span>
+            <span class="pc-desc">Exact copy of MyRebound FM MVP, plus the FM → legacy back-propagation additions: a generated Parcel Type per lane, a Legacy Sync status, and a one-click "Add all configuration".</span>
           </span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
@@ -2246,7 +2322,8 @@ function initTabular(){
     returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
     returnFlow:     'B2C',      // MyRebound FM MVP return flow type — 'B2C' (B2B disabled)
     setupDone:      false,      // MyRebound FM MVP: has the "Ship First Mile · Setup" screen been completed?
-    methods: {                  // MyRebound FM MVP: return methods enabled on the setup screen (id -> on). B2C on by default; B2B disabled for now
+    activeCountries: ['GB'],    // variant L only: countries seeded into the table so far — GB pre-added ("POC: GB live"), the rest added one at a time via "+ Add country"
+    methods: {                // MyRebound FM MVP: return methods enabled on the setup screen (id -> on). B2C on by default; B2B disabled for now
       'parcel-dropoff':    true,
       'parcel-pickup':     true,
       'self-post':         true,
@@ -2322,7 +2399,7 @@ const CSC_LM = [
 ];
 
 /* Tabular 2 (variant G) + First Mile MVP Ready (H) + POC Phase 1 (J) + Carrier Priority (I) = single-select service & label, one row per country */
-function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I' || state.variant === 'K'; }
+function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I' || state.variant === 'K' || state.variant === 'L'; }
 /* POC Phase 1 (variant J) drops the destination step/column and ranks carriers, one row per carrier×postal-product */
 function ePoc(){ return state.variant === 'J'; }
 /* Carrier Priority (variant I) — Tabular 2 minus destination/lane type/contract, with a manual, ranked, multi-carrier picker */
@@ -2330,13 +2407,167 @@ function eManual(){ return state.variant === 'I'; }
 /* both J and I share the trimmed ranked-carrier column layout (no destination/laneType/contract columns) */
 function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
 /* First Mile - MVP Ready (H): Tabular 2 without the First Mile Destination step, the Destination column, or the Contract column (Lane type IS kept) */
-function eMvp(){ return state.variant === 'H' || state.variant === 'K'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy) */
+function eMvp(){ return state.variant === 'H' || state.variant === 'K' || state.variant === 'L'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy), L = MyRebound FM MVP + Legacy Sync */
 function eFmMvp(){ return state.variant === 'H'; }  /* First Mile - MVP Ready only: shipping-preferences pane + Carrier Service Catalogue button */
-function eMyr(){ return state.variant === 'K'; }   /* MyRebound FM MVP only: Return flow type selector, no Priority column */
+function eMyr(){ return state.variant === 'K' || state.variant === 'L'; }   /* MyRebound FM MVP family: Return flow type selector, no Priority column */
 /* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
 function eSingleSvc(){ return eSingle() && !eManual() && !eMvp(); }  /* First Mile - MVP Ready (H) + MyRebound FM MVP (K) multi-select service & label like Tabular 1 */
+/* MyRebound FM MVP + Legacy Sync (L) only: Parcel Type + Legacy Sync columns and the bulk "Add all configuration" action —
+   the FM → legacy back-propagation additions explored in the myrebound-fm-poc-design docs, layered onto an exact copy of K. */
+function eLegacy(){ return state.variant === 'L'; }
+/* variant L: deterministic legacy-sync status for a newly seeded lane — a small, repeatable mix of
+   Synced/Pending/Failed so the demo shows the states without relying on real Griffin sync data */
+function eSeedSyncStatus(){
+  const n = _tabSeq;
+  return (n % 9 === 0) ? 'Failed' : (n % 5 === 0) ? 'Pending' : 'Synced';
+}
+/* variant L: this lane's 1-based position among its country's lanes, in the same order the table
+   renders them — the numbering key for the generated parcel type */
+function eOrdinalInCountry(r){
+  let n = 0;
+  for(let i = 0; i < tabState.rows.length; i++){
+    if(tabState.rows[i].code !== r.code) continue;
+    n++;
+    if(tabState.rows[i] === r) return n;
+  }
+  return n || 1;
+}
+/* variant L: <CLIENT>_MyRB_<priority> — reused where legacy already has this slot, generated for a net-new lane */
+function eParcelType(r){ return String(state.client || 'CLIENT').toUpperCase() + '_MyRB_' + eOrdinalInCountry(r); }
+/* variant L: Legacy Sync status pill (dot + label), mirroring the sync/lane-review status styling elsewhere in the app */
+function eLegacySyncPill(status){
+  const map = { Synced:['sync-ok','Synced'], Pending:['sync-warn','Pending'], Failed:['sync-bad','Failed'], New:['sync-new','New · on save'] };
+  const pair = map[status] || map.Synced;
+  return el('span',{class:'sync-pill '+pair[0]}, el('span',{class:'sync-dot'}), pair[1]);
+}
+/* variant L: swap a lane with its neighbour above/below within the same country — this row order
+   is what numbers the generated parcel type, so reordering here renumbers it */
+function eMovePriority(r, dir){
+  const idx = tabState.rows.indexOf(r);
+  const j = idx + dir;
+  if(idx < 0 || j < 0 || j >= tabState.rows.length || tabState.rows[j].code !== r.code) return;
+  const tmp = tabState.rows[idx]; tabState.rows[idx] = tabState.rows[j]; tabState.rows[j] = tmp;
+  rerenderE();
+}
+/* variant L: Priority cell — rank number + move up/down, first column of the table */
+function eRankCell(r){
+  const n = eOrdinalInCountry(r);
+  const siblingCount = tabState.rows.filter(x => x.code === r.code).length;
+  const idx = tabState.rows.indexOf(r);
+  const atTop = idx <= 0 || tabState.rows[idx-1].code !== r.code;
+  const atBottom = idx < 0 || idx >= tabState.rows.length-1 || tabState.rows[idx+1].code !== r.code;
+  // el()'s setAttribute always sets `disabled`, even to the string "undefined" — so the key must
+  // be omitted entirely to leave a button enabled, never set with a falsy value.
+  const upAttrs = Object.assign({class:'rank-btn', title:'Move up', onclick:()=>eMovePriority(r,-1)}, (siblingCount<=1||atTop) ? {disabled:'disabled'} : {});
+  const downAttrs = Object.assign({class:'rank-btn', title:'Move down', onclick:()=>eMovePriority(r,1)}, (siblingCount<=1||atBottom) ? {disabled:'disabled'} : {});
+  return el('td',{}, el('div',{class:'rank-cell'},
+    el('span',{class:'rank-n'}, String(n)),
+    el('span',{class:'rank-btns'},
+      el('button', upAttrs, '▲'),
+      el('button', downAttrs, '▼')
+    )
+  ));
+}
+/* variant L: each row picks its own service/label inline (columns 2 and 3) instead of the shared
+   top-level selection — reconcile the carrier and protect the lane from being pruned as stale */
+function eSetRowServiceLabel(r, service, label){
+  const origKey = eComboKey(r.code, r.service, r.label);
+  r.service = service;
+  r.label = service === 'Self-post' ? null : label;
+  r.custom = true;
+  tabState.deleted[origKey] = true;
+  const av = eCarriersFor(r.code, r.service, r.label);
+  if(!av.some(c => c.id === r.carrier)) eSetCarrier(r, av.length ? av[0].id : null);
+  tabBuildRows();
+  rerenderE();
+}
+/* variant L: Return service cell — only the services enabled on the setup screen are ever offered
+   (never the full RETURN_SERVICES list), and with exactly one enabled there's nothing to choose, so
+   it renders as plain text instead of a single-option dropdown. */
+function eRowServiceCell(r){
+  const opts = tabState.returnServices.length ? tabState.returnServices : RETURN_SERVICES;
+  if(opts.length <= 1){
+    const only = opts[0] || r.service;
+    return el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(only)}), only);
+  }
+  return eSelect(r.service, opts.map(s=>({value:s,text:s})), v => eSetRowServiceLabel(r, v, r.label || tabState.returnLabels[0] || RETURN_LABELS[0]));
+}
+/* variant L: Label option cell — same rule as the service cell, scoped to tabState.returnLabels */
+function eRowLabelCell(r){
+  const opts = tabState.returnLabels.length ? tabState.returnLabels : RETURN_LABELS;
+  if(opts.length <= 1){
+    const only = opts[0] || r.label;
+    return only ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(only)}), only) : el('span',{class:'cell-dim'}, 'N/A');
+  }
+  return eSelect(r.label, opts.map(l=>({value:l,text:l})), v => eSetRowServiceLabel(r, r.service, v));
+}
+/* variant L only: append one new lane (currently selected service/label, first free carrier) to every
+   country already in the table — the bulk counterpart to the per-country "+" add-configuration button */
+function eAddAllConfiguration(){
+  const service = tabState.returnServices[0];
+  if(!service){ showToast('Pick a return service first.', null, null, {icon:'info'}); return; }
+  const label = service === 'Self-post' ? null : (tabState.returnLabels[0] || RETURN_LABELS[0]);
+  const codes = [...new Set(tabState.rows.map(r => r.code))];
+  let added = 0, skipped = 0;
+  codes.forEach(code => {
+    const av = eCarriersFor(code, service, label);
+    if(!av.length){ skipped++; return; }
+    const usedByOthers = new Set(tabState.rows.filter(r => r.code === code && r.service === service && (r.label || null) === (label || null)).map(r => r.carrier));
+    const carrier = av.find(c => !usedByOthers.has(c.id));
+    if(!carrier){ skipped++; return; }
+    const row = makeERow(code, service, label);
+    row.custom = true;
+    eSetCarrier(row, carrier.id);
+    row.sync = 'New';
+    tabState.rows.push(row);
+    added++;
+  });
+  tabBuildRows();
+  rerenderE();
+  const parts = [];
+  if(added) parts.push('Added ' + added + ' configuration' + (added === 1 ? '' : 's') + '.');
+  if(skipped) parts.push(skipped + ' ' + (skipped === 1 ? 'country' : 'countries') + ' skipped — no free carrier for the current service/label.');
+  showToast(parts.length ? parts.join(' ') : 'No countries to add to yet.', null, null, {icon:'info'});
+}
+/* variant L only: the per-country "+" inserts a blank row directly — no service/label/carrier yet,
+   filled in via the inline dropdowns — instead of the multi-step add-configuration popup. When only
+   one service (or label) is enabled there's nothing to pick, so pre-fill it rather than leaving a
+   dropdown-less cell stuck blank. */
+function eAddEmptyConfigForCountry(code){
+  const svc = tabState.returnServices.length === 1 ? tabState.returnServices[0] : null;
+  const lbl = (svc && svc !== 'Self-post' && tabState.returnLabels.length === 1) ? tabState.returnLabels[0] : null;
+  const row = makeERow(code, svc, lbl);
+  row.custom = true;
+  row.sync = 'New';
+  tabState.rows.push(row);
+  tabBuildRows();
+  rerenderE();
+}
+/* variant L only: bring a new country into the table (rollout country-by-country instead of the
+   whole Country Scope at once). Also clears any earlier "deleted" flags for this country, so a
+   country that was fully removed can be brought back cleanly. */
+function eAddCountry(code){
+  if(!tabState.activeCountries.includes(code)) tabState.activeCountries.push(code);
+  Object.keys(tabState.deleted).forEach(k => { if(k.indexOf(code + '|') === 0) delete tabState.deleted[k]; });
+  tabBuildRows();
+  rerenderE();
+}
+/* variant L only: "+ Add country" — scoped to the client's Country Scope, only offering countries
+   not already in the table (so a re-add after a full delete is still possible). */
+function eAddCountrySelect(){
+  const pool = getClientCountryScope(state.client)
+    .map(s => COUNTRIES.find(c => c.code === s.code))
+    .filter(Boolean);
+  const shown = new Set(tabState.rows.map(r => r.code));
+  const options = pool.filter(c => !shown.has(c.code));
+  const sel = el('select',{class:'add-country-sel', onchange:(e)=>{ const v = e.target.value; if(v) eAddCountry(v); }});
+  sel.appendChild(el('option',{value:''}, options.length ? '+ Add country…' : 'All scoped countries added'));
+  options.forEach(c => sel.appendChild(el('option',{value:c.code}, c.flag + ' ' + c.name)));
+  if(!options.length) sel.disabled = true;
+  return sel;
+}
 /* every variant driven by tabState / renderVariantE */
-const TABULAR_VARIANTS = ['E','F','G','H','I','J','K'];
+const TABULAR_VARIANTS = ['E','F','G','H','I','J','K','L'];
 function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
 /* postal products derived from a carrier (each carrier → one or more products) */
 function ePostalProductsFor(carrierId){
@@ -2406,6 +2637,7 @@ function makeERow(code, service, label){
     postalProduct: null,
     priority: 0,          // First Mile - MVP Ready lane priority; 0 = none, only used when a country has >1 lane
     custom:false,
+    sync: eLegacy() ? eSeedSyncStatus() : undefined,   // variant L only: simulated legacy-sync state for a freshly seeded lane
   };
 }
 function tabBuildRows(){
@@ -2447,8 +2679,11 @@ function tabBuildRowsMvp(){
     if(tabState.deleted[lk] || used[lk]) return;
     next.push(r); used[lk] = true;
   });
-  // ensure each active country × combo has at least one (base) lane, unless the combo was fully removed
-  COUNTRIES.forEach(c => {
+  // ensure each active country × combo has at least one (base) lane, unless the combo was fully removed.
+  // Variant L: only countries the user explicitly added (tabState.activeCountries) get seeded — everyone
+  // else auto-seeds every country up front, which is exactly the "28/31 countries at once" problem L fixes.
+  const scopedCountries = eLegacy() ? COUNTRIES.filter(c => tabState.activeCountries.includes(c.code)) : COUNTRIES;
+  scopedCountries.forEach(c => {
     combos.forEach(cb => {
       const comboKey = eComboKey(c.code, cb.service, cb.label);
       if(tabState.deleted[comboKey]) return;
@@ -2685,7 +2920,7 @@ function setView(v){
   if(v === 'wizard' && state.variant) document.body.setAttribute('data-variant', state.variant);
   else document.body.removeAttribute('data-variant');
   document.getElementById('meta-client').textContent = state.client || '—';
-  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1', K:'MyRebound FM MVP' };
+  const variantLabels = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1', K:'MyRebound FM MVP', L:'MyRebound FM MVP + Legacy Sync' };
   document.getElementById('meta-variant').textContent = variantLabels[state.variant] || '—';
   const flowEl = document.getElementById('meta-flow');
   if(flowEl) flowEl.style.display = state.variant ? '' : 'none';
@@ -4004,7 +4239,7 @@ function buildTabJson(){
       summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
     };
   }
-  const variantName = state.variant === 'K' ? 'myrebound-fm-mvp' : state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
+  const variantName = state.variant === 'L' ? 'myrebound-fm-mvp-legacy-sync' : state.variant === 'K' ? 'myrebound-fm-mvp' : state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
   const mvp = eMvp(); // First Mile - MVP Ready: no destination or contract in the payload (lane type kept)
   return {
     client: state.client || null,
@@ -4029,6 +4264,7 @@ function buildTabJson(){
         carrier: mvp ? eCarrierName(r.carrier) : r.carrier,
         ...(mvp ? {} : { contract: r.contract || null }),
         postalProduct: r.postalProduct || null,
+        ...(eLegacy() ? { parcelType: eParcelType(r), legacySync: r.sync || 'Synced' } : {}),
         serviceable: eCarriersFor(r.code, r.service, r.label).length > 0,
       };
     }),
@@ -4092,7 +4328,7 @@ function showToast(message, actionLabel, onAction, opts){
 /* ─────────────────────────────────────────────────
    SAVE / LOAD FLOWS (shared backend via /api/flows)
    ───────────────────────────────────────────────── */
-const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1', K:'MyRebound FM MVP' };
+const VARIANT_NAMES = { A:'Lane-by-Lane', B:'Carrier-First', C:'Inline Grid', D:'Client Preferences', E:'Tabular 1', F:'Manisha Tabular', G:'Tabular 2', H:'First Mile - MVP Ready', I:'MyRebound FM POC', J:'POC Phase 1', K:'MyRebound FM MVP', L:'MyRebound FM MVP + Legacy Sync' };
 
 function captureFlowState(){
   const s = {};
@@ -5061,6 +5297,11 @@ function renderVariantE(root){
     srow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service'));
     if(paneServices.length){
       paneServices.forEach(s => {
+        if(eLegacy()){
+          // variant L: already chosen on the setup screen — show as read-only, like the Return flow chip
+          srow.appendChild(el('span',{class:'fm-flow-chip'}, s));
+          return;
+        }
         const on = tabState.returnServices.includes(s);
         srow.appendChild(el('button',{class:'fm-tab fm-svc-chip'+(on?' on':''), type:'button', title:(on?'Hide':'Show')+' '+s+' lanes in the review',
           onclick:()=>{
@@ -5080,13 +5321,15 @@ function renderVariantE(root){
   }
 
   const layout = el('div',{class:'e-layout'});
-  layout.appendChild(eNav());
+  if(!eLegacy()) layout.appendChild(eNav());  // variant L: no left "Configuration" step panel — this is the only screen
 
   const main = el('div',{class:'e-main'});
   if(eFmMvp()){ const ft = eCardFlowType(); ft.id = 'sec-flow'; main.appendChild(ft); }  /* Return flow type card — H only (K shows it in the combined config pane) */
   if(!eMyr()){ const svc = eCardService(false); svc.id = 'sec-service'; main.appendChild(svc); }  // K picks service in the combined pane, not a separate card
-  const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
-  main.appendChild(lbl);
+  if(!eLegacy()){                                   // variant L: Label Option moves inline next to Country/Group by, no standalone card
+    const lbl = eCardLabel(!eServiceReady());         lbl.id = 'sec-label';
+    main.appendChild(lbl);
+  }
   if(eFmMvp()){ const pref = eCardShippingPrefs(!eLabelReady()); pref.id = 'sec-prefs'; main.appendChild(pref); }
   if(eRanked() || eMvp()){
     const rev = eCardTable(!eLabelReady());          rev.id = 'sec-review';
@@ -5178,6 +5421,24 @@ function eCardLabel(locked){
   }
   card.appendChild(body);
   return card;
+}
+
+/* variant L: same Label Option choice as eCardLabel, but as a compact segmented toggle in the
+   table-tools row (next to Country / Group by) instead of its own full-width question card */
+function eCardLabelInline(){
+  if(eHasSelfPost() && eNonSelfServices().length === 0) return null;   // not applicable — nothing to show
+  const wrap = el('div',{class:'tt-label-toggle'});
+  wrap.appendChild(el('span',{class:'tt-label'}, 'Label option'));
+  const seg = el('div',{class:'seg'});
+  ['Paperless / QR code','Printed label'].forEach(l => {
+    const on = tabState.returnLabels.includes(l);
+    seg.appendChild(el('button',{class:'seg-opt'+(on?' on':''), onclick:()=>{
+      tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
+      rerenderE();
+    }}, l));
+  });
+  wrap.appendChild(seg);
+  return wrap;
 }
 
 /* Q3 — destination + dynamic follow-ups */
@@ -5823,12 +6084,17 @@ function eRow(r, prio){
   const isSelfPost = r.service === 'Self-post';
   const refreshing = tabState.carrierPhase === 'refreshing';
   const av = isSelfPost ? [] : eCarriersFor(r.code, r.service, r.label);
-  const unavailable = !isSelfPost && !refreshing && av.length === 0;
+  const unavailable = !isSelfPost && !refreshing && !!r.service && av.length === 0;
   const c = COUNTRIES.find(x => x.code === r.code);
   const tr = el('tr',{class:'lane-row'+(unavailable?' unavail':'')});
 
-  // Return service (always shown)
-  tr.appendChild(el('td',{}, el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
+  // Priority (variant L only) — first column, rank + move up/down
+  if(eLegacy()) tr.appendChild(eRankCell(r));
+
+  // Return service (always shown) — variant L: dropdown only when more than one service is enabled
+  tr.appendChild(el('td',{}, eLegacy()
+    ? eRowServiceCell(r)
+    : el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:serviceIcon(r.service)}), r.service)));
 
   const naCell = ()=>el('td',{}, el('span',{class:'cell-na'}, 'Not applicable'));
   if(isSelfPost){
@@ -5857,10 +6123,18 @@ function eRow(r, prio){
     const spPp = el('td',{class:'pp-td'+(eMyr()?'':' carrier-cell')}, ppCombobox(r));
     if(!eMyr()) spPp.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
     tr.appendChild(spPp);
+    // Parcel Type + Legacy Sync (variant L only)
+    if(eLegacy()){
+      const generated = r.sync === 'New';
+      tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'ptype-code'}, eParcelType(r)), el('span',{class:'ptype-tag '+(generated?'gen':'reuse')}, generated?'generated':'reused')));
+      tr.appendChild(el('td',{}, eLegacySyncPill(r.sync)));
+    }
     if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
   } else {
-    // Standard lanes
-    tr.appendChild(el('td',{}, r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A')));
+    // Standard lanes — variant L: dropdown only when more than one label option is enabled
+    tr.appendChild(el('td',{}, eLegacy()
+      ? eRowLabelCell(r)
+      : (r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A'))));
 
     // Priority (First Mile - MVP Ready)
     if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
@@ -5903,6 +6177,12 @@ function eRow(r, prio){
     const ppCell = el('td',{class:'pp-td'+((eMvp() && !eMyr())?' carrier-cell':'')});
     ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
     tr.appendChild(ppCell);
+    // Parcel Type + Legacy Sync (variant L only)
+    if(eLegacy()){
+      const generated = r.sync === 'New';
+      tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'ptype-code'}, eParcelType(r)), el('span',{class:'ptype-tag '+(generated?'gen':'reuse')}, generated?'generated':'reused')));
+      tr.appendChild(el('td',{}, eLegacySyncPill(r.sync)));
+    }
     if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
 
     if(unavailable){
@@ -5929,7 +6209,7 @@ function eAppendCountryGroup(tbody, code, rows, colCount, prioOn){
   );
   // Tabular 2 + Manisha Tabular: lightweight icon-only "+" to add a configuration
   if(eSingle() || state.variant === 'F'){
-    headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=>openAddConfigModal(code), html:icon('plus')}));
+    headCell.appendChild(el('button',{class:'grp-add', title:'Add another configuration', onclick:()=> eLegacy() ? eAddEmptyConfigForCountry(code) : openAddConfigModal(code), html:icon('plus')}));
   }
   tbody.appendChild(el('tr',{class:'grp-country'}, headCell));
   rows.forEach((r, i) => eManual() ? eManualAppendCarrierRows(tbody, r) : ePoc() ? ePocAppendCarrierRows(tbody, r) : tbody.appendChild(eRow(r, prioOn ? { n:i+1, laneCount:rows.length } : null)));
@@ -6052,12 +6332,16 @@ function eCardTable(locked){
   if(!locked) tabBuildRows();
 
   const head = el('div',{class:'q-card-head'},
-    el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4'),
+    ...(eLegacy() ? [] : [el('div',{class:'q-num'}, (eRanked() || eMvp()) ? '3' : '4')]),   // variant L: no left step panel, so the step number reads as noise here
     el('div',{class:'q-titlewrap'}, el('div',{class:'q-title'}, 'Review and fine-tune each lane'))
   );
   if(eFmMvp() && !locked){
     head.appendChild(el('button',{class:'csc-btn', type:'button', title:'Browse the Carrier Service Catalogue', onclick:()=>openCscModal()},
       el('span',{class:'csc-btn-ic', html:icon('globe')}), 'Carrier Service Catalogue'));
+  }
+  if(eLegacy() && !locked){
+    head.appendChild(el('button',{class:'csc-btn', type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
+      el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration'));
   }
   const card = el('div',{class:'q-card'+(locked?' locked':'')}, head);
   const body = el('div',{class:'q-body'});
@@ -6088,7 +6372,11 @@ function eCardTable(locked){
     )
   ];
   if(eMvp()){
-    body.appendChild(el('div',{class:'table-tools cf-tools'}, eCountryFilterBar(), ...groupByEls));
+    const toolEls = [eCountryFilterBar()];
+    if(eLegacy()) toolEls.push(eAddCountrySelect());
+    toolEls.push(...groupByEls);
+    if(eLegacy()){ const lblInline = eCardLabelInline(); if(lblInline) toolEls.push(lblInline); }
+    body.appendChild(el('div',{class:'table-tools cf-tools'}, ...toolEls));
   } else {
     body.appendChild(el('div',{class:'table-tools'}, ...groupByEls));
     if(eManual()) body.appendChild(eCountryFilterBar());
@@ -6111,12 +6399,14 @@ function eCardTable(locked){
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
     : eRanked()
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{},'Priority'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
-    : [el('th',{},'Return service'), el('th',{}, eMvp() ? 'Label Option' : 'Return label'),
+    : [...(eLegacy() ? [el('th',{class:'th-rank'},'Priority')] : []),
+       el('th',{},'Return service'), el('th',{}, eMvp() ? 'Label Option' : 'Return label'),
        ...(prioOn ? [el('th',{},'Priority')] : []),
        ...(eMvp() ? [] : [el('th',{},'Destination')]),
        el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Lane type'),
        ...(eMvp() ? [] : [el('th',{},'Contract')]),
-       el('th',{class:'th-pp'},'Postal Product')];
+       el('th',{class:'th-pp'},'Postal Product'),
+       ...(eLegacy() ? [el('th',{},'Parcel Type'), el('th',{},'Legacy Sync')] : [])];
   if(showAddBtn) headerCols.push(el('th',{class:'th-add-col'}));
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
   const tbody = el('tbody',{});
@@ -6127,7 +6417,7 @@ function eCardTable(locked){
   let codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
   if((eManual() || eMvp()) && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
-  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) : 7;
+  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eLegacy() ? 3 : 0) : 7;
   const colCount = showAddBtn ? baseCols + 1 : baseCols;
   if(!codes.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
@@ -6390,6 +6680,7 @@ function openAddConfigModal(code){
       if(draft.service !== 'Self-post' && !draft.carrier){ hint.textContent='No carrier ships this combination. Choose another service or label.'; hint.classList.add('err'); return; }
       const row = makeERow(tCode, draft.service, draft.label);
       row.custom = true; if(draft.carrier) eSetCarrier(row, draft.carrier);
+      if(eLegacy()) row.sync = 'New';   // this lane didn't exist before — always "New · on save", never a random seeded status
       if(eMvp()){
         // First Mile - MVP Ready: a config is unique by service + label + carrier, so a different carrier for the same combo is allowed
         const laneK = eLaneKey(row);
