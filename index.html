@@ -1363,6 +1363,9 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-config-btn.is-disabled{opacity:.5;cursor:not-allowed}
 /* MyRebound FM MVP: combined config pane — return business flow + enabled methods only */
 .fm-cpane{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px;padding:14px 16px;background:var(--brand-soft);border-radius:12px}
+/* variant L: flow/service/label/country all read as one plain list — no separate coloured panel */
+.lf-panel{background:none;padding:14px 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
+.lf-country-row{margin-top:2px;padding-top:12px;border-top:1px dashed var(--border)}
 .fm-cpane-rows{display:flex;flex-direction:column;gap:8px;min-width:0}
 .fm-cpane-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
@@ -5452,7 +5455,19 @@ function eLegacyFeatureRow(){
   }
   rows.appendChild(lblRow);
 
-  return el('div',{class:'fm-cpane'},
+  // Country + Group by — same stacked row style as flow/service/label, not a separate boxed toolbar
+  const countryRow = el('div',{class:'fm-cpane-row lf-country-row'},
+    el('span',{class:'fm-cpane-label'}, 'Country'),
+    eCountryFilterBar(),
+    el('span',{class:'fm-cpane-label', style:{marginLeft:'14px'}}, 'Group by'),
+    el('div',{class:'seg'},
+      el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
+      el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
+    )
+  );
+  rows.appendChild(countryRow);
+
+  return el('div',{class:'fm-cpane lf-panel'},
     rows,
     el('button',{class:'fm-tab-back', type:'button', title:'Back to setup', onclick:()=>{ tabState.setupDone = false; rerenderE(); }}, '← Setup')
   );
@@ -6396,11 +6411,10 @@ function eCardTable(locked){
       el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
     )
   ];
-  if(eMvp()){
-    // variant L: Return flow / service / label option now live together in eLegacyFeatureRow(), above
-    const toolEls = [eCountryFilterBar(), ...groupByEls];
-    body.appendChild(el('div',{class:'table-tools cf-tools'}, ...toolEls));
-  } else {
+  if(eMvp() && !eLegacy()){
+    // variant L: Country/Group by live inside eLegacyFeatureRow() above, alongside flow/service/label
+    body.appendChild(el('div',{class:'table-tools cf-tools'}, eCountryFilterBar(), ...groupByEls));
+  } else if(!eLegacy()){
     body.appendChild(el('div',{class:'table-tools'}, ...groupByEls));
     if(eManual()) body.appendChild(eCountryFilterBar());
   }
