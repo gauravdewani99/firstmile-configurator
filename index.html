@@ -2511,47 +2511,58 @@ function eRowLabelCell(r){
   }
   return eSelect(r.label, opts.map(l=>({value:l,text:l})), v => eSetRowServiceLabel(r, r.service, v));
 }
-/* variant L only: fill in a default (currently selected service/label, first free carrier) config for
-   every country currently VISIBLE on screen — the bulk counterpart to the per-country "+" button.
-   "Visible" means every Country Scope country (they all get a header even with zero rows), respecting
-   the Country search/filter: a non-empty tabState.reviewCountries means the user has filtered down to
-   specific countries (e.g. AT, DE), and only those get configured. Fills an existing blank row for a
-   country if one is there instead of stacking a new lane on top of it, and creates one from scratch
-   for a country that has no rows at all yet. */
+/* variant L only: for every service×label combination currently chosen via the Return service /
+   Label option filters, add a lane (first free carrier) to every country currently VISIBLE on
+   screen — the bulk counterpart to the per-country "+" button. "Visible" means every Country Scope
+   country (they all get a header even with zero rows), respecting the Country search/filter: a
+   non-empty tabState.reviewCountries means the user has filtered down to specific countries (e.g.
+   AT, DE), and only those get configured. Fills a country's existing blank row for its first combo
+   instead of stacking a new lane on top of it; every combo after that (or a country with no blank
+   row left) gets a freshly created lane. */
 function eAddAllConfiguration(){
-  const service = tabState.returnServices[0];
-  if(!service){ showToast('Pick a return service first.', null, null, {icon:'info'}); return; }
-  const label = service === 'Self-post' ? null : (tabState.returnLabels[0] || RETURN_LABELS[0]);
+  const nonSelfServices = tabState.serviceFilter.filter(s => s !== 'Self-post');
+  const hasSelfPost = tabState.serviceFilter.includes('Self-post');
+  if(!tabState.serviceFilter.length){ showToast('Pick at least one Return service filter first.', null, null, {icon:'info'}); return; }
+  if(nonSelfServices.length && !tabState.labelFilter.length){ showToast('Pick at least one Return label option filter too.', null, null, {icon:'info'}); return; }
+  const combos = [];
+  nonSelfServices.forEach(s => tabState.labelFilter.forEach(l => combos.push({ service:s, label:l })));
+  if(hasSelfPost) combos.push({ service:'Self-post', label:null });
+
   const scopeCodes = getClientCountryScope(state.client).map(s => s.code).filter(code => COUNTRIES.some(c => c.code === code));
   const withRows = tabState.rows.map(r => r.code);
   const allCodes = [...new Set([...scopeCodes, ...withRows])];
   const codes = tabState.reviewCountries.length ? allCodes.filter(c => tabState.reviewCountries.includes(c)) : allCodes;
+
   let added = 0, skipped = 0;
   codes.forEach(code => {
-    const av = eCarriersFor(code, service, label);
-    if(!av.length){ skipped++; return; }
-    const usedByOthers = new Set(tabState.rows.filter(r => r.code === code && r.service === service && (r.label || null) === (label || null)).map(r => r.carrier));
-    const carrier = av.find(c => !usedByOthers.has(c.id));
-    if(!carrier){ skipped++; return; }
-    const blank = tabState.rows.find(r => r.code === code && !r.service);
-    if(blank){
-      blank.service = service; blank.label = label; blank.custom = true;
-      eSetCarrier(blank, carrier.id);
-      blank.sync = 'New';
-    } else {
-      const row = makeERow(code, service, label);
-      row.custom = true;
-      eSetCarrier(row, carrier.id);
-      row.sync = 'New';
-      tabState.rows.push(row);
-    }
-    added++;
+    let blankAvailable = tabState.rows.some(r => r.code === code && !r.service);
+    combos.forEach(({ service, label }) => {
+      const av = eCarriersFor(code, service, label);
+      if(!av.length){ skipped++; return; }
+      const usedByOthers = new Set(tabState.rows.filter(r => r.code === code && r.service === service && (r.label || null) === (label || null)).map(r => r.carrier));
+      const carrier = av.find(c => !usedByOthers.has(c.id));
+      if(!carrier){ skipped++; return; }
+      const blank = blankAvailable ? tabState.rows.find(r => r.code === code && !r.service) : null;
+      if(blank){
+        blank.service = service; blank.label = label; blank.custom = true;
+        eSetCarrier(blank, carrier.id);
+        blank.sync = 'New';
+        blankAvailable = false;
+      } else {
+        const row = makeERow(code, service, label);
+        row.custom = true;
+        eSetCarrier(row, carrier.id);
+        row.sync = 'New';
+        tabState.rows.push(row);
+      }
+      added++;
+    });
   });
   tabBuildRows();
   rerenderE();
   const parts = [];
-  if(added) parts.push('Configured ' + added + ' countr' + (added === 1 ? 'y' : 'ies') + '.');
-  if(skipped) parts.push(skipped + ' ' + (skipped === 1 ? 'country' : 'countries') + ' skipped — no free carrier for the current service/label.');
+  if(added) parts.push('Added ' + added + ' configuration' + (added === 1 ? '' : 's') + '.');
+  if(skipped) parts.push(skipped + ' skipped — no free carrier for that service/label in that country.');
   showToast(parts.length ? parts.join(' ') : 'No countries to add to yet.', null, null, {icon:'info'});
 }
 /* variant L only: the per-country "+" inserts a blank row directly — no service/label/carrier yet,
@@ -4457,8 +4468,12 @@ function eGotoCarriers(){
   if(target){ target.scrollIntoView({block:'center', behavior:'smooth'}); }
 }
 
-function eServiceReady(){ return tabState.returnServices.length > 0; }
+// variant L never populates tabState.returnServices/returnLabels (there's no setup screen to do it
+// from anymore) — service/label are always "ready" for L, since every option is always available
+// and chosen per-row instead.
+function eServiceReady(){ return eLegacy() || tabState.returnServices.length > 0; }
 function eLabelReady(){
+  if(eLegacy()) return true;
   if(!eServiceReady()) return false;
   return eNonSelfServices().length === 0 ? true : tabState.returnLabels.length > 0; // self-post-only needs no label
 }
@@ -5286,7 +5301,7 @@ function eKSetupScreen(root){
 }
 
 function renderVariantE(root){
-  if(eMyr() && !tabState.setupDone){ eKSetupScreen(root); return; }  // MyRebound FM MVP: setup screen gates the config
+  if(eMyr() && !eLegacy() && !tabState.setupDone){ eKSetupScreen(root); return; }  // MyRebound FM MVP (K): setup screen gates the config. Variant L skips it entirely — every option is enabled and filtered directly on the table.
   root.appendChild(el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config · Tabular'),
     el('div',{class:'wizard-title'}, eLegacy() ? `First Mile Carrier Configuration for ${state.client}` : `Tabular configuration for ${state.client}`)
@@ -5432,16 +5447,15 @@ function eCardLabel(locked){
    read-only — greyed out for whatever wasn't enabled on the setup screen, same treatment as B2B.
    Label option stays a real toggle (its choice belongs on this screen, not the setup screen). */
 function eLegacyFeatureRow(){
-  const paneServices = [...new Set(FM_RETURN_METHODS.flatMap(g=>g.items).filter(m => tabState.methods[m.id] && m.service).map(m => m.service))];
   const numBadge = n => el('span',{class:'fm-cpane-num'}, String(n));
   const bar = el('div',{class:'lf-bar'});
 
-  // Return service — a real filter now: enabled services (from setup) toggle tabState.serviceFilter
-  // and hide non-matching lanes; a service never enabled at setup stays a plain grey, inert chip —
-  // there's nothing to filter by since no lane of that service exists.
+  // Return service — no setup screen gating this anymore, so every service is always available;
+  // these are pure filters. Selecting one (or more) hides non-matching lanes, and — together with
+  // whatever Label option filters are also selected — is exactly what "Add all configuration" uses
+  // as the set of service×label combinations to add.
   const svcGroup = el('div',{class:'lf-group'}, el('span',{class:'fm-cpane-label'}, 'Return service', numBadge(2)));
   RETURN_SERVICES.forEach(s => {
-    if(!paneServices.includes(s)){ svcGroup.appendChild(el('span',{class:'fm-tab off'}, s)); return; }
     const on = tabState.serviceFilter.includes(s);
     svcGroup.appendChild(el('button',{class:'fm-tab'+(on?' on':' filter-off'), type:'button', title:'Filter the table to '+s+' lanes', onclick:()=>{
       tabState.serviceFilter = on ? tabState.serviceFilter.filter(x=>x!==s) : [...tabState.serviceFilter, s];
@@ -5450,9 +5464,9 @@ function eLegacyFeatureRow(){
   });
   bar.appendChild(svcGroup);
 
-  // Label option — same filter treatment; both options are always available to filter by (label
-  // isn't gated by the setup screen the way service is). Configuring a lane's actual label still only
-  // happens via that lane's own dropdown in the table — this row is a view filter, not a bulk-setter.
+  // Label option — same filter treatment, same role in "Add all configuration". Configuring a lane's
+  // actual service/label still only happens via that lane's own dropdown in the table — this row is a
+  // view filter + bulk-add chooser, never a direct setter.
   const lblGroup = el('div',{class:'lf-group'}, el('span',{class:'fm-cpane-label'}, 'Return label option'));
   ['Paperless / QR code','Printed label'].forEach(l => {
     const on = tabState.labelFilter.includes(l);
