@@ -1379,8 +1379,7 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-svc-chip:hover{border-color:var(--brand-2);color:var(--brand)}
 .fm-svc-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 /* variant L: faded chip for a feature not enabled on the setup screen — same treatment as B2B */
-.fm-tab.off{background:var(--border-soft);color:var(--dim);border:none;opacity:.75}
-.fm-tab.off:hover{color:var(--brand)}
+.fm-tab.off{background:var(--border-soft);color:var(--dim);border:none;opacity:.75}   /* read-only, disabled — no hover state */
 /* variant L: small step-number badge next to a feature-row label — outline only, no fill */
 .fm-cpane-num{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--dim);color:var(--dim);font-size:8.5px;font-weight:800;background:none;flex-shrink:0}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
@@ -5281,7 +5280,7 @@ function renderVariantE(root){
   if(eMyr() && !tabState.setupDone){ eKSetupScreen(root); return; }  // MyRebound FM MVP: setup screen gates the config
   root.appendChild(el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config · Tabular'),
-    el('div',{class:'wizard-title'}, `Tabular configuration for ${state.client}`)
+    el('div',{class:'wizard-title'}, eLegacy() ? `First Mile Carrier Configuration for ${state.client}` : `Tabular configuration for ${state.client}`)
   ));
 
   if(eMyr() && !eLegacy()){
@@ -5457,8 +5456,7 @@ function eLegacyFeatureRow(){
 
   // Country + Group by — same stacked row style as flow/service/label, not a separate boxed toolbar
   const countryRow = el('div',{class:'fm-cpane-row lf-country-row'},
-    el('span',{class:'fm-cpane-label'}, 'Country'),
-    eCountryFilterBar(),
+    eCountryFilterBar(),   // eCountryFilterBar() already renders its own "Country" label — don't duplicate it here
     el('span',{class:'fm-cpane-label', style:{marginLeft:'14px'}}, 'Group by'),
     el('div',{class:'seg'},
       el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
