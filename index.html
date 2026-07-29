@@ -1363,36 +1363,6 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-config-btn.is-disabled{opacity:.5;cursor:not-allowed}
 /* MyRebound FM MVP: combined config pane — return business flow + enabled methods only */
 .fm-cpane{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px;padding:14px 16px;background:var(--brand-soft);border-radius:12px}
-/* variant L: flow/service/label/country all read as one plain list — no separate coloured panel */
-/* .fm-cpane has no explicit width, so — without a flex-basis / align-items:stretch forcing it — it
-   shrink-to-fits its own content. That's an unstable base for a row that's forcing internal line
-   breaks: the very same forced break changes what "fits", so the container's own computed width
-   feeds back into whether things wrap, differently depending on how much content came before it
-   (fewer country chips → narrower auto width → premature extra wrapping later in the row). Force it
-   to actually fill the card instead of guessing its own width from content. */
-.lf-panel{width:100%;background:none;padding:14px 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
-/* the actual root cause: .fm-cpane's two children (.fm-cpane-rows, the "← Setup" button) are laid out
-   with justify-content:space-between, but .fm-cpane-rows has no flex-grow — so it shrink-to-fits its
-   own content instead of claiming the available width, and "← Setup" just floats however far right
-   that content happens to reach. Scoped to this panel only (K's own top band uses plain .fm-cpane and
-   is unaffected) since its rows never needed to force internal line breaks the way this one does. */
-.lf-panel .fm-cpane-rows{flex:1;min-width:0}
-.lf-country-row{margin-top:0}
-/* .country-filter has no explicit width, so as a flex container it auto-sizes to its content's
-   shrink-to-fit width instead of filling the available row — with a flex-basis:100% child forcing an
-   early wrap, that auto width locks in too narrow, and later children wrap again even though the
-   page has plenty of room. Force it to actually fill the row. */
-.lf-country-row .country-filter{width:100%}
-/* force a line break before the "Add another country…" control (and everything after it — Clear
-   all, Group by) so that group always starts its own line, right below the country chips, instead
-   of sharing a line whose width depends on how many chips happen to fit */
-.lf-break{flex-basis:100%;height:0}
-/* Group by's label + its two buttons as one atomic flex item — they wrap as a unit, never splitting
-   the label onto one line and the buttons onto another — and centered, not top-aligned like the row */
-.lf-groupby-group{display:flex;align-items:center;gap:10px;align-self:center;margin-left:16px}
-.fm-cpane-rows{display:flex;flex-direction:column;gap:8px;min-width:0}
-.fm-cpane-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
 .fm-flow-chip{font-size:12px;font-weight:800;color:#fff;background:var(--brand);border-radius:8px;padding:4px 12px}
 .fm-cpane-empty{font-size:12px;color:var(--dim);font-style:italic}
 .fm-tab-back{font-size:12px;font-weight:700;color:var(--brand);padding:6px 11px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;flex-shrink:0}
@@ -1402,10 +1372,31 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-svc-chip{cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all .12s}
 .fm-svc-chip:hover{border-color:var(--brand-2);color:var(--brand)}
 .fm-svc-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
-/* variant L: faded chip for a feature not enabled on the setup screen — same treatment as B2B */
-.fm-tab.off{background:var(--border-soft);color:var(--dim);border:none;opacity:.75}   /* read-only, disabled — no hover state */
-/* variant L: small step-number badge next to a feature-row label — outline only, no fill */
+/* variant L: everything — Return service / Label option filters, Country, Group by, and the bulk /
+   setup actions — as one wrapping bar instead of a stacked, separately-boxed panel. */
+/* align-items:flex-start (not center): the country filter is taller than the other groups once its
+   own internal "Add another country… / Group by" line wraps below its chips, and centering would
+   shove the shorter groups down to the middle of that extra height instead of keeping everything
+   lined up along one shared top edge */
+.lf-bar{width:100%;display:flex;flex-wrap:wrap;align-items:flex-start;gap:20px 24px;padding:14px 0 18px}
+.lf-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px}
+.lf-actions{display:flex;justify-content:flex-end;gap:10px;padding-bottom:18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
+/* faded, inert chip for a feature never enabled on the setup screen — same treatment as B2B used to
+   have — there's nothing to filter by since no lane of that service exists */
+.fm-tab.off{background:var(--border-soft);color:var(--dim);border:none;opacity:.75}
+/* bordered, non-muted chip for a filter option that IS available but not currently toggled on —
+   distinct from .off, which means "not available at all" */
+.fm-tab.filter-off{background:var(--card);color:var(--text);border:1px solid var(--border);cursor:pointer}
+.fm-tab.filter-off:hover{border-color:var(--brand-2);color:var(--brand)}
+/* force a line break before "Add another country…" (and everything after it — Clear all, Group by)
+   so that group starts its own line, right after the country chips, regardless of how many fit */
+.lf-break{flex-basis:100%;height:0}
+/* Group by's label + its two buttons as one atomic flex item — wrap as a unit, never splitting the
+   label onto one line and the buttons onto another — and centered, not top-aligned */
+.lf-groupby-group{display:flex;align-items:center;gap:10px;align-self:center;margin-left:16px}
+/* small step-number badge next to a filter group's label — outline only, no fill */
 .fm-cpane-num{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--dim);color:var(--dim);font-size:8.5px;font-weight:800;background:none;flex-shrink:0}
+.fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
 @media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
 .ship-col{min-width:0}
@@ -2336,6 +2327,8 @@ function initTabular(){
     carrierPhase:   'idle', // 'idle' | 'refreshing' | 'review' — drives the carrier-refresh banner
     routingRules:   [],    // [{id,name,productCategory,returnReason,sku,ean,minValue,maxValue,countries:[],carrierServices:[{carrierId,service}],destination}]
     reviewCountries: [],   // variant I — search+multi-select filter on the Lane Review table, avoids scrolling every country
+    serviceFilter: [],    // variant L: Return service filter — empty = show all lanes, non-empty = only lanes with one of these services
+    labelFilter: [],      // variant L: Label option filter — same empty/non-empty semantics as serviceFilter
     serviceLevel:   'STANDARD', // First Mile - MVP Ready shipping pref — 'STANDARD' | 'PREMIUM'
     returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
     returnFlow:     'B2C',      // MyRebound FM MVP return flow type — 'B2C' (B2B disabled)
@@ -5440,48 +5433,46 @@ function eCardLabel(locked){
    Label option stays a real toggle (its choice belongs on this screen, not the setup screen). */
 function eLegacyFeatureRow(){
   const paneServices = [...new Set(FM_RETURN_METHODS.flatMap(g=>g.items).filter(m => tabState.methods[m.id] && m.service).map(m => m.service))];
-  const rows = el('div',{class:'fm-cpane-rows'});
-
   const numBadge = n => el('span',{class:'fm-cpane-num'}, String(n));
+  const bar = el('div',{class:'lf-bar'});
 
-  rows.appendChild(el('div',{class:'fm-cpane-row'},
-    el('span',{class:'fm-cpane-label'}, 'Return flow', numBadge(1)),
-    el('span',{class:'fm-tab on'}, 'B2C'),
-    el('span',{class:'fm-tab off'}, 'B2B')
-  ));
+  // Return service — a real filter now: enabled services (from setup) toggle tabState.serviceFilter
+  // and hide non-matching lanes; a service never enabled at setup stays a plain grey, inert chip —
+  // there's nothing to filter by since no lane of that service exists.
+  const svcGroup = el('div',{class:'lf-group'}, el('span',{class:'fm-cpane-label'}, 'Return service', numBadge(2)));
+  RETURN_SERVICES.forEach(s => {
+    if(!paneServices.includes(s)){ svcGroup.appendChild(el('span',{class:'fm-tab off'}, s)); return; }
+    const on = tabState.serviceFilter.includes(s);
+    svcGroup.appendChild(el('button',{class:'fm-tab'+(on?' on':' filter-off'), type:'button', title:'Filter the table to '+s+' lanes', onclick:()=>{
+      tabState.serviceFilter = on ? tabState.serviceFilter.filter(x=>x!==s) : [...tabState.serviceFilter, s];
+      rerenderE();
+    }}, s));
+  });
+  bar.appendChild(svcGroup);
 
-  const svcRow = el('div',{class:'fm-cpane-row'});
-  svcRow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service', numBadge(2)));
-  RETURN_SERVICES.forEach(s => svcRow.appendChild(el('span',{class:'fm-tab'+(paneServices.includes(s)?' on':' off')}, s)));
-  rows.appendChild(svcRow);
+  // Label option — same filter treatment; both options are always available to filter by (label
+  // isn't gated by the setup screen the way service is). Configuring a lane's actual label still only
+  // happens via that lane's own dropdown in the table — this row is a view filter, not a bulk-setter.
+  const lblGroup = el('div',{class:'lf-group'}, el('span',{class:'fm-cpane-label'}, 'Return label option'));
+  ['Paperless / QR code','Printed label'].forEach(l => {
+    const on = tabState.labelFilter.includes(l);
+    lblGroup.appendChild(el('button',{class:'fm-tab'+(on?' on':' filter-off'), type:'button', title:'Filter the table to '+l+' lanes', onclick:()=>{
+      tabState.labelFilter = on ? tabState.labelFilter.filter(x=>x!==l) : [...tabState.labelFilter, l];
+      rerenderE();
+    }}, l));
+  });
+  bar.appendChild(lblGroup);
 
-  const lblRow = el('div',{class:'fm-cpane-row'});
-  lblRow.appendChild(el('span',{class:'fm-cpane-label'}, 'Label option'));
-  if(paneServices.length && paneServices.some(s => s !== 'Self-post')){
-    ['Paperless / QR code','Printed label'].forEach(l => {
-      const on = tabState.returnLabels.includes(l);
-      lblRow.appendChild(eChip(on, labelIcon(l), l, ()=>{
-        tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
-        rerenderE();
-      }));
-    });
-  } else {
-    lblRow.appendChild(el('span',{class:'fm-cpane-empty'}, 'Not applicable for Self-post'));
-  }
-  rows.appendChild(lblRow);
-
-  // Country chips get their own line (flush left, no label, no extra gap above them); "Country" the
-  // label moves down to sit right before "Add another country…" instead — so that line reads
-  // "COUNTRY [Add another country…] [Clear all]  Group by [Country][Region]", same as every other
-  // row's "label, then its controls" shape. Group by is one atomic flex item (label + its two buttons
-  // never split across lines), vertically centered, and a forced break before the search box keeps
-  // the whole "COUNTRY … Group by" line consistent regardless of how many chips came before it.
+  // Country + Group by, folded into this same bar. "Country" the label sits right before "Add
+  // another country…" (after chips, which get their own forced line via the break spacer) — a
+  // forced break also keeps "Group by" (one atomic flex item, never split across lines) landing on a
+  // consistent line regardless of how many country chips came before it.
   const countryFilter = eCountryFilterBar();
   const cfLabelEl = countryFilter.querySelector('.cf-label');
   const comboEl = countryFilter.querySelector('.cf-combo');
   if(comboEl){
     countryFilter.insertBefore(el('span',{class:'lf-break'}), comboEl);
-    if(cfLabelEl) countryFilter.insertBefore(cfLabelEl, comboEl);   // move label from before the chips to right before the search box
+    if(cfLabelEl) countryFilter.insertBefore(cfLabelEl, comboEl);
   }
   countryFilter.appendChild(el('div',{class:'lf-groupby-group'},
     el('span',{class:'fm-cpane-label'}, 'Group by'),
@@ -5490,12 +5481,17 @@ function eLegacyFeatureRow(){
       el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
     )
   ));
-  rows.appendChild(el('div',{class:'lf-country-row'}, countryFilter));
+  bar.appendChild(countryFilter);
 
-  return el('div',{class:'fm-cpane lf-panel'},
-    rows,
-    el('button',{class:'fm-tab-back', type:'button', title:'Back to setup', onclick:()=>{ tabState.setupDone = false; rerenderE(); }}, '← Setup')
-  );
+  // Bulk/setup actions get their own row below — cramming them onto the filter bar too starves the
+  // buttons of room the moment the country search box wraps to two internal lines (a flex:1 spacer
+  // claims all space left on THAT line, not the row overall, and shoves the buttons to line 2 anyway).
+  const actions = el('div',{class:'lf-actions'});
+  actions.appendChild(el('button',{class:'csc-btn', type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
+    el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration'));
+  actions.appendChild(el('button',{class:'fm-tab-back', type:'button', title:'Back to setup', onclick:()=>{ tabState.setupDone = false; rerenderE(); }}, '← Setup'));
+
+  return el('div',{}, bar, actions);
 }
 
 /* Q3 — destination + dynamic follow-ups */
@@ -6402,10 +6398,6 @@ function eCardTable(locked){
     head.appendChild(el('button',{class:'csc-btn', type:'button', title:'Browse the Carrier Service Catalogue', onclick:()=>openCscModal()},
       el('span',{class:'csc-btn-ic', html:icon('globe')}), 'Carrier Service Catalogue'));
   }
-  if(eLegacy() && !locked){
-    head.appendChild(el('button',{class:'csc-btn', type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
-      el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration'));
-  }
   const card = el('div',{class:'q-card'+(locked?' locked':'')}, head);
   const body = el('div',{class:'q-body'});
 
@@ -6473,9 +6465,17 @@ function eCardTable(locked){
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
   const tbody = el('tbody',{});
 
-  // rows grouped by country, in COUNTRIES order
+  // rows grouped by country, in COUNTRIES order — variant L's Return service / Label option filters
+  // hide non-matching CONFIGURED lanes (never a still-blank row, which has no service/label yet to
+  // not-match against)
   const rowsByCode = {};
-  tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
+  const svcFilter = eLegacy() ? tabState.serviceFilter : [];
+  const lblFilter = eLegacy() ? tabState.labelFilter : [];
+  tabState.rows.forEach(r => {
+    if(svcFilter.length && r.service && !svcFilter.includes(r.service)) return;
+    if(lblFilter.length && r.label && !lblFilter.includes(r.label)) return;
+    (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r);
+  });
   let codes;
   if(eLegacy()){
     // every country in the client's Country Scope gets a header (and its "+"), even with zero lanes
