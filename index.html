@@ -1377,9 +1377,7 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
    that content happens to reach. Scoped to this panel only (K's own top band uses plain .fm-cpane and
    is unaffected) since its rows never needed to force internal line breaks the way this one does. */
 .lf-panel .fm-cpane-rows{flex:1;min-width:0}
-/* "Country" is its own row above this one; this row (chips / add-country / clear-all / group-by)
-   is indented to start under the pill-boxes in the rows above, not flush with the label column */
-.lf-country-row{margin-top:6px;padding-left:128px}
+.lf-country-row{margin-top:0}
 /* .country-filter has no explicit width, so as a flex container it auto-sizes to its content's
    shrink-to-fit width instead of filling the available row — with a flex-basis:100% child forcing an
    early wrap, that auto width locks in too narrow, and later children wrap again even though the
@@ -5472,16 +5470,19 @@ function eLegacyFeatureRow(){
   }
   rows.appendChild(lblRow);
 
-  // "Country" gets its own line, like the other rows' labels — then chips / "Add another country…" /
-  // "Clear all" / "Group by" all live on the line(s) below, indented to start under the pill-boxes
-  // above (not flush with the label). Group by is one atomic flex item (label + its two buttons never
-  // split across lines), vertically centered, and a forced break before the search box keeps it
-  // landing on a consistent line regardless of how many country chips came before it.
+  // Country chips get their own line (flush left, no label, no extra gap above them); "Country" the
+  // label moves down to sit right before "Add another country…" instead — so that line reads
+  // "COUNTRY [Add another country…] [Clear all]  Group by [Country][Region]", same as every other
+  // row's "label, then its controls" shape. Group by is one atomic flex item (label + its two buttons
+  // never split across lines), vertically centered, and a forced break before the search box keeps
+  // the whole "COUNTRY … Group by" line consistent regardless of how many chips came before it.
   const countryFilter = eCountryFilterBar();
   const cfLabelEl = countryFilter.querySelector('.cf-label');
-  if(cfLabelEl) cfLabelEl.remove();   // rendered separately, on its own line, below
   const comboEl = countryFilter.querySelector('.cf-combo');
-  if(comboEl) countryFilter.insertBefore(el('span',{class:'lf-break'}), comboEl);
+  if(comboEl){
+    countryFilter.insertBefore(el('span',{class:'lf-break'}), comboEl);
+    if(cfLabelEl) countryFilter.insertBefore(cfLabelEl, comboEl);   // move label from before the chips to right before the search box
+  }
   countryFilter.appendChild(el('div',{class:'lf-groupby-group'},
     el('span',{class:'fm-cpane-label'}, 'Group by'),
     el('div',{class:'seg'},
@@ -5489,7 +5490,6 @@ function eLegacyFeatureRow(){
       el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
     )
   ));
-  rows.appendChild(el('div',{class:'fm-cpane-row'}, el('span',{class:'fm-cpane-label'}, 'Country')));
   rows.appendChild(el('div',{class:'lf-country-row'}, countryFilter));
 
   return el('div',{class:'fm-cpane lf-panel'},
