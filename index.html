@@ -704,7 +704,6 @@ body[data-variant="L"] .e-layout{grid-template-columns:minmax(0,1fr)}
 
 /* table tools (group-by segmented toggle) */
 .table-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.tt-label-toggle{display:flex;align-items:center;gap:10px;margin-left:14px;padding-left:14px;border-left:1px solid var(--border)}
 .tt-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim)}
 .seg{display:inline-flex;background:var(--brand-soft);border-radius:9px;padding:3px}
 .seg-opt{padding:5px 14px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--muted);transition:all .14s}
@@ -1245,18 +1244,6 @@ body[data-view="wizard"] #view-landing{display:none}
 .pp-trigger.open{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
 .pp-trigger-ic{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none;display:flex}
 .pp-trigger-ic svg{width:12px;height:12px}
-/* variant L: "+ Add country" native select, styled to match the "Search countries…" trigger above */
-.add-country-sel{
-  display:flex;align-items:center;gap:6px;max-width:180px;
-  padding:6px 28px 6px 10px;border:1px solid var(--border);border-radius:var(--r-xs);
-  background:var(--card);font:inherit;font-size:12.5px;font-weight:500;color:var(--dim);
-  cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat:no-repeat;background-position:right 8px center;
-}
-.add-country-sel:hover,.add-country-sel:focus{border-color:var(--brand-2);outline:none}
-.add-country-sel:disabled{opacity:.5;cursor:default}
 .pp-drop{
   position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:200;
   background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);
@@ -1376,9 +1363,36 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-config-btn.is-disabled{opacity:.5;cursor:not-allowed}
 /* MyRebound FM MVP: combined config pane — return business flow + enabled methods only */
 .fm-cpane{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px;padding:14px 16px;background:var(--brand-soft);border-radius:12px}
+/* variant L: flow/service/label/country all read as one plain list — no separate coloured panel */
+/* .fm-cpane has no explicit width, so — without a flex-basis / align-items:stretch forcing it — it
+   shrink-to-fits its own content. That's an unstable base for a row that's forcing internal line
+   breaks: the very same forced break changes what "fits", so the container's own computed width
+   feeds back into whether things wrap, differently depending on how much content came before it
+   (fewer country chips → narrower auto width → premature extra wrapping later in the row). Force it
+   to actually fill the card instead of guessing its own width from content. */
+.lf-panel{width:100%;background:none;padding:14px 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
+/* the actual root cause: .fm-cpane's two children (.fm-cpane-rows, the "← Setup" button) are laid out
+   with justify-content:space-between, but .fm-cpane-rows has no flex-grow — so it shrink-to-fits its
+   own content instead of claiming the available width, and "← Setup" just floats however far right
+   that content happens to reach. Scoped to this panel only (K's own top band uses plain .fm-cpane and
+   is unaffected) since its rows never needed to force internal line breaks the way this one does. */
+.lf-panel .fm-cpane-rows{flex:1;min-width:0}
+.lf-country-row{margin-top:0}
+/* .country-filter has no explicit width, so as a flex container it auto-sizes to its content's
+   shrink-to-fit width instead of filling the available row — with a flex-basis:100% child forcing an
+   early wrap, that auto width locks in too narrow, and later children wrap again even though the
+   page has plenty of room. Force it to actually fill the row. */
+.lf-country-row .country-filter{width:100%}
+/* force a line break before the "Add another country…" control (and everything after it — Clear
+   all, Group by) so that group always starts its own line, right below the country chips, instead
+   of sharing a line whose width depends on how many chips happen to fit */
+.lf-break{flex-basis:100%;height:0}
+/* Group by's label + its two buttons as one atomic flex item — they wrap as a unit, never splitting
+   the label onto one line and the buttons onto another — and centered, not top-aligned like the row */
+.lf-groupby-group{display:flex;align-items:center;gap:10px;align-self:center;margin-left:16px}
 .fm-cpane-rows{display:flex;flex-direction:column;gap:8px;min-width:0}
 .fm-cpane-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.fm-cpane-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
+.fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
 .fm-flow-chip{font-size:12px;font-weight:800;color:#fff;background:var(--brand);border-radius:8px;padding:4px 12px}
 .fm-cpane-empty{font-size:12px;color:var(--dim);font-style:italic}
 .fm-tab-back{font-size:12px;font-weight:700;color:var(--brand);padding:6px 11px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;flex-shrink:0}
@@ -1388,6 +1402,10 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-svc-chip{cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all .12s}
 .fm-svc-chip:hover{border-color:var(--brand-2);color:var(--brand)}
 .fm-svc-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+/* variant L: faded chip for a feature not enabled on the setup screen — same treatment as B2B */
+.fm-tab.off{background:var(--border-soft);color:var(--dim);border:none;opacity:.75}   /* read-only, disabled — no hover state */
+/* variant L: small step-number badge next to a feature-row label — outline only, no fill */
+.fm-cpane-num{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--dim);color:var(--dim);font-size:8.5px;font-weight:800;background:none;flex-shrink:0}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
 @media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
 .ship-col{min-width:0}
@@ -2322,7 +2340,6 @@ function initTabular(){
     returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
     returnFlow:     'B2C',      // MyRebound FM MVP return flow type — 'B2C' (B2B disabled)
     setupDone:      false,      // MyRebound FM MVP: has the "Ship First Mile · Setup" screen been completed?
-    activeCountries: ['GB'],    // variant L only: countries seeded into the table so far — GB pre-added ("POC: GB live"), the rest added one at a time via "+ Add country"
     methods: {                // MyRebound FM MVP: return methods enabled on the setup screen (id -> on). B2C on by default; B2B disabled for now
       'parcel-dropoff':    true,
       'parcel-pickup':     true,
@@ -2501,13 +2518,21 @@ function eRowLabelCell(r){
   }
   return eSelect(r.label, opts.map(l=>({value:l,text:l})), v => eSetRowServiceLabel(r, r.service, v));
 }
-/* variant L only: append one new lane (currently selected service/label, first free carrier) to every
-   country already in the table — the bulk counterpart to the per-country "+" add-configuration button */
+/* variant L only: fill in a default (currently selected service/label, first free carrier) config for
+   every country currently VISIBLE on screen — the bulk counterpart to the per-country "+" button.
+   "Visible" means every Country Scope country (they all get a header even with zero rows), respecting
+   the Country search/filter: a non-empty tabState.reviewCountries means the user has filtered down to
+   specific countries (e.g. AT, DE), and only those get configured. Fills an existing blank row for a
+   country if one is there instead of stacking a new lane on top of it, and creates one from scratch
+   for a country that has no rows at all yet. */
 function eAddAllConfiguration(){
   const service = tabState.returnServices[0];
   if(!service){ showToast('Pick a return service first.', null, null, {icon:'info'}); return; }
   const label = service === 'Self-post' ? null : (tabState.returnLabels[0] || RETURN_LABELS[0]);
-  const codes = [...new Set(tabState.rows.map(r => r.code))];
+  const scopeCodes = getClientCountryScope(state.client).map(s => s.code).filter(code => COUNTRIES.some(c => c.code === code));
+  const withRows = tabState.rows.map(r => r.code);
+  const allCodes = [...new Set([...scopeCodes, ...withRows])];
+  const codes = tabState.reviewCountries.length ? allCodes.filter(c => tabState.reviewCountries.includes(c)) : allCodes;
   let added = 0, skipped = 0;
   codes.forEach(code => {
     const av = eCarriersFor(code, service, label);
@@ -2515,17 +2540,24 @@ function eAddAllConfiguration(){
     const usedByOthers = new Set(tabState.rows.filter(r => r.code === code && r.service === service && (r.label || null) === (label || null)).map(r => r.carrier));
     const carrier = av.find(c => !usedByOthers.has(c.id));
     if(!carrier){ skipped++; return; }
-    const row = makeERow(code, service, label);
-    row.custom = true;
-    eSetCarrier(row, carrier.id);
-    row.sync = 'New';
-    tabState.rows.push(row);
+    const blank = tabState.rows.find(r => r.code === code && !r.service);
+    if(blank){
+      blank.service = service; blank.label = label; blank.custom = true;
+      eSetCarrier(blank, carrier.id);
+      blank.sync = 'New';
+    } else {
+      const row = makeERow(code, service, label);
+      row.custom = true;
+      eSetCarrier(row, carrier.id);
+      row.sync = 'New';
+      tabState.rows.push(row);
+    }
     added++;
   });
   tabBuildRows();
   rerenderE();
   const parts = [];
-  if(added) parts.push('Added ' + added + ' configuration' + (added === 1 ? '' : 's') + '.');
+  if(added) parts.push('Configured ' + added + ' countr' + (added === 1 ? 'y' : 'ies') + '.');
   if(skipped) parts.push(skipped + ' ' + (skipped === 1 ? 'country' : 'countries') + ' skipped — no free carrier for the current service/label.');
   showToast(parts.length ? parts.join(' ') : 'No countries to add to yet.', null, null, {icon:'info'});
 }
@@ -2542,29 +2574,6 @@ function eAddEmptyConfigForCountry(code){
   tabState.rows.push(row);
   tabBuildRows();
   rerenderE();
-}
-/* variant L only: bring a new country into the table (rollout country-by-country instead of the
-   whole Country Scope at once). Also clears any earlier "deleted" flags for this country, so a
-   country that was fully removed can be brought back cleanly. */
-function eAddCountry(code){
-  if(!tabState.activeCountries.includes(code)) tabState.activeCountries.push(code);
-  Object.keys(tabState.deleted).forEach(k => { if(k.indexOf(code + '|') === 0) delete tabState.deleted[k]; });
-  tabBuildRows();
-  rerenderE();
-}
-/* variant L only: "+ Add country" — scoped to the client's Country Scope, only offering countries
-   not already in the table (so a re-add after a full delete is still possible). */
-function eAddCountrySelect(){
-  const pool = getClientCountryScope(state.client)
-    .map(s => COUNTRIES.find(c => c.code === s.code))
-    .filter(Boolean);
-  const shown = new Set(tabState.rows.map(r => r.code));
-  const options = pool.filter(c => !shown.has(c.code));
-  const sel = el('select',{class:'add-country-sel', onchange:(e)=>{ const v = e.target.value; if(v) eAddCountry(v); }});
-  sel.appendChild(el('option',{value:''}, options.length ? '+ Add country…' : 'All scoped countries added'));
-  options.forEach(c => sel.appendChild(el('option',{value:c.code}, c.flag + ' ' + c.name)));
-  if(!options.length) sel.disabled = true;
-  return sel;
 }
 /* every variant driven by tabState / renderVariantE */
 const TABULAR_VARIANTS = ['E','F','G','H','I','J','K','L'];
@@ -2680,20 +2689,24 @@ function tabBuildRowsMvp(){
     next.push(r); used[lk] = true;
   });
   // ensure each active country × combo has at least one (base) lane, unless the combo was fully removed.
-  // Variant L: only countries the user explicitly added (tabState.activeCountries) get seeded — everyone
-  // else auto-seeds every country up front, which is exactly the "28/31 countries at once" problem L fixes.
-  const scopedCountries = eLegacy() ? COUNTRIES.filter(c => tabState.activeCountries.includes(c.code)) : COUNTRIES;
-  scopedCountries.forEach(c => {
-    combos.forEach(cb => {
-      const comboKey = eComboKey(c.code, cb.service, cb.label);
-      if(tabState.deleted[comboKey]) return;
-      const hasLane = next.some(r => r.code === c.code && r.service === cb.service && (r.label || null) === (cb.label || null));
-      if(hasLane) return;
-      const baseRow = makeERow(c.code, cb.service, cb.label);
-      if(tabState.deleted[eLaneKey(baseRow)]) return;
-      next.push(baseRow); used[eLaneKey(baseRow)] = true;
+  // Variant L doesn't drive rows off a global combo selection at all — countries start with zero rows
+  // (eCardTable's codes list shows every Country Scope country regardless), and each row the user adds
+  // picks its own service/label inline — so skip this entirely for L (it would otherwise resurrect a
+  // "default" lane per combo per country, which is exactly the old all-countries-at-once behaviour L
+  // is meant to replace).
+  if(!eLegacy()){
+    COUNTRIES.forEach(c => {
+      combos.forEach(cb => {
+        const comboKey = eComboKey(c.code, cb.service, cb.label);
+        if(tabState.deleted[comboKey]) return;
+        const hasLane = next.some(r => r.code === c.code && r.service === cb.service && (r.label || null) === (cb.label || null));
+        if(hasLane) return;
+        const baseRow = makeERow(c.code, cb.service, cb.label);
+        if(tabState.deleted[eLaneKey(baseRow)]) return;
+        next.push(baseRow); used[eLaneKey(baseRow)] = true;
+      });
     });
-  });
+  }
   next.sort((a,b) => COUNTRIES.findIndex(c=>c.code===a.code) - COUNTRIES.findIndex(c=>c.code===b.code));
   tabState.rows = next;
 }
@@ -5270,6 +5283,8 @@ function eKSetupScreen(root){
         if(!tabState.returnLabels.length && svcs.some(s=>s!=='Self-post')) tabState.returnLabels = ['Paperless / QR code'];
       }
       tabState.setupDone = true;
+      // variant L: no rows are seeded at all — every Country Scope country still gets a header (via
+      // eCardTable's codes list), but stays empty until the user clicks "+" to add a config
       rerenderE();
     }}, 'Product Configuration →')
   ));
@@ -5281,12 +5296,13 @@ function renderVariantE(root){
   if(eMyr() && !tabState.setupDone){ eKSetupScreen(root); return; }  // MyRebound FM MVP: setup screen gates the config
   root.appendChild(el('div',{class:'wizard-header'},
     el('div',{class:'wizard-crumb'}, 'First Mile Config · Tabular'),
-    el('div',{class:'wizard-title'}, `Tabular configuration for ${state.client}`)
+    el('div',{class:'wizard-title'}, eLegacy() ? `First Mile Carrier Configuration for ${state.client}` : `Tabular configuration for ${state.client}`)
   ));
 
-  if(eMyr()){
+  if(eMyr() && !eLegacy()){
     // Combined config pane: B2C flow + a single interactive Return service control (also filters the review lane).
     // Services come from the consumer-parcel methods enabled on the setup screen; toggling filters which lanes show.
+    // Variant L moves this whole thing into eLegacyFeatureRow(), inside the "Review and fine-tune" card.
     const paneServices = [...new Set(FM_RETURN_METHODS.flatMap(g=>g.items).filter(m => tabState.methods[m.id] && m.service).map(m => m.service))];
     const rows = el('div',{class:'fm-cpane-rows'});
     rows.appendChild(el('div',{class:'fm-cpane-row'},
@@ -5297,11 +5313,6 @@ function renderVariantE(root){
     srow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service'));
     if(paneServices.length){
       paneServices.forEach(s => {
-        if(eLegacy()){
-          // variant L: already chosen on the setup screen — show as read-only, like the Return flow chip
-          srow.appendChild(el('span',{class:'fm-flow-chip'}, s));
-          return;
-        }
         const on = tabState.returnServices.includes(s);
         srow.appendChild(el('button',{class:'fm-tab fm-svc-chip'+(on?' on':''), type:'button', title:(on?'Hide':'Show')+' '+s+' lanes in the review',
           onclick:()=>{
@@ -5423,22 +5434,68 @@ function eCardLabel(locked){
   return card;
 }
 
-/* variant L: same Label Option choice as eCardLabel, but as a compact segmented toggle in the
-   table-tools row (next to Country / Group by) instead of its own full-width question card */
-function eCardLabelInline(){
-  if(eHasSelfPost() && eNonSelfServices().length === 0) return null;   // not applicable — nothing to show
-  const wrap = el('div',{class:'tt-label-toggle'});
-  wrap.appendChild(el('span',{class:'tt-label'}, 'Label option'));
-  const seg = el('div',{class:'seg'});
-  ['Paperless / QR code','Printed label'].forEach(l => {
-    const on = tabState.returnLabels.includes(l);
-    seg.appendChild(el('button',{class:'seg-opt'+(on?' on':''), onclick:()=>{
-      tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
-      rerenderE();
-    }}, l));
-  });
-  wrap.appendChild(seg);
-  return wrap;
+/* variant L: Return flow / Return service / Label option, unified into one row inside "Review and
+   fine-tune each lane" (moved out of the old top-page band). Return flow and Return service are
+   read-only — greyed out for whatever wasn't enabled on the setup screen, same treatment as B2B.
+   Label option stays a real toggle (its choice belongs on this screen, not the setup screen). */
+function eLegacyFeatureRow(){
+  const paneServices = [...new Set(FM_RETURN_METHODS.flatMap(g=>g.items).filter(m => tabState.methods[m.id] && m.service).map(m => m.service))];
+  const rows = el('div',{class:'fm-cpane-rows'});
+
+  const numBadge = n => el('span',{class:'fm-cpane-num'}, String(n));
+
+  rows.appendChild(el('div',{class:'fm-cpane-row'},
+    el('span',{class:'fm-cpane-label'}, 'Return flow', numBadge(1)),
+    el('span',{class:'fm-tab on'}, 'B2C'),
+    el('span',{class:'fm-tab off'}, 'B2B')
+  ));
+
+  const svcRow = el('div',{class:'fm-cpane-row'});
+  svcRow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service', numBadge(2)));
+  RETURN_SERVICES.forEach(s => svcRow.appendChild(el('span',{class:'fm-tab'+(paneServices.includes(s)?' on':' off')}, s)));
+  rows.appendChild(svcRow);
+
+  const lblRow = el('div',{class:'fm-cpane-row'});
+  lblRow.appendChild(el('span',{class:'fm-cpane-label'}, 'Label option'));
+  if(paneServices.length && paneServices.some(s => s !== 'Self-post')){
+    ['Paperless / QR code','Printed label'].forEach(l => {
+      const on = tabState.returnLabels.includes(l);
+      lblRow.appendChild(eChip(on, labelIcon(l), l, ()=>{
+        tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
+        rerenderE();
+      }));
+    });
+  } else {
+    lblRow.appendChild(el('span',{class:'fm-cpane-empty'}, 'Not applicable for Self-post'));
+  }
+  rows.appendChild(lblRow);
+
+  // Country chips get their own line (flush left, no label, no extra gap above them); "Country" the
+  // label moves down to sit right before "Add another country…" instead — so that line reads
+  // "COUNTRY [Add another country…] [Clear all]  Group by [Country][Region]", same as every other
+  // row's "label, then its controls" shape. Group by is one atomic flex item (label + its two buttons
+  // never split across lines), vertically centered, and a forced break before the search box keeps
+  // the whole "COUNTRY … Group by" line consistent regardless of how many chips came before it.
+  const countryFilter = eCountryFilterBar();
+  const cfLabelEl = countryFilter.querySelector('.cf-label');
+  const comboEl = countryFilter.querySelector('.cf-combo');
+  if(comboEl){
+    countryFilter.insertBefore(el('span',{class:'lf-break'}), comboEl);
+    if(cfLabelEl) countryFilter.insertBefore(cfLabelEl, comboEl);   // move label from before the chips to right before the search box
+  }
+  countryFilter.appendChild(el('div',{class:'lf-groupby-group'},
+    el('span',{class:'fm-cpane-label'}, 'Group by'),
+    el('div',{class:'seg'},
+      el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
+      el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
+    )
+  ));
+  rows.appendChild(el('div',{class:'lf-country-row'}, countryFilter));
+
+  return el('div',{class:'fm-cpane lf-panel'},
+    rows,
+    el('button',{class:'fm-tab-back', type:'button', title:'Back to setup', onclick:()=>{ tabState.setupDone = false; rerenderE(); }}, '← Setup')
+  );
 }
 
 /* Q3 — destination + dynamic follow-ups */
@@ -6177,11 +6234,17 @@ function eRow(r, prio){
     const ppCell = el('td',{class:'pp-td'+((eMvp() && !eMyr())?' carrier-cell':'')});
     ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
     tr.appendChild(ppCell);
-    // Parcel Type + Legacy Sync (variant L only)
+    // Parcel Type + Legacy Sync (variant L only) — a still-blank row (no service picked yet) has
+    // nothing to number or sync, so show a plain dash instead of a premature parcel type / status
     if(eLegacy()){
-      const generated = r.sync === 'New';
-      tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'ptype-code'}, eParcelType(r)), el('span',{class:'ptype-tag '+(generated?'gen':'reuse')}, generated?'generated':'reused')));
-      tr.appendChild(el('td',{}, eLegacySyncPill(r.sync)));
+      if(!r.service){
+        tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'cell-dim'}, '—')));
+        tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+      } else {
+        const generated = r.sync === 'New';
+        tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'ptype-code'}, eParcelType(r)), el('span',{class:'ptype-tag '+(generated?'gen':'reuse')}, generated?'generated':'reused')));
+        tr.appendChild(el('td',{}, eLegacySyncPill(r.sync)));
+      }
     }
     if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
 
@@ -6348,6 +6411,8 @@ function eCardTable(locked){
 
   if(locked){ card.appendChild(body); return card; }
 
+  if(eLegacy()) body.appendChild(eLegacyFeatureRow());
+
   // carrier-service-selector refresh banner
   if(tabState.carrierPhase === 'refreshing'){
     body.appendChild(el('div',{class:'carrier-refresh refreshing'},
@@ -6371,18 +6436,15 @@ function eCardTable(locked){
       el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
     )
   ];
-  if(eMvp()){
-    const toolEls = [eCountryFilterBar()];
-    if(eLegacy()) toolEls.push(eAddCountrySelect());
-    toolEls.push(...groupByEls);
-    if(eLegacy()){ const lblInline = eCardLabelInline(); if(lblInline) toolEls.push(lblInline); }
-    body.appendChild(el('div',{class:'table-tools cf-tools'}, ...toolEls));
-  } else {
+  if(eMvp() && !eLegacy()){
+    // variant L: Country/Group by live inside eLegacyFeatureRow() above, alongside flow/service/label
+    body.appendChild(el('div',{class:'table-tools cf-tools'}, eCountryFilterBar(), ...groupByEls));
+  } else if(!eLegacy()){
     body.appendChild(el('div',{class:'table-tools'}, ...groupByEls));
     if(eManual()) body.appendChild(eCountryFilterBar());
   }
 
-  if(!tabState.rows.length){
+  if(!tabState.rows.length && !eLegacy()){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
       el('span',{html:icon('info')}), el('span',{html:'No lanes left. Adjust the service or label selections above to repopulate the table.'})));
     card.appendChild(body);
@@ -6414,7 +6476,16 @@ function eCardTable(locked){
   // rows grouped by country, in COUNTRIES order
   const rowsByCode = {};
   tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
-  let codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
+  let codes;
+  if(eLegacy()){
+    // every country in the client's Country Scope gets a header (and its "+"), even with zero lanes
+    // so far — "start with all countries, empty config" means nothing is configured yet, not that
+    // the country itself is hidden until something is.
+    const scopeCodes = getClientCountryScope(state.client).map(s => s.code);
+    codes = COUNTRIES.map(c=>c.code).filter(code => scopeCodes.includes(code) || (rowsByCode[code] && rowsByCode[code].length));
+  } else {
+    codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
+  }
   if((eManual() || eMvp()) && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
   const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eLegacy() ? 3 : 0) : 7;
@@ -6433,10 +6504,10 @@ function eCardTable(locked){
       const inRegion = codes.filter(code => regionOf(code) === region);
       if(!inRegion.length) return;
       tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:colCount}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
-      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount, prioOn));
+      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code] || [], colCount, prioOn));
     });
   } else {
-    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount, prioOn));
+    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code] || [], colCount, prioOn));
   }
 
   table.appendChild(tbody);
