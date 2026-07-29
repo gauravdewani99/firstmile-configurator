@@ -1365,7 +1365,7 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-cpane{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px;padding:14px 16px;background:var(--brand-soft);border-radius:12px}
 .fm-cpane-rows{display:flex;flex-direction:column;gap:8px;min-width:0}
 .fm-cpane-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.fm-cpane-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
+.fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
 .fm-flow-chip{font-size:12px;font-weight:800;color:#fff;background:var(--brand);border-radius:8px;padding:4px 12px}
 .fm-cpane-empty{font-size:12px;color:var(--dim);font-style:italic}
 .fm-tab-back{font-size:12px;font-weight:700;color:var(--brand);padding:6px 11px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;flex-shrink:0}
@@ -1375,9 +1375,11 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-svc-chip{cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all .12s}
 .fm-svc-chip:hover{border-color:var(--brand-2);color:var(--brand)}
 .fm-svc-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
-/* variant L: greyed-out chip for a feature not enabled on the setup screen — same treatment as B2B */
-.fm-tab.off{background:var(--card);color:var(--dim);border:1px solid var(--border)}
-.fm-tab.off:hover{border-color:var(--brand-2);color:var(--brand)}
+/* variant L: faded chip for a feature not enabled on the setup screen — same treatment as B2B */
+.fm-tab.off{background:var(--border-soft);color:var(--dim);border:none;opacity:.75}
+.fm-tab.off:hover{color:var(--brand)}
+/* variant L: small step-number badge next to a feature-row label — outline only, no fill */
+.fm-cpane-num{display:inline-flex;align-items:center;justify-content:center;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--dim);color:var(--dim);font-size:8.5px;font-weight:800;background:none;flex-shrink:0}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
 @media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
 .ship-col{min-width:0}
@@ -5422,14 +5424,16 @@ function eLegacyFeatureRow(){
   const paneServices = [...new Set(FM_RETURN_METHODS.flatMap(g=>g.items).filter(m => tabState.methods[m.id] && m.service).map(m => m.service))];
   const rows = el('div',{class:'fm-cpane-rows'});
 
+  const numBadge = n => el('span',{class:'fm-cpane-num'}, String(n));
+
   rows.appendChild(el('div',{class:'fm-cpane-row'},
-    el('span',{class:'fm-cpane-label'}, 'Return flow ①'),
+    el('span',{class:'fm-cpane-label'}, 'Return flow', numBadge(1)),
     el('span',{class:'fm-tab on'}, 'B2C'),
     el('span',{class:'fm-tab off'}, 'B2B')
   ));
 
   const svcRow = el('div',{class:'fm-cpane-row'});
-  svcRow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service ②'));
+  svcRow.appendChild(el('span',{class:'fm-cpane-label'}, 'Return service', numBadge(2)));
   RETURN_SERVICES.forEach(s => svcRow.appendChild(el('span',{class:'fm-tab'+(paneServices.includes(s)?' on':' off')}, s)));
   rows.appendChild(svcRow);
 
@@ -5438,10 +5442,10 @@ function eLegacyFeatureRow(){
   if(paneServices.length && paneServices.some(s => s !== 'Self-post')){
     ['Paperless / QR code','Printed label'].forEach(l => {
       const on = tabState.returnLabels.includes(l);
-      lblRow.appendChild(el('button',{class:'fm-tab'+(on?' on':' off'), type:'button', onclick:()=>{
+      lblRow.appendChild(eChip(on, labelIcon(l), l, ()=>{
         tabState.returnLabels = on ? tabState.returnLabels.filter(x=>x!==l) : [...tabState.returnLabels, l];
         rerenderE();
-      }}, l));
+      }));
     });
   } else {
     lblRow.appendChild(el('span',{class:'fm-cpane-empty'}, 'Not applicable for Self-post'));
@@ -6190,11 +6194,17 @@ function eRow(r, prio){
     const ppCell = el('td',{class:'pp-td'+((eMvp() && !eMyr())?' carrier-cell':'')});
     ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
     tr.appendChild(ppCell);
-    // Parcel Type + Legacy Sync (variant L only)
+    // Parcel Type + Legacy Sync (variant L only) — a still-blank row (no service picked yet) has
+    // nothing to number or sync, so show a plain dash instead of a premature parcel type / status
     if(eLegacy()){
-      const generated = r.sync === 'New';
-      tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'ptype-code'}, eParcelType(r)), el('span',{class:'ptype-tag '+(generated?'gen':'reuse')}, generated?'generated':'reused')));
-      tr.appendChild(el('td',{}, eLegacySyncPill(r.sync)));
+      if(!r.service){
+        tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'cell-dim'}, '—')));
+        tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
+      } else {
+        const generated = r.sync === 'New';
+        tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'ptype-code'}, eParcelType(r)), el('span',{class:'ptype-tag '+(generated?'gen':'reuse')}, generated?'generated':'reused')));
+        tr.appendChild(el('td',{}, eLegacySyncPill(r.sync)));
+      }
     }
     if(eMyr()) tr.appendChild(el('td',{class:'row-del-td'}, el('button',{class:'row-del row-del-end', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')})));
 
