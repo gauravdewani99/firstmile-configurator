@@ -1367,9 +1367,12 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .lf-panel{background:none;padding:14px 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
 /* fixed column widths (not 1fr/auto) so neither column's rendered width — and so neither column's
    position — depends on how many country chips happen to be inside the left one */
-.lf-country-row{display:grid;grid-template-columns:640px 220px;gap:20px;align-items:start;margin-top:12px}
-.lf-country-col{min-width:0;overflow:hidden}
-.lf-groupby-col{display:flex;align-items:center;gap:10px;white-space:nowrap;padding-top:1px}
+.lf-country-row{margin-top:12px}
+/* force a line break before the "Add another country…" control (and everything after it — Clear
+   all, Group by) so that group always starts its own line, right below the country chips, instead
+   of sharing a line whose width depends on how many chips happen to fit */
+.lf-break{flex-basis:100%;height:0}
+.lf-groupby-label{margin-left:16px}
 .fm-cpane-rows{display:flex;flex-direction:column;gap:8px;min-width:0}
 .fm-cpane-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
@@ -2500,16 +2503,18 @@ function eRowLabelCell(r){
 }
 /* variant L only: fill in a default (currently selected service/label, first free carrier) config for
    every country currently VISIBLE on screen — the bulk counterpart to the per-country "+" button.
-   "Visible" respects the Country search/filter: a non-empty tabState.reviewCountries means the user
-   has filtered down to specific countries (e.g. AT, DE), and only those get configured — everyone
-   else in the Country Scope is left untouched. Fills an existing blank row for a country if one is
-   there (the common case, since every scoped country starts blank) instead of stacking a new lane
-   on top of it. */
+   "Visible" means every Country Scope country (they all get a header even with zero rows), respecting
+   the Country search/filter: a non-empty tabState.reviewCountries means the user has filtered down to
+   specific countries (e.g. AT, DE), and only those get configured. Fills an existing blank row for a
+   country if one is there instead of stacking a new lane on top of it, and creates one from scratch
+   for a country that has no rows at all yet. */
 function eAddAllConfiguration(){
   const service = tabState.returnServices[0];
   if(!service){ showToast('Pick a return service first.', null, null, {icon:'info'}); return; }
   const label = service === 'Self-post' ? null : (tabState.returnLabels[0] || RETURN_LABELS[0]);
-  const allCodes = [...new Set(tabState.rows.map(r => r.code))];
+  const scopeCodes = getClientCountryScope(state.client).map(s => s.code).filter(code => COUNTRIES.some(c => c.code === code));
+  const withRows = tabState.rows.map(r => r.code);
+  const allCodes = [...new Set([...scopeCodes, ...withRows])];
   const codes = tabState.reviewCountries.length ? allCodes.filter(c => tabState.reviewCountries.includes(c)) : allCodes;
   let added = 0, skipped = 0;
   codes.forEach(code => {
@@ -2552,18 +2557,6 @@ function eAddEmptyConfigForCountry(code){
   tabState.rows.push(row);
   tabBuildRows();
   rerenderE();
-}
-/* variant L only: seed one blank lane (no service/label/carrier yet) for every country in the
-   client's Country Scope, once — called right after the setup screen hands off to the table, so the
-   whole scope is visible from the start with nothing pre-filled, instead of an "+ Add country" step. */
-function eSeedBlankCountries(){
-  getClientCountryScope(state.client).forEach(s => {
-    if(!COUNTRIES.some(c => c.code === s.code)) return;   // scope entry with no COUNTRIES record (e.g. Cyprus) — skip rather than crash the table on render
-    if(tabState.rows.some(r => r.code === s.code)) return;
-    const row = makeERow(s.code, null, null);
-    row.custom = true;
-    tabState.rows.push(row);
-  });
 }
 /* every variant driven by tabState / renderVariantE */
 const TABULAR_VARIANTS = ['E','F','G','H','I','J','K','L'];
@@ -2679,10 +2672,11 @@ function tabBuildRowsMvp(){
     next.push(r); used[lk] = true;
   });
   // ensure each active country × combo has at least one (base) lane, unless the combo was fully removed.
-  // Variant L doesn't drive rows off a global combo selection at all — every scoped country is seeded
-  // once, blank, by eSeedBlankCountries(), and each row picks its own service/label inline — so skip
-  // this entirely for L (it would otherwise resurrect a "default" lane per combo per country, which is
-  // exactly the old all-countries-at-once behaviour L is meant to replace).
+  // Variant L doesn't drive rows off a global combo selection at all — countries start with zero rows
+  // (eCardTable's codes list shows every Country Scope country regardless), and each row the user adds
+  // picks its own service/label inline — so skip this entirely for L (it would otherwise resurrect a
+  // "default" lane per combo per country, which is exactly the old all-countries-at-once behaviour L
+  // is meant to replace).
   if(!eLegacy()){
     COUNTRIES.forEach(c => {
       combos.forEach(cb => {
@@ -5272,7 +5266,8 @@ function eKSetupScreen(root){
         if(!tabState.returnLabels.length && svcs.some(s=>s!=='Self-post')) tabState.returnLabels = ['Paperless / QR code'];
       }
       tabState.setupDone = true;
-      if(eLegacy()) eSeedBlankCountries();   // whole Country Scope visible from the start, each with an empty config
+      // variant L: no rows are seeded at all — every Country Scope country still gets a header (via
+      // eCardTable's codes list), but stays empty until the user clicks "+" to add a config
       rerenderE();
     }}, 'Product Configuration →')
   ));
@@ -5458,19 +5453,21 @@ function eLegacyFeatureRow(){
   }
   rows.appendChild(lblRow);
 
-  // Country + Group by — a fixed two-column grid, so Group by stays put in its own column no matter
-  // how many country chips wrap inside the country filter's column next to it.
-  const countryRow = el('div',{class:'lf-country-row'},
-    el('div',{class:'lf-country-col'}, eCountryFilterBar()),   // eCountryFilterBar() renders its own "Country" label
-    el('div',{class:'lf-groupby-col'},
-      el('span',{class:'fm-cpane-label'}, 'Group by'),
-      el('div',{class:'seg'},
-        el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
-        el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
-      )
-    )
-  );
-  rows.appendChild(countryRow);
+  // Country + Group by, in the same flex-wrap flow: the country label + chips take as many lines as
+  // they need, then "Add another country…" / "Clear all" / "Group by" always land together on the
+  // next line — appended straight onto eCountryFilterBar()'s own wrapper so they share its flex-wrap
+  // context (a forced break before .cf-combo keeps that line consistent regardless of chip count).
+  const countryFilter = eCountryFilterBar();
+  // .cf-combo has its own max-width, which neutralizes a flex-basis:100% trick placed on it directly —
+  // insert a dedicated zero-size spacer instead, right before it, to force the actual line break.
+  const comboEl = countryFilter.querySelector('.cf-combo');
+  if(comboEl) countryFilter.insertBefore(el('span',{class:'lf-break'}), comboEl);
+  countryFilter.appendChild(el('span',{class:'fm-cpane-label lf-groupby-label'}, 'Group by'));
+  countryFilter.appendChild(el('div',{class:'seg'},
+    el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
+    el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
+  ));
+  rows.appendChild(el('div',{class:'lf-country-row'}, countryFilter));
 
   return el('div',{class:'fm-cpane lf-panel'},
     rows,
@@ -6424,7 +6421,7 @@ function eCardTable(locked){
     if(eManual()) body.appendChild(eCountryFilterBar());
   }
 
-  if(!tabState.rows.length){
+  if(!tabState.rows.length && !eLegacy()){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
       el('span',{html:icon('info')}), el('span',{html:'No lanes left. Adjust the service or label selections above to repopulate the table.'})));
     card.appendChild(body);
@@ -6456,7 +6453,16 @@ function eCardTable(locked){
   // rows grouped by country, in COUNTRIES order
   const rowsByCode = {};
   tabState.rows.forEach(r => { (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r); });
-  let codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
+  let codes;
+  if(eLegacy()){
+    // every country in the client's Country Scope gets a header (and its "+"), even with zero lanes
+    // so far — "start with all countries, empty config" means nothing is configured yet, not that
+    // the country itself is hidden until something is.
+    const scopeCodes = getClientCountryScope(state.client).map(s => s.code);
+    codes = COUNTRIES.map(c=>c.code).filter(code => scopeCodes.includes(code) || (rowsByCode[code] && rowsByCode[code].length));
+  } else {
+    codes = COUNTRIES.map(c=>c.code).filter(code => rowsByCode[code] && rowsByCode[code].length);
+  }
   if((eManual() || eMvp()) && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
   const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eLegacy() ? 3 : 0) : 7;
@@ -6475,10 +6481,10 @@ function eCardTable(locked){
       const inRegion = codes.filter(code => regionOf(code) === region);
       if(!inRegion.length) return;
       tbody.appendChild(el('tr',{class:'grp-region'}, el('td',{colspan:colCount}, el('span',{class:'grp-region-ic', html:icon('globe')}), region)));
-      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount, prioOn));
+      inRegion.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code] || [], colCount, prioOn));
     });
   } else {
-    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code], colCount, prioOn));
+    codes.forEach(code => eAppendCountryGroup(tbody, code, rowsByCode[code] || [], colCount, prioOn));
   }
 
   table.appendChild(tbody);
