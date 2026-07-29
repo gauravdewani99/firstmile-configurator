@@ -1365,7 +1365,11 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-cpane{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin:0 0 16px;padding:14px 16px;background:var(--brand-soft);border-radius:12px}
 /* variant L: flow/service/label/country all read as one plain list — no separate coloured panel */
 .lf-panel{background:none;padding:14px 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
-.lf-country-row{margin-top:2px;padding-top:12px;border-top:1px dashed var(--border)}
+/* fixed column widths (not 1fr/auto) so neither column's rendered width — and so neither column's
+   position — depends on how many country chips happen to be inside the left one */
+.lf-country-row{display:grid;grid-template-columns:640px 220px;gap:20px;align-items:start;margin-top:12px}
+.lf-country-col{min-width:0;overflow:hidden}
+.lf-groupby-col{display:flex;align-items:center;gap:10px;white-space:nowrap;padding-top:1px}
 .fm-cpane-rows{display:flex;flex-direction:column;gap:8px;min-width:0}
 .fm-cpane-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);min-width:120px}
@@ -5454,13 +5458,16 @@ function eLegacyFeatureRow(){
   }
   rows.appendChild(lblRow);
 
-  // Country + Group by — same stacked row style as flow/service/label, not a separate boxed toolbar
-  const countryRow = el('div',{class:'fm-cpane-row lf-country-row'},
-    eCountryFilterBar(),   // eCountryFilterBar() already renders its own "Country" label — don't duplicate it here
-    el('span',{class:'fm-cpane-label', style:{marginLeft:'14px'}}, 'Group by'),
-    el('div',{class:'seg'},
-      el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
-      el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
+  // Country + Group by — a fixed two-column grid, so Group by stays put in its own column no matter
+  // how many country chips wrap inside the country filter's column next to it.
+  const countryRow = el('div',{class:'lf-country-row'},
+    el('div',{class:'lf-country-col'}, eCountryFilterBar()),   // eCountryFilterBar() renders its own "Country" label
+    el('div',{class:'lf-groupby-col'},
+      el('span',{class:'fm-cpane-label'}, 'Group by'),
+      el('div',{class:'seg'},
+        el('button',{class:'seg-opt'+(tabState.groupBy==='country'?' on':''), onclick:()=>{ tabState.groupBy='country'; rerenderE(); }}, 'Country'),
+        el('button',{class:'seg-opt'+(tabState.groupBy==='region'?' on':''), onclick:()=>{ tabState.groupBy='region'; rerenderE(); }}, 'Region')
+      )
     )
   );
   rows.appendChild(countryRow);
