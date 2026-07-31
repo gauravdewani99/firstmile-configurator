@@ -1004,7 +1004,7 @@ tr.lane-row.unavail:hover{background:transparent}
 
 /* question card */
 .q-card{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
+  /* background:var(--card); *//* border:1px solid var(--border); */border-radius:var(--r-lg);
   padding:22px 24px;margin-bottom:14px;box-shadow:var(--shadow-1);
   transition:border-color .2s,box-shadow .2s,opacity .25s,transform .25s;
 }
@@ -1383,7 +1383,7 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
    wrapping freely on their own line so they never affect rows 1 or 2. */
 .lf-wrap{width:100%;padding:0 0 18px;margin-bottom:6px;border-bottom:1px solid var(--border)}
 .lf-row{display:flex;flex-wrap:wrap;align-items:center;gap:20px 24px}
-.lf-row+.lf-row{margin-top:14px}
+.lf-row+.lf-row{margin-top:14px;margin-bottom:14px}
 .lf-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 /* pins "Add all configuration" to the top-right corner of row 1, regardless of how many Return
    service / Label option chips precede it */
@@ -1417,10 +1417,10 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .lf-chips-row{margin-left:82px}
 .fm-cpane-label{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dim)}
 
-/* variant L: visual section separation (subtle) */
+/* variant L: visual section separation (card-style) */
 .lf-section{width:100%}
-.lf-section-1{padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--border-soft)}
-.lf-section-2{padding-top:0}
+.lf-section-1{margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:16px}
+.lf-section-2{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:16px}
 
 /* variant L: filterable table headers with icons */
 .th-filterable{position:relative;padding:0 !important}
@@ -1432,13 +1432,14 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .th-filter-btn svg{width:16px;height:16px}
 
 /* filter popup menu */
-.th-filter-popup{position:absolute;top:100%;right:0;margin-top:4px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--shadow-2);z-index:100;min-width:200px;max-width:300px;max-height:400px;overflow-y:auto;padding:8px}
-.th-filter-option{display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer;border-radius:var(--r-xs);transition:background .15s ease;font-size:13px;user-select:none}
+.th-filter-popup{position:absolute;top:calc(100% + 4px);left:0;background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);box-shadow:var(--shadow-2);z-index:1000;min-width:240px;max-width:320px;max-height:400px;overflow-y:auto;padding:8px}
+.th-filterable{position:relative}
+.th-filter-option{display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:pointer;border-radius:var(--r-xs);transition:background .15s ease;font-size:12px;user-select:none}
 .th-filter-option:hover{background:var(--border-soft)}
-.th-filter-option input[type="checkbox"]{cursor:pointer;flex-shrink:0}
-.th-filter-option span{flex:1;overflow:hidden;text-overflow:ellipsis}
+.th-filter-option input[type="checkbox"]{cursor:pointer;flex-shrink:0;margin:0;width:16px;height:16px}
+.th-filter-option span{flex:1;overflow:hidden;text-overflow:ellipsis;word-break:break-word}
 .th-filter-popup hr{margin:6px 0;border:none;border-top:1px solid var(--border-soft)}
-.th-filter-clear{width:100%;padding:6px 10px;border:none;background:var(--border-soft);color:var(--text);border-radius:var(--r-xs);cursor:pointer;font-size:11px;font-weight:600;transition:background .15s ease;text-align:left}
+.th-filter-clear{width:100%;padding:6px 10px;border:none;background:var(--border-soft);color:var(--text);border-radius:var(--r-xs);cursor:pointer;font-size:11px;font-weight:600;transition:background .15s ease;text-align:center}
 .th-filter-clear:hover{background:var(--border)}
 .ship-prefs{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:start}
 @media (max-width:720px){.ship-prefs{grid-template-columns:1fr;gap:18px}}
@@ -6207,40 +6208,90 @@ function eFilterHeader(label, columnKey, availableValues){
 
   filterBtn.onclick = (e) => {
     e.stopPropagation();
+    e.preventDefault();
+
+    // Close existing popup if open
+    const existing = th.querySelector('.th-filter-popup');
+    if(existing){
+      existing.remove();
+      return;
+    }
+
+    // Create and show popup
     const popup = el('div',{class:'th-filter-popup'});
+
+    // Add checkboxes for each value
     availableValues.forEach(val => {
-      const isSelected = eLegacy() && tabState.columnFilters[columnKey].includes(val);
-      const chk = el('label',{class:'th-filter-option'},
-        el('input',{type:'checkbox', checked:isSelected, onchange:(ev)=>{
-          if(ev.target.checked){
-            if(!tabState.columnFilters[columnKey].includes(val)) tabState.columnFilters[columnKey].push(val);
-          } else {
-            tabState.columnFilters[columnKey] = tabState.columnFilters[columnKey].filter(v => v !== val);
+      const isSelected = tabState.columnFilters[columnKey].includes(val);
+      console.log(`Checkbox [${columnKey}] "${val}": isSelected=${isSelected}, filter=${JSON.stringify(tabState.columnFilters[columnKey])}`);
+
+      const checkbox = el('input',{
+        type:'checkbox',
+        checked:isSelected
+      });
+
+      // Store the value on the checkbox for easy access
+      checkbox.dataset.filterValue = val;
+
+      checkbox.addEventListener('change', (ev) => {
+        // Get all checkboxes and build filter from their current state
+        const newFilter = [];
+        const allCheckboxes = Array.from(popup.querySelectorAll('input[type="checkbox"]'));
+
+        allCheckboxes.forEach(cb => {
+          // Force read the actual DOM checked state
+          const isChecked = cb.checked;
+          if(isChecked) {
+            const value = cb.dataset.filterValue;
+            newFilter.push(value);
           }
-          rerenderE();
-        }}),
+        });
+
+        tabState.columnFilters[columnKey] = newFilter;
+        console.log(`Filter [${columnKey}] updated to:`, tabState.columnFilters[columnKey]);
+
+        // Close popup and re-render
+        popup.remove();
+        rerenderE();
+      });
+
+      const label_el = el('label',{class:'th-filter-option'},
+        checkbox,
         el('span',{}, val)
       );
-      popup.appendChild(chk);
+      popup.appendChild(label_el);
     });
-    popup.appendChild(el('hr'));
-    popup.appendChild(el('button',{class:'th-filter-clear', type:'button', onclick:()=>{
-      tabState.columnFilters[columnKey] = [];
-      rerenderE();
-    }}, 'Clear filter'));
 
-    // Position popup near the button
-    filterBtn.parentElement.style.position = 'relative';
-    filterBtn.parentElement.appendChild(popup);
+    // Add clear button
+    if(availableValues.length > 0){
+      popup.appendChild(el('hr'));
+      const clearBtn = el('button',{
+        class:'th-filter-clear',
+        type:'button'
+      }, 'Clear filter');
 
-    // Click outside to close
+      clearBtn.onclick = (e) => {
+        e.stopPropagation();
+        tabState.columnFilters[columnKey] = [];
+        rerenderE();
+      };
+
+      popup.appendChild(clearBtn);
+    }
+
+    th.appendChild(popup);
+
+    // Close popup when clicking outside
     const closePopup = (ev) => {
       if(!popup.contains(ev.target) && !filterBtn.contains(ev.target)){
         popup.remove();
         document.removeEventListener('click', closePopup);
       }
     };
-    setTimeout(() => document.addEventListener('click', closePopup), 0);
+
+    setTimeout(() => {
+      document.addEventListener('click', closePopup);
+    }, 100);
   };
 
   hdr.appendChild(filterBtn);
@@ -6569,14 +6620,19 @@ function eCardTable(locked){
   const table = el('table',{class:'config-table compact'+(tabState.carrierPhase==='review'?' carriers-review':'')+(eSingle()?' single-mode':'')+(eMvp()?' mvp-table':'')});
   const showAddBtn = !locked && (eSingle() || state.variant === 'F');
 
-  // variant L: collect available column values for filter dropdowns
-  const availableServices = eLegacy() ? [...new Set(tabState.rows.map(r => r.service).filter(Boolean))] : [];
-  const availableLabels = eLegacy() ? [...new Set(tabState.rows.map(r => r.label).filter(Boolean))] : [];
-  const availableCarriers = eLegacy() ? [...new Set(tabState.rows.map(r => r.carrier).filter(Boolean))] : [];
-  const availableLaneTypes = eLegacy() ? [...new Set(tabState.rows.map(r => r.laneType).filter(Boolean))] : [];
-  const availablePostalProducts = eLegacy() ? [...new Set(tabState.rows.map(r => r.postalProduct).filter(Boolean))] : [];
-  const availableParcelTypes = eLegacy() ? [...new Set(tabState.rows.map(r => r.sync ? eParcelType(r) : null).filter(Boolean))] : [];
-  const availableLegacySyncs = eLegacy() ? [...new Set(tabState.rows.map(r => r.sync).filter(Boolean))] : [];
+  // variant L: collect available column values from ALL rows (before filtering)
+  // This ensures filter checkboxes for values outside current filter always appear
+  const availableServices = eLegacy() ? [...new Set(tabState.rows.map(r => r.service).filter(Boolean))].sort() : [];
+  const availableLabels = eLegacy() ? [...new Set(tabState.rows.map(r => r.label).filter(Boolean))].sort() : [];
+  const availableCarriers = eLegacy() ? [...new Set(tabState.rows.map(r => r.carrier).filter(Boolean))].sort() : [];
+  const availableLaneTypes = eLegacy() ? [...new Set(tabState.rows.map(r => r.laneType).filter(Boolean))].sort() : [];
+  const availablePostalProducts = eLegacy() ? [...new Set(tabState.rows.map(r => r.postalProduct).filter(Boolean))].sort() : [];
+  const availableParcelTypes = eLegacy() ? [...new Set(tabState.rows.map(r => r.sync ? eParcelType(r) : null).filter(Boolean))].sort() : [];
+  const availableLegacySyncs = eLegacy() ? [...new Set(tabState.rows.map(r => r.sync).filter(Boolean))].sort() : [];
+
+  console.log('Available values from ALL rows:');
+  console.log('  Services:', availableServices);
+  console.log('  Labels:', availableLabels);
 
   const headerCols = eManual()
     ? [el('th',{},'Return service'), el('th',{},'Return label'), el('th',{class:'th-carrier'},'Carrier'), el('th',{},'Postal product')]
@@ -6603,19 +6659,44 @@ function eCardTable(locked){
   const svcFilter = eLegacy() ? tabState.serviceFilter : [];
   const lblFilter = eLegacy() ? tabState.labelFilter : [];
   const colFilters = eLegacy() ? tabState.columnFilters : { service:[], label:[], carrier:[], laneType:[], postalProduct:[], parcelType:[], legacySync:[] };
-  tabState.rows.forEach(r => {
-    if(svcFilter.length && r.service && !svcFilter.includes(r.service)) return;
-    if(lblFilter.length && r.label && !lblFilter.includes(r.label)) return;
-    // Apply column filters (only if filter values are selected)
-    if(colFilters.service.length && r.service && !colFilters.service.includes(r.service)) return;
-    if(colFilters.label.length && r.label && !colFilters.label.includes(r.label)) return;
-    if(colFilters.carrier.length && r.carrier && !colFilters.carrier.includes(r.carrier)) return;
-    if(colFilters.laneType.length && r.laneType && !colFilters.laneType.includes(r.laneType)) return;
-    if(colFilters.postalProduct.length && r.postalProduct && !colFilters.postalProduct.includes(r.postalProduct)) return;
-    if(colFilters.parcelType.length && r.sync && !colFilters.parcelType.includes(eParcelType(r))) return;
-    if(colFilters.legacySync.length && r.sync && !colFilters.legacySync.includes(r.sync)) return;
-    (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r);
+
+  console.log('=== FILTERING DEBUG ===');
+  console.log('Total rows:', tabState.rows.length);
+  console.log('columnFilters:', colFilters);
+
+  let visibleCount = 0;
+  tabState.rows.forEach((r, idx) => {
+    // For variant L: serviceFilter/labelFilter are toggles (enabled/disabled), not row filters
+    // Only apply column-level filters (columnFilters) to determine which rows show
+    let shouldSkip = false;
+    if(eLegacy()){
+      if(colFilters.service.length && r.service && !colFilters.service.includes(r.service)){
+        console.log(`Row ${idx}: SKIP - service ${r.service} not in ${colFilters.service}`);
+        shouldSkip = true;
+      }
+      if(colFilters.label.length && r.label && !colFilters.label.includes(r.label)){
+        console.log(`Row ${idx}: SKIP - label ${r.label} not in ${colFilters.label}`);
+        shouldSkip = true;
+      }
+      if(!shouldSkip && colFilters.carrier.length && r.carrier && !colFilters.carrier.includes(r.carrier)) shouldSkip = true;
+      if(!shouldSkip && colFilters.laneType.length && r.laneType && !colFilters.laneType.includes(r.laneType)) shouldSkip = true;
+      if(!shouldSkip && colFilters.postalProduct.length && r.postalProduct && !colFilters.postalProduct.includes(r.postalProduct)) shouldSkip = true;
+      if(!shouldSkip && colFilters.parcelType.length && r.sync && !colFilters.parcelType.includes(eParcelType(r))) shouldSkip = true;
+      if(!shouldSkip && colFilters.legacySync.length && r.sync && !colFilters.legacySync.includes(r.sync)) shouldSkip = true;
+    } else {
+      // Other variants: apply service/label filters as before
+      if(svcFilter.length && r.service && !svcFilter.includes(r.service)) shouldSkip = true;
+      if(lblFilter.length && r.label && !lblFilter.includes(r.label)) shouldSkip = true;
+    }
+
+    if(!shouldSkip){
+      console.log(`Row ${idx}: SHOW - ${r.service} + ${r.label}`);
+      visibleCount++;
+      (rowsByCode[r.code] = rowsByCode[r.code] || []).push(r);
+    }
   });
+  console.log(`Visible rows: ${visibleCount}/${tabState.rows.length}`);
+  console.log('=== END DEBUG ===');
   let codes;
   if(eLegacy()){
     // every country in the client's Country Scope gets a header (and its "+"), even with zero lanes
