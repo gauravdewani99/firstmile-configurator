@@ -583,6 +583,7 @@ body[data-variant="F"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 body[data-variant="G"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="H"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="K"] .wizard,
+body[data-variant="M"] .wizard,
 body[data-variant="L"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="I"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
 body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;padding-right:16px}
@@ -590,6 +591,7 @@ body[data-variant="J"] .wizard{max-width:calc(100vw - 32px);padding-left:16px;pa
 /* ─── Variant E: left navigation panel ─── */
 .e-layout{display:grid;grid-template-columns:212px minmax(0,1fr);gap:30px;align-items:start}
 /* variant L: no left "Configuration" panel — one screen, full width */
+body[data-variant="M"] .e-layout,
 body[data-variant="L"] .e-layout{grid-template-columns:minmax(0,1fr)}
 .e-nav{position:sticky;top:80px;display:flex;flex-direction:column;gap:3px}
 .e-nav-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--dim);padding:0 12px 10px}
@@ -909,6 +911,99 @@ tr.lane-row.unavail:hover{background:transparent}
 .app-toast.ok{border-left-color:var(--green)}
 .app-toast.ok .toast-ic{color:var(--green)}
 
+/* ─── variant M: routing decisions wizard + warehouse profiles ─── */
+.dest-ic.none{background:var(--border-soft);color:var(--dim)}
+.rw-card{width:min(980px,calc(100vw - 36px));max-height:90vh;padding:0;display:flex;flex-direction:column;overflow:hidden}
+.rw-header{position:relative;padding:22px 26px 4px;border-bottom:1px solid var(--border-soft)}
+.rw-close{position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--dim)}
+.rw-close:hover{background:var(--border-soft);color:var(--text)}
+.rw-close svg{width:14px;height:14px}
+.rw-scroll{flex:1;overflow-y:auto;padding:18px 26px 22px}
+.rw-sec+.rw-sec{margin-top:26px;padding-top:22px;border-top:1px solid var(--border-soft)}
+.rw-sec-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.rw-step{width:24px;height:24px;border-radius:7px;background:var(--brand-soft);color:var(--brand);font-size:12px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.rw-mini{display:flex;align-items:center;gap:10px}
+.rw-card .opt-desc{display:block}
+.rw-link{font-size:12px;font-weight:600;color:var(--brand-2);background:none;border:none;padding:0;cursor:pointer;text-transform:none;letter-spacing:0}
+.rw-link:hover{text-decoration:underline}
+.rw-link[disabled]{color:var(--dim);cursor:default;text-decoration:none}
+.rw-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:4px 0 12px}
+.rw-toggle{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer}
+.rw-legend{margin-left:auto;display:inline-flex;gap:6px}
+.rw-tree{border:1.5px solid var(--border);border-radius:var(--r-md);overflow:hidden}
+.rw-region+.rw-region{border-top:1.5px solid var(--border)}
+.rw-region-head,.rw-country-head{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.rw-region-head{padding:11px 14px;background:#F8FAFC}
+.rw-region-head:hover{background:var(--border-soft)}
+.rw-region-name{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text)}
+.rw-country{border-top:1px solid var(--border-soft)}
+.rw-country-head{padding:9px 14px 9px 40px}
+.rw-country-head:hover{background:#FAFBFC}
+.rw-flag{font-size:15px}
+.rw-country-name{font-size:13px;font-weight:700;color:var(--text)}
+.rw-count{font-size:11px;font-weight:600;color:var(--muted);background:var(--border-soft);padding:2px 8px;border-radius:12px}
+.rw-tags{display:inline-flex;gap:5px;margin-left:auto}
+.rw-chev{color:var(--dim);display:inline-flex;transition:transform .15s;flex-shrink:0}
+.rw-count+.rw-chev{margin-left:auto}
+.rw-chev svg{width:15px;height:15px}
+.rw-chev.open{transform:rotate(180deg)}
+.rw-check{width:18px;height:18px;border-radius:5px;border:1.5px solid #CBD5E1;background:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;cursor:pointer;padding:0}
+.rw-check svg{width:11px;height:11px;color:#fff;opacity:0}
+.rw-check.all,.rw-check.some{background:var(--brand);border-color:var(--brand)}
+.rw-check.all svg{opacity:1}
+.rw-check.some::after{content:'';width:9px;height:2px;background:#fff;border-radius:1px;position:absolute}
+.rw-check.disabled,.rw-check[disabled]{background:var(--border-soft);border-color:var(--border);cursor:not-allowed}
+.rw-lanes{padding:2px 14px 10px 66px;display:flex;flex-direction:column;gap:6px}
+.rw-lane{display:grid;grid-template-columns:18px minmax(150px,1fr) minmax(0,2fr) 84px;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--border-soft);border-radius:9px;background:#fff}
+.rw-lane.on{border-color:var(--brand-2);background:var(--brand-soft)}
+.rw-lane.override.on{border-color:#F59E0B;background:#FFFBEB}
+.rw-lane.same,.rw-lane.na{opacity:.6}
+.rw-lane-cfg{display:flex;flex-direction:column;min-width:0}
+.rw-lane-svc{font-size:12.5px;font-weight:600;color:var(--text)}
+.rw-lane-carrier{font-size:11px;color:var(--muted)}
+.rw-diff{display:flex;align-items:center;gap:10px;min-width:0}
+.rw-arrow{color:var(--dim);display:inline-flex;flex-shrink:0}
+.rw-arrow svg{width:14px;height:14px}
+.rw-dest{display:flex;flex-direction:column;min-width:0;padding:4px 9px;border-radius:7px;background:var(--border-soft)}
+.rw-dest-main{font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rw-dest-sub{font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rw-dest.next{background:#ECFDF5}
+.rw-dest.next .rw-dest-main{color:#047857}
+.rw-lane.override .rw-dest.next{background:#FEF3C7}
+.rw-lane.override .rw-dest.next .rw-dest-main{color:#92400E}
+.rw-dest.struck .rw-dest-main{text-decoration:line-through;color:#B45309}
+.rw-dest.na{background:#FEF2F2}
+.rw-dest.na .rw-dest-main{color:var(--red)}
+.rw-tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;justify-self:start;text-transform:capitalize}
+.rw-tag.new{background:#D1FAE5;color:#047857}
+.rw-tag.override{background:#FEF3C7;color:#92400E;border:1px solid #F59E0B}
+.rw-tag.same,.rw-tag.na{background:var(--border-soft);color:var(--muted)}
+.rw-footer{display:flex;align-items:center;gap:10px;padding:14px 26px;border-top:1px solid var(--border);background:#FAFBFC}
+.rw-summary{flex:1;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:10px}
+.rw-summary b{color:var(--text)}
+.rw-summary .rw-tag{margin-left:8px;text-transform:none}
+.rw-footer .btn[disabled]{opacity:.5;cursor:not-allowed}
+@media (max-width:720px){.rw-lane{grid-template-columns:18px 1fr}.rw-diff,.rw-lane>.rw-tag{grid-column:2}.rw-lanes{padding-left:14px}.rw-country-head{padding-left:24px}.rw-legend{margin-left:0}}
+.whp-card{width:min(860px,calc(100vw - 36px));max-height:90vh;display:flex;flex-direction:column}
+.whp-body{display:grid;grid-template-columns:200px 1fr;gap:18px;min-height:0;flex:1;overflow:hidden}
+.whp-side{display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.whp-item{display:flex;flex-direction:column;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;background:#fff;text-align:left}
+.whp-item.active{border-color:var(--brand);background:var(--brand-soft)}
+.whp-item-name{font-size:13px;font-weight:700;color:var(--text)}
+.whp-item-sub{font-size:11px;color:var(--muted)}
+.whp-new{display:flex;align-items:center;gap:6px;padding:9px 12px;border:1.5px dashed var(--border);border-radius:10px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.whp-new:hover{border-color:var(--brand-2);color:var(--brand)}
+.whp-new svg{width:13px;height:13px}
+.whp-main{display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden}
+.whp-fields{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;align-items:center}
+.whp-table-wrap{flex:1;overflow-y:auto;border:1.5px solid var(--border);border-radius:10px;min-height:200px}
+.whp-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.whp-table th{position:sticky;top:0;background:#F8F9FA;padding:8px 10px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dim);border-bottom:1.5px solid var(--border)}
+.whp-table td{padding:5px 10px;border-bottom:1px solid var(--border-soft)}
+.whp-region td{background:#F8FAFC;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.whp-del{align-self:flex-start;color:var(--red)}
+@media (max-width:720px){.whp-body{grid-template-columns:1fr;overflow-y:auto}.whp-side{flex-direction:row;flex-wrap:wrap}}
+
 /* ─── Routing Rules ─── */
 .rule-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
 .rule-card{border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;background:#fff;display:flex;align-items:flex-start;gap:12px}
@@ -1177,8 +1272,8 @@ tr.lane-row.unavail:hover{background:transparent}
 .save-flow-btn:hover{background:var(--brand-2);border-color:var(--brand-2);box-shadow:var(--shadow-2);transform:translateY(-1px)}
 .save-flow-btn svg{width:15px;height:15px}
 .save-flow-btn.saving{opacity:.7;pointer-events:none}
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]):not([data-variant="L"]) .json-fab,
-body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]):not([data-variant="L"]) .json-panel,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]):not([data-variant="L"]):not([data-variant="M"]) .json-fab,
+body:not([data-variant="D"]):not([data-variant="E"]):not([data-variant="F"]):not([data-variant="G"]):not([data-variant="H"]):not([data-variant="I"]):not([data-variant="J"]):not([data-variant="K"]):not([data-variant="L"]):not([data-variant="M"]) .json-panel,
 body[data-view="landing"] .json-fab,
 body[data-view="landing"] .json-panel{display:none}
 .json-panel{
@@ -1308,30 +1403,53 @@ body[data-view="wizard"] #view-landing{display:none}
    as a fixed px so no single column (e.g. Postal Product, left unspecified before) balloons to
    absorb the table's full remaining width — table-layout:fixed scales all of these up together,
    proportionally, to fill the table's actual rendered width. */
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(1),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(1),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(1),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(1){width:64px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(2),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(2),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(2),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(2){width:150px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(3),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(3),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(3),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(3){width:168px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(4),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(4),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(4),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(4){width:230px}   /* Carrier: dropdown + the Active/Inactive tag now sit side by side, needs the extra room */
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(5),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(5),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(5),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(5){width:140px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(6),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(6),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(6),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(6){width:220px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(7),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(7),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(7),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(7){width:180px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(8),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(8),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(8),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(8){width:130px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(9),
 body[data-variant="L"] .config-table.compact.mvp-table th:nth-child(9),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(9),
 body[data-variant="L"] .config-table.compact.mvp-table td:nth-child(9){width:48px}
+body[data-variant="M"] .config-table.compact.mvp-table .pp-td .pp-trigger,
 body[data-variant="L"] .config-table.compact.mvp-table .pp-td .pp-trigger{min-width:170px}
 /* variant L: Active/Inactive carrier tag sits beside the dropdown, like the Parcel Type "reused"/
    "generated" tag — not stacked underneath, which is what select{width:100%} forces by default. */
+body[data-variant="M"] .carrier-cell,
 body[data-variant="L"] .carrier-cell{display:flex;align-items:center;flex-wrap:nowrap}
+body[data-variant="M"] .carrier-cell select,
 body[data-variant="L"] .carrier-cell select{width:auto;flex:1;min-width:0}
+body[data-variant="M"] .carrier-active-tag,
 body[data-variant="L"] .carrier-active-tag,
+body[data-variant="M"] .carrier-inactive-tag,
 body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-space:nowrap}
 /* First Mile - MVP Ready: shipping preferences pane */
 .q-card-head .csc-btn{margin-left:auto}
@@ -1512,6 +1630,16 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 /* ─── scrollbar ─── */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+/* variant M: L minus Postal Product / Parcel Type / Legacy Sync, plus Destination after Label Option —
+   Priority · Return service · Label Option · Destination · Carrier · Lane type · delete */
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(4),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(4){width:200px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(5),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(5){width:230px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(6),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(6){width:140px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(7),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(7){width:48px}
 </style>
 </head>
 <body data-view="landing">
@@ -1567,6 +1695,15 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
           <span class="pc-info">
             <span class="pc-name">MyRebound FM MVP <span class="pc-badge">MVP Ready</span></span>
             <span class="pc-desc">MyRebound FM MVP-ready build — one return service &amp; label, one row per country; add extra carriers/configs per country as needed.</span>
+          </span>
+          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+        </button>
+
+        <button class="primary-card" onclick="startVariant('M')">
+          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6h7"/><path d="M6 8.5v4a5.5 5.5 0 0 0 5.5 5.5h4"/></svg></span>
+          <span class="pc-info">
+            <span class="pc-name">MyRebound FM MVP + Routing Decisions <span class="pc-badge">POC</span></span>
+            <span class="pc-desc">Copy of MyRebound FM MVP + Legacy Sync without the Postal Product / Parcel Type / Legacy Sync columns, plus a Destination column and an "Add routing decisions" wizard: pick a destination, review the diff per region → country → lane, and apply.</span>
           </span>
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
@@ -2369,6 +2506,7 @@ function initTabular(){
     rows:           [],     // generated per country × service×label combo
     deleted:        {},     // key -> true (combo removed for a country)
     carrierPhase:   'idle', // 'idle' | 'refreshing' | 'review' — drives the carrier-refresh banner
+    whProfiles:     eDefaultWhProfiles(),   // variant M: warehouse profiles used by the routing-decisions wizard
     routingRules:   [],    // [{id,name,productCategory,returnReason,sku,ean,minValue,maxValue,countries:[],carrierServices:[{carrierId,service}],destination}]
     reviewCountries: [],   // variant I — search+multi-select filter on the Lane Review table, avoids scrolling every country
     serviceFilter: [],    // variant L: Return service filter — empty = show all lanes, non-empty = only lanes with one of these services
@@ -2462,7 +2600,7 @@ const CSC_LM = [
 ];
 
 /* Tabular 2 (variant G) + First Mile MVP Ready (H) + POC Phase 1 (J) + Carrier Priority (I) = single-select service & label, one row per country */
-function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I' || state.variant === 'K' || state.variant === 'L'; }
+function eSingle(){ return state.variant === 'G' || state.variant === 'H' || state.variant === 'J' || state.variant === 'I' || state.variant === 'K' || state.variant === 'L' || state.variant === 'M'; }
 /* POC Phase 1 (variant J) drops the destination step/column and ranks carriers, one row per carrier×postal-product */
 function ePoc(){ return state.variant === 'J'; }
 /* Carrier Priority (variant I) — Tabular 2 minus destination/lane type/contract, with a manual, ranked, multi-carrier picker */
@@ -2470,14 +2608,18 @@ function eManual(){ return state.variant === 'I'; }
 /* both J and I share the trimmed ranked-carrier column layout (no destination/laneType/contract columns) */
 function eRanked(){ return state.variant === 'J' || state.variant === 'I'; }
 /* First Mile - MVP Ready (H): Tabular 2 without the First Mile Destination step, the Destination column, or the Contract column (Lane type IS kept) */
-function eMvp(){ return state.variant === 'H' || state.variant === 'K' || state.variant === 'L'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy), L = MyRebound FM MVP + Legacy Sync */
+function eMvp(){ return state.variant === 'H' || state.variant === 'K' || state.variant === 'L' || state.variant === 'M'; }  /* H = First Mile - MVP Ready, K = MyRebound FM - MVP Ready (exact copy), L = MyRebound FM MVP + Legacy Sync */
 function eFmMvp(){ return state.variant === 'H'; }  /* First Mile - MVP Ready only: shipping-preferences pane + Carrier Service Catalogue button */
-function eMyr(){ return state.variant === 'K' || state.variant === 'L'; }   /* MyRebound FM MVP family: Return flow type selector, no Priority column */
+function eMyr(){ return state.variant === 'K' || state.variant === 'L' || state.variant === 'M'; }   /* MyRebound FM MVP family: Return flow type selector, no Priority column */
 /* single-select service & label questions: G, H, J only. Carrier Priority (I) multi-selects them like E/F. */
 function eSingleSvc(){ return eSingle() && !eManual() && !eMvp(); }  /* First Mile - MVP Ready (H) + MyRebound FM MVP (K) multi-select service & label like Tabular 1 */
 /* MyRebound FM MVP + Legacy Sync (L) only: Parcel Type + Legacy Sync columns and the bulk "Add all configuration" action —
    the FM → legacy back-propagation additions explored in the myrebound-fm-poc-design docs, layered onto an exact copy of K. */
-function eLegacy(){ return state.variant === 'L'; }
+function eLegacy(){ return state.variant === 'L' || state.variant === 'M'; }
+/* MyRebound FM MVP + Routing Decisions (M): exact copy of L minus the Postal Product / Parcel Type /
+   Legacy Sync columns, plus a Destination column and the "Add routing decisions" wizard that bulk-applies
+   a destination (warehouse profile / client facility / partner) to selected lanes via a diff view. */
+function eRouting(){ return state.variant === 'M'; }
 /* variant L: deterministic legacy-sync status for a newly seeded lane — a small, repeatable mix of
    Synced/Pending/Failed so the demo shows the states without relying on real Griffin sync data */
 function eSeedSyncStatus(){
@@ -2633,7 +2775,7 @@ function eAddEmptyConfigForCountry(code){
   rerenderE();
 }
 /* every variant driven by tabState / renderVariantE */
-const TABULAR_VARIANTS = ['E','F','G','H','I','J','K','L'];
+const TABULAR_VARIANTS = ['E','F','G','H','I','J','K','L','M'];
 function isTabularVariant(v){ return TABULAR_VARIANTS.includes(v); }
 /* postal products derived from a carrier (each carrier → one or more products) */
 function ePostalProductsFor(carrierId){
@@ -4243,6 +4385,8 @@ function tabGlobalDestJson(){
   return { type:null };
 }
 function tabLaneDestJson(r){
+  if(eRouting() && !r.destType) return { type:null };
+  if(eRouting() && r.destType === 'DTW') return { type:'rebound_warehouse', profile:r.dtwType, warehouse:r.warehouse || null };
   const d = eEffectiveDest(r);
   const c = COUNTRIES.find(x => x.code === r.code);
   if(d.type === 'DTW') return { type:'rebound_warehouse', warehouse: d.dtwType === 'ERC' ? 'ERC' : 'local', location: d.dtwType === 'ERC' ? ERC_WAREHOUSE.split('_').slice(-1)[0] : c.wh.split('_').slice(-1)[0] };
@@ -4310,7 +4454,7 @@ function buildTabJson(){
       summary: { totalLanes: tabState.rows.length, unserviceableLanes: unserviceable },
     };
   }
-  const variantName = state.variant === 'L' ? 'myrebound-fm-mvp-legacy-sync' : state.variant === 'K' ? 'myrebound-fm-mvp' : state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
+  const variantName = state.variant === 'M' ? 'myrebound-fm-routing-decisions' : state.variant === 'L' ? 'myrebound-fm-mvp-legacy-sync' : state.variant === 'K' ? 'myrebound-fm-mvp' : state.variant === 'H' ? 'first-mile-mvp-ready' : state.variant === 'G' ? 'tabular-2' : state.variant === 'F' ? 'manisha-tabular' : 'tabular-1';
   const mvp = eMvp(); // First Mile - MVP Ready: no destination or contract in the payload (lane type kept)
   return {
     client: state.client || null,
@@ -4320,7 +4464,8 @@ function buildTabJson(){
     returnServices: tabState.returnServices,
     returnLabels: eNonSelfServices().length ? tabState.returnLabels : [],
     ...(mvp ? {} : { destination: tabGlobalDestJson() }),
-    ...(mvp ? {} : { clientAddresses: tabState.destination === 'DTR'
+    ...(eRouting() ? { warehouseProfiles: tabState.whProfiles.map(p => ({ id:p.id, name:p.name, warehouses:{...p.map} })) } : {}),
+    ...(mvp && !eRouting() ? {} : { clientAddresses: (tabState.destination === 'DTR' || eRouting())
       ? tabState.addresses.filter(a => a.city.trim() && a.countryCode).map(a => ({ line1:a.line1, line2:a.line2 || undefined, city:a.city, postalCode:a.postal || undefined, country:a.countryCode, appliesToCountries:(a.countries||[]) }))
       : [] }),
     lanes: tabState.rows.map(r => {
@@ -4330,12 +4475,12 @@ function buildTabJson(){
         countryName: c.name,
         returnService: r.service,
         returnLabel: r.label,
-        ...(mvp ? {} : { destination: tabLaneDestJson(r) }),
+        ...(mvp && !eRouting() ? {} : { destination: tabLaneDestJson(r) }),
         laneType: r.laneType,
         carrier: mvp ? eCarrierName(r.carrier) : r.carrier,
         ...(mvp ? {} : { contract: r.contract || null }),
-        postalProduct: r.postalProduct || null,
-        ...(eLegacy() ? { parcelType: eParcelType(r), legacySync: r.sync || 'Synced' } : {}),
+        ...(eRouting() ? {} : { postalProduct: r.postalProduct || null }),
+        ...(eLegacy() && !eRouting() ? { parcelType: eParcelType(r), legacySync: r.sync || 'Synced' } : {}),
         serviceable: eCarriersFor(r.code, r.service, r.label).length > 0,
       };
     }),
@@ -4552,6 +4697,10 @@ function clientWarehouseIcon(){ return '<span class="dest-ic clientwh">'+icon('w
 
 // destination cell content: {iconHtml, city, sub}
 function eDestCellInfo(r){
+  if(eRouting()){
+    if(!r.destType) return { iconHtml:'<span class="dest-ic none">'+icon('warehouse')+'</span>', city:'Not set', sub:'No routing decision' };
+    if(r.destType === 'DTW'){ const p = whProfileById(r.dtwType); return { iconHtml:reboundWarehouseIcon(), city:whCity(r.warehouse), sub:'ReBound WH · '+(p ? p.name : 'profile') }; }
+  }
   const d = eEffectiveDest(r);
   const c = COUNTRIES.find(x => x.code === r.code);
   if(d.type === 'DTW'){
@@ -5531,8 +5680,18 @@ function eLegacyFeatureRow(){
   });
   row1.appendChild(lblGroup);
 
-  row1.appendChild(el('button',{class:'csc-btn lf-add-all', type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
-    el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration'));
+  const addAllBtn = el('button',{class:'csc-btn'+(eRouting()?'':' lf-add-all'), type:'button', title:'Add one new configuration to every country below', onclick:()=>eAddAllConfiguration()},
+    el('span',{class:'csc-btn-ic', html:icon('plus')}), 'Add all configuration');
+  if(!eRouting()) row1.appendChild(addAllBtn);
+  if(eRouting()){
+    // variant M: the bulk actions sit together, pinned top-right as one unit
+    const actions = el('div',{class:'lf-group lf-add-all'}, addAllBtn);
+    row1.appendChild(actions);
+    actions.appendChild(el('button',{class:'csc-btn', type:'button', title:'Manage the warehouse profiles used by routing decisions', onclick:()=>openWhProfilesModal()},
+      el('span',{class:'csc-btn-ic', html:icon('warehouse')}), 'Warehouse profiles'));
+    actions.appendChild(el('button',{class:'csc-btn', type:'button', title:'Pick a destination and apply it to many lanes at once', onclick:()=>openRoutingWizard()},
+      el('span',{class:'csc-btn-ic', html:icon('partners')}), 'Add routing decisions'));
+  }
 
   const section1 = el('div',{class:'lf-section lf-section-1'}, row1);
   return section1;
@@ -5677,7 +5836,7 @@ function openModal(cardNode){
 function closeModal(overlay){ overlay.classList.remove('open'); setTimeout(()=> overlay.remove(), 200); }
 
 /* address add/edit modal */
-function openAddressModal(id){
+function openAddressModal(id, onSaved){
   const editing = id ? tabState.addresses.find(a=>a.id===id) : null;
   const draft = editing ? {...editing} : makeAddress();
   if(!draft.countries) draft.countries = [];
@@ -5821,6 +5980,7 @@ function openAddressModal(id){
       }
       if(editing) Object.assign(editing,draft); else tabState.addresses.push(draft);
       closeModal(ref.o); rerenderE();
+      if(onSaved) onSaved(draft.id);
     }},editing?'Save address':'Add address')
   ));
   ref.o=openModal(card);
@@ -6322,14 +6482,14 @@ function eRow(r, prio){
     tr.appendChild(naCell());
     // Priority (First Mile - MVP Ready)
     if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
-    // Return Destination (hidden for First Mile - MVP Ready)
-    if(!eMvp()){
+    // Return Destination (hidden for First Mile - MVP Ready; shown again in M)
+    if(!eMvp() || eRouting()){
       const di = eDestCellInfo(r);
       tr.appendChild(el('td',{class:'dest-cell'},
         el('span',{class:'dest-wrap'},
           el('span',{class:'dest-ic-slot', html:di.iconHtml}),
           el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
-          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
+          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=> eRouting() ? openRoutingWizard({ laneIds:[r.id] }) : openDestinationModal(r.id), html:icon('edit')})
         )
       ));
     }
@@ -6340,11 +6500,13 @@ function eRow(r, prio){
     // Contract — not applicable (hidden for First Mile - MVP Ready)
     if(!eMvp()) tr.appendChild(naCell());
     // Postal Product
-    const spPp = el('td',{class:'pp-td'+(eMyr()?'':' carrier-cell')}, ppCombobox(r));
-    if(!eMyr()) spPp.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
-    tr.appendChild(spPp);
+    if(!eRouting()){
+      const spPp = el('td',{class:'pp-td'+(eMyr()?'':' carrier-cell')}, ppCombobox(r));
+      if(!eMyr()) spPp.appendChild(el('button',{class:'row-del', title:'Remove this lane', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
+      tr.appendChild(spPp);
+    }
     // Parcel Type + Legacy Sync (variant L only)
-    if(eLegacy()){
+    if(eLegacy() && !eRouting()){
       const generated = r.sync === 'New';
       tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'ptype-code'}, eParcelType(r)), el('span',{class:'ptype-tag '+(generated?'gen':'reuse')}, generated?'generated':'reused')));
       tr.appendChild(el('td',{}, eLegacySyncPill(r.sync)));
@@ -6359,13 +6521,13 @@ function eRow(r, prio){
     // Priority (First Mile - MVP Ready)
     if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
 
-    if(!eMvp()){
+    if(!eMvp() || eRouting()){
       const di = eDestCellInfo(r);
       tr.appendChild(el('td',{class:'dest-cell'},
         el('span',{class:'dest-wrap'},
           el('span',{class:'dest-ic-slot', html:di.iconHtml}),
           el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
-          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=>openDestinationModal(r.id), html:icon('edit')})
+          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=> eRouting() ? openRoutingWizard({ laneIds:[r.id] }) : openDestinationModal(r.id), html:icon('edit')})
         )
       ));
     }
@@ -6394,12 +6556,14 @@ function eRow(r, prio){
     tr.appendChild(el('td',{}, eLaneToggle(r)));
     if(!eMvp()) tr.appendChild(el('td',{}, eContractCell(r)));
 
-    const ppCell = el('td',{class:'pp-td'+((eMvp() && !eMyr())?' carrier-cell':'')});
-    ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
-    tr.appendChild(ppCell);
+    if(!eRouting()){
+      const ppCell = el('td',{class:'pp-td'+((eMvp() && !eMyr())?' carrier-cell':'')});
+      ppCell.appendChild(unavailable || !r.carrier ? el('span',{class:'cell-dim'}, '—') : ppCombobox(r));
+      tr.appendChild(ppCell);
+    }
     // Parcel Type + Legacy Sync (variant L only) — a still-blank row (no service picked yet) has
     // nothing to number or sync, so show a plain dash instead of a premature parcel type / status
-    if(eLegacy()){
+    if(eLegacy() && !eRouting()){
       if(!r.service){
         tr.appendChild(el('td',{class:'ptype-td'}, el('span',{class:'cell-dim'}, '—')));
         tr.appendChild(el('td',{}, el('span',{class:'cell-dim'}, '—')));
@@ -6642,12 +6806,12 @@ function eCardTable(locked){
        ...(eLegacy() ? [eFilterHeader('Return service', 'service', availableServices.sort())] : [el('th',{},'Return service')]),
        ...(eLegacy() ? [eFilterHeader('Label Option', 'label', availableLabels.sort())] : [el('th',{}, eMvp() ? 'Label Option' : 'Return label')]),
        ...(prioOn ? [el('th',{},'Priority')] : []),
-       ...(eMvp() ? [] : [el('th',{},'Destination')]),
+       ...(eMvp() && !eRouting() ? [] : [el('th',{},'Destination')]),
        ...(eLegacy() ? [eFilterHeader('Carrier', 'carrier', availableCarriers.sort())] : [el('th',{class:'th-carrier'},'Carrier')]),
        ...(eLegacy() ? [eFilterHeader('Lane type', 'laneType', availableLaneTypes.sort())] : [el('th',{},'Lane type')]),
        ...(eMvp() ? [] : [el('th',{},'Contract')]),
-       ...(eLegacy() ? [eFilterHeader('Postal Product', 'postalProduct', availablePostalProducts.sort())] : [el('th',{class:'th-pp'},'Postal Product')]),
-       ...(eLegacy() ? [eFilterHeader('Parcel Type', 'parcelType', availableParcelTypes.sort()), eFilterHeader('Legacy Sync', 'legacySync', availableLegacySyncs.sort())] : [])];
+       ...(eRouting() ? [] : eLegacy() ? [eFilterHeader('Postal Product', 'postalProduct', availablePostalProducts.sort())] : [el('th',{class:'th-pp'},'Postal Product')]),
+       ...(eLegacy() && !eRouting() ? [eFilterHeader('Parcel Type', 'parcelType', availableParcelTypes.sort()), eFilterHeader('Legacy Sync', 'legacySync', availableLegacySyncs.sort())] : [])];
   if(showAddBtn) headerCols.push(el('th',{class:'th-add-col'}));
   table.appendChild(el('thead',{}, el('tr',{},...headerCols)));
   const tbody = el('tbody',{});
@@ -6709,7 +6873,7 @@ function eCardTable(locked){
   }
   if((eManual() || eMvp()) && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
-  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eLegacy() ? 3 : 0) : 7;
+  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eRouting() ? 1 : eLegacy() ? 3 : 0) : 7;
   const colCount = showAddBtn ? baseCols + 1 : baseCols;
   if(!codes.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
@@ -6744,6 +6908,387 @@ function eCardTable(locked){
 
   card.appendChild(body);
   return card;
+}
+
+/* ─── variant M: warehouse profiles ───────────────────────────────────────
+   A profile maps every pickup country to the ReBound warehouse its returns go to. Two are seeded:
+   "Local" (the country's own warehouse, else the closest big consolidation hub for its region) and
+   "ERC" (everything to Nettetal). The routing-decisions wizard picks a profile for DTW lanes. */
+const WH_CONSOLIDATION_HUBS = {
+  'European Union':'DE_ASC_Nettetal', 'United Kingdom':'GB_ASC_Corby', 'North America':'USA_SEKO_Cranbury',
+  'Pacific':'Australia_SEKO_Mascot', 'Asia':'Australia_SEKO_Mascot', 'Middle East & Africa':'DE_ASC_Nettetal', 'South America':'USA_SEKO_Cranbury',
+};
+/* every known ReBound warehouse (placeholder "Generic" ones excluded — they aren't real sites) */
+const WH_OPTIONS = [...new Set([...COUNTRIES.map(c => c.wh), ...PREF_COUNTRIES.map(c => c.wh), ...Object.values(WH_CONSOLIDATION_HUBS)])]
+  .filter(w => w && !/_Generic_/.test(w)).sort();
+function whCity(wh){ return wh ? wh.split('_').slice(-1)[0] : '—'; }
+function eDefaultWhProfiles(){
+  const local = {}, erc = {};
+  COUNTRIES.forEach(c => {
+    local[c.code] = (c.wh && !/_Generic_/.test(c.wh)) ? c.wh : (WH_CONSOLIDATION_HUBS[regionOf(c.code)] || ERC_WAREHOUSE);
+    erc[c.code] = ERC_WAREHOUSE;
+  });
+  return [
+    { id:'local', name:'Local', desc:'Each return goes to its origin country’s warehouse, else the closest consolidation hub.', map:local },
+    { id:'ERC',   name:'ERC',   desc:'Every return goes to the European Returns Centre in Nettetal.', map:erc },
+  ];
+}
+function whProfileById(id){ return (tabState.whProfiles || []).find(p => p.id === id) || null; }
+let _whProfileSeq = 0;
+
+/* regions → country codes, in the table's region order */
+function eRegionGroups(codes){
+  const regions = [...E_REGION_ORDER, ...codes.map(regionOf).filter(r => !E_REGION_ORDER.includes(r))];
+  const seen = {}, out = [];
+  regions.forEach(region => {
+    if(seen[region]) return; seen[region] = true;
+    const inRegion = codes.filter(code => regionOf(code) === region);
+    if(inRegion.length) out.push({ region, codes:inRegion });
+  });
+  return out;
+}
+
+function openWhProfilesModal(opts){
+  opts = opts || {};
+  const draft = tabState.whProfiles.map(p => ({ ...p, map:{...p.map} }));
+  let activeId = opts.profileId || draft[0].id;
+  const ref = {};
+  const card = el('div',{class:'modal-card whp-card'});
+  const bodyWrap = el('div',{class:'whp-body'});
+
+  function render(){
+    bodyWrap.innerHTML = '';
+    const active = draft.find(p => p.id === activeId) || draft[0];
+    const side = el('div',{class:'whp-side'});
+    draft.forEach(p => side.appendChild(el('button',{class:'whp-item'+(p.id===active.id?' active':''), type:'button', onclick:()=>{ activeId = p.id; render(); }},
+      el('span',{class:'whp-item-name'}, p.name || 'Untitled profile'),
+      el('span',{class:'whp-item-sub'}, new Set(Object.values(p.map)).size + ' warehouses'))));
+    side.appendChild(el('button',{class:'whp-new', type:'button', onclick:()=>{
+      const p = { id:'p'+(++_whProfileSeq), name:'New profile', desc:'', map:{...draft[0].map} };
+      draft.push(p); activeId = p.id; render();
+    }}, el('span',{html:icon('plus')}), 'New profile'));
+
+    const main = el('div',{class:'whp-main'});
+    main.appendChild(el('div',{class:'whp-fields'},
+      el('label',{class:'addr-lbl'}, 'Profile name'),
+      el('input',{type:'text', class:'modal-inp', value:active.name, oninput:e=>{ active.name = e.target.value; }, onchange:()=>render()}),
+      el('label',{class:'addr-lbl'}, 'Description'),
+      el('input',{type:'text', class:'modal-inp', value:active.desc || '', placeholder:'Shown in the routing decisions wizard', oninput:e=>{ active.desc = e.target.value; }})
+    ));
+    const tbl = el('table',{class:'whp-table'});
+    tbl.appendChild(el('thead',{}, el('tr',{}, el('th',{},'Pickup country'), el('th',{},'Warehouse'))));
+    const tb = el('tbody',{});
+    eRegionGroups(COUNTRIES.map(c => c.code)).forEach(g => {
+      tb.appendChild(el('tr',{class:'whp-region'}, el('td',{colspan:2}, g.region)));
+      g.codes.forEach(code => {
+        const c = COUNTRIES.find(x => x.code === code);
+        const sel = el('select',{class:'rtbl-sel', onchange:e=>{ active.map[code] = e.target.value; }});
+        WH_OPTIONS.forEach(w => { const o = el('option',{value:w}, w.replace(/_/g,' · ')); if(active.map[code]===w) o.selected = true; sel.appendChild(o); });
+        tb.appendChild(el('tr',{}, el('td',{}, c.flag+' '+c.name), el('td',{}, sel)));
+      });
+    });
+    tbl.appendChild(tb);
+    main.appendChild(el('div',{class:'whp-table-wrap'}, tbl));
+    if(draft.length > 1){
+      main.appendChild(el('button',{class:'btn btn-ghost whp-del', type:'button', onclick:()=>{
+        const used = tabState.rows.some(r => r.destType === 'DTW' && r.dtwType === active.id);
+        if(used){ showToast('“'+active.name+'” is used by lanes — re-route them first.', null, null, { icon:'warn' }); return; }
+        draft.splice(draft.indexOf(active), 1); activeId = draft[0].id; render();
+      }}, 'Delete profile'));
+    }
+    bodyWrap.appendChild(side);
+    bodyWrap.appendChild(main);
+  }
+
+  card.appendChild(el('div',{class:'modal-title'}, 'Warehouse profiles'));
+  card.appendChild(el('div',{class:'modal-sub'}, 'A profile decides which ReBound warehouse each pickup country’s returns go to. Routing decisions apply a profile to lanes. Saving doesn’t change lanes that were already routed.'));
+  card.appendChild(bodyWrap);
+  card.appendChild(el('div',{class:'modal-actions'},
+    el('button',{class:'btn btn-ghost', onclick:()=>closeModal(ref.o)}, 'Cancel'),
+    el('button',{class:'btn btn-primary', onclick:()=>{
+      draft.forEach(p => { if(!p.name.trim()) p.name = 'Untitled profile'; });
+      tabState.whProfiles = draft;
+      closeModal(ref.o); rerenderE();
+      if(opts.onSaved) opts.onSaved(activeId);
+    }}, 'Save profiles')
+  ));
+  render();
+  ref.o = openModal(card);
+}
+
+/* ─── variant M: "Add routing decisions" wizard ───────────────────────────
+   One scrollable modal: (1) decide where returns go, (2) tick region → country → lane in a tree that
+   shows each lane's current → new destination (overrides flagged amber), (3) submit to write the
+   destination onto the real lanes. Only existing lanes are listed — the wizard never creates lanes. */
+function rdDestKey(d){ return d.destType ? [d.destType, d.dtwType||'', d.warehouse||'', d.addressId||'', d.partner||''].join('|') : ''; }
+function rdLaneDest(r){ return { destType:r.destType||null, dtwType:r.dtwType||null, warehouse:r.warehouse||null, addressId:r.addressId||null, partner:r.partner||null }; }
+function rdDescribe(d){
+  if(!d || !d.destType) return { text:'Not set', sub:'' };
+  if(d.destType === 'DTW'){ const p = whProfileById(d.dtwType); return { text:whCity(d.warehouse), sub:'ReBound WH · '+(p ? p.name : d.dtwType) }; }
+  if(d.destType === 'DTR'){ const a = tabState.addresses.find(x => x.id === d.addressId); return { text:a ? a.city : 'Client facility', sub:'Client facility' }; }
+  if(d.destType === 'DTP') return { text:d.partner, sub:'ReBound partner' };
+  return { text:'—', sub:'' };
+}
+
+function openRoutingWizard(opts){
+  opts = opts || {};
+  const preset = (opts.laneIds || []).map(id => tabState.rows.find(r => r.id === id)).filter(Boolean);
+  const seed = preset.length === 1 && preset[0].destType ? preset[0] : null;   // pencil on a routed lane: start from its decision
+  const draft = {
+    destType: seed ? seed.destType : null,
+    dtwType:  seed && seed.destType === 'DTW' ? seed.dtwType : null,
+    addressMode: seed && seed.destType === 'DTR' ? seed.addressId : 'closest',   // 'closest' | address id
+    dtpCategory: seed && seed.destType === 'DTP' ? ((DTP_PARTNER_DATA.find(d => d.partner === seed.partner)||{}).category || null) : null,
+    partner:  seed && seed.destType === 'DTP' ? seed.partner : null,
+    hideUnchanged: false,
+  };
+  const selected = new Set(preset.map(r => r.id));
+  const expanded = new Set(preset.map(r => r.code));
+  const collapsedRegions = new Set();
+  const ref = {};
+  const card = el('div',{class:'modal-card rw-card'});
+  const scroll = el('div',{class:'rw-scroll'});
+  const footer = el('div',{class:'rw-footer'});
+
+  function decisionReady(){
+    if(draft.destType === 'DTW') return !!whProfileById(draft.dtwType);
+    if(draft.destType === 'DTR') return tabState.addresses.some(a => a.city.trim() && a.countryCode) && (draft.addressMode === 'closest' || tabState.addresses.some(a => a.id === draft.addressMode));
+    if(draft.destType === 'DTP') return !!draft.partner;
+    return false;
+  }
+  /* what this decision would set on lane r — null when it can't apply (e.g. profile has no warehouse) */
+  function proposed(r){
+    if(draft.destType === 'DTW'){
+      const p = whProfileById(draft.dtwType); const wh = p && p.map[r.code];
+      return wh ? { destType:'DTW', dtwType:p.id, warehouse:wh, addressId:null, partner:null } : null;
+    }
+    if(draft.destType === 'DTR'){
+      const a = draft.addressMode === 'closest' ? closestAddress(r.code) : tabState.addresses.find(x => x.id === draft.addressMode);
+      return a ? { destType:'DTR', dtwType:null, warehouse:null, addressId:a.id, partner:null } : null;
+    }
+    if(draft.destType === 'DTP') return { destType:'DTP', dtwType:null, warehouse:null, addressId:null, partner:draft.partner };
+    return null;
+  }
+  function laneDiff(r){
+    const before = rdLaneDest(r), after = decisionReady() ? proposed(r) : null;
+    const status = !after ? 'na' : !before.destType ? 'new' : rdDestKey(before) === rdDestKey(after) ? 'same' : 'override';
+    return { r, before, after, status, selectable: status === 'new' || status === 'override' };
+  }
+
+  function rerender(){ const top = scroll.scrollTop; renderScroll(); renderFooter(); scroll.scrollTop = top; }
+
+  function decisionSection(){
+    const sec = el('div',{class:'rw-sec'});
+    sec.appendChild(el('div',{class:'rw-sec-head'}, el('span',{class:'rw-step'}, '1'), el('span',{class:'q-title'}, 'Where do you want to send the return parcel?')));
+    const list = el('div',{class:'opt-list'});
+    [
+      { v:'DTW', name:'ReBound Warehouse', code:'DTW', ic:'warehouse' },
+      { v:'DTR', name:'Client facility or Warehouse', code:'DTR', ic:'building' },
+      { v:'DTP', name:'ReBound Partners', code:'DTP', ic:'partners' },
+    ].forEach(o => list.appendChild(el('button',{class:'opt opt-ic'+(draft.destType===o.v?' active':''), type:'button', onclick:()=>{ draft.destType = o.v; rerender(); }},
+      el('span',{class:'opt-radio'}),
+      el('span',{class:'opt-ic-badge', html:icon(o.ic)}),
+      el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, o.name, el('span',{class:'opt-code'}, o.code)))
+    )));
+    sec.appendChild(list);
+
+    if(draft.destType === 'DTW'){
+      sec.appendChild(el('div',{class:'q-mini-label rw-mini'}, 'Which warehouse profile?',
+        el('button',{class:'rw-link', type:'button', onclick:()=>openWhProfilesModal({ profileId:draft.dtwType || undefined, onSaved:()=>rerender() })}, 'Manage profiles')));
+      const wl = el('div',{class:'opt-list'});
+      tabState.whProfiles.forEach(p => wl.appendChild(el('button',{class:'opt'+(draft.dtwType===p.id?' active':''), type:'button', onclick:()=>{ draft.dtwType = p.id; rerender(); }},
+        el('span',{class:'opt-radio'}),
+        el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, p.name), p.desc ? el('span',{class:'opt-desc'}, p.desc) : null)
+      )));
+      sec.appendChild(wl);
+    }
+
+    if(draft.destType === 'DTR'){
+      sec.appendChild(el('div',{class:'q-mini-label rw-mini'}, 'Which client facility?',
+        el('button',{class:'rw-link', type:'button', onclick:()=>openAddressModal(null, id=>{ draft.addressMode = id; rerender(); })}, '+ Add address')));
+      const filled = tabState.addresses.filter(a => a.city.trim() && a.countryCode);
+      if(!filled.length){
+        sec.appendChild(el('div',{class:'sub-note'}, el('span',{html:icon('warn')}), 'No client addresses yet — add one to route lanes to a client facility.'));
+      } else {
+        const al = el('div',{class:'opt-list'});
+        al.appendChild(el('button',{class:'opt'+(draft.addressMode==='closest'?' active':''), type:'button', onclick:()=>{ draft.addressMode = 'closest'; rerender(); }},
+          el('span',{class:'opt-radio'}),
+          el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, 'Closest facility per country'), el('span',{class:'opt-desc'}, 'Each lane goes to the facility mapped to, or nearest to, its pickup country.'))));
+        filled.forEach(a => {
+          const ac = ADDRESS_COUNTRY_BY_CODE[a.countryCode];
+          al.appendChild(el('button',{class:'opt'+(draft.addressMode===a.id?' active':''), type:'button', onclick:()=>{ draft.addressMode = a.id; rerender(); }},
+            el('span',{class:'opt-radio'}),
+            el('span',{class:'opt-text'}, el('span',{class:'opt-name'}, (ac ? ac.flag+' ' : '')+a.city), el('span',{class:'opt-desc'}, [a.company, a.line1, ac && ac.name].filter(Boolean).join(' · ')))));
+        });
+        sec.appendChild(al);
+      }
+    }
+
+    if(draft.destType === 'DTP'){
+      sec.appendChild(el('div',{class:'q-mini-label rw-mini'}, 'Partner category'));
+      const cats = el('div',{class:'cat-tile-grid'});
+      DTP_CATEGORIES.forEach(cat => cats.appendChild(el('button',{class:'cat-tile'+(draft.dtpCategory===cat?' active':''), type:'button', onclick:()=>{ draft.dtpCategory = cat; draft.partner = null; rerender(); }},
+        el('span',{class:'cat-tile-ic', html:categoryIcon(cat)}),
+        el('span',{class:'cat-tile-name'}, cat),
+        el('span',{class:'cat-check', html:icon('check')})
+      )));
+      sec.appendChild(cats);
+      if(draft.dtpCategory){
+        sec.appendChild(el('div',{class:'q-mini-label rw-mini'}, 'Select a partner'));
+        const grid = el('div',{class:'partner-grid'});
+        // partners serve any pickup country — the region tag is only where the partner is located
+        const byPartner = {};
+        dtpEntriesFor(draft.dtpCategory).forEach(e => { (byPartner[e.partner] = byPartner[e.partner] || { partner:e.partner, regions:new Set(), specs:new Set() }); byPartner[e.partner].regions.add(e.region); if(e.spec) byPartner[e.partner].specs.add(e.spec); });
+        Object.values(byPartner).forEach(e => {
+          const tags = el('div',{class:'opt-tags'});
+          e.regions.forEach(rg => tags.appendChild(el('span',{class:'opt-tag region', title:'Partner location'}, rg)));
+          e.specs.forEach(sp => tags.appendChild(el('span',{class:'opt-tag spec'}, sp)));
+          grid.appendChild(el('button',{class:'partner-card'+(draft.partner===e.partner?' active':''), type:'button', onclick:()=>{ draft.partner = e.partner; rerender(); }},
+            el('span',{class:'partner-card-ic', html:icon('partners')}),
+            el('span',{class:'partner-card-name'}, e.partner),
+            tags));
+        });
+        sec.appendChild(grid);
+      }
+    }
+    return sec;
+  }
+
+  /* tri-state checkbox for a set of diffs */
+  function triBox(diffs){
+    const sel = diffs.filter(d => d.selectable);
+    const on = sel.filter(d => selected.has(d.r.id)).length;
+    const state = !sel.length ? 'disabled' : on === 0 ? '' : on === sel.length ? 'all' : 'some';
+    return el('button',{class:'rw-check '+state, type:'button', ...(!sel.length ? { disabled:'disabled', title:'Nothing to change here' } : {}), onclick:e=>{
+      e.stopPropagation();
+      if(state === 'all') sel.forEach(d => selected.delete(d.r.id)); else sel.forEach(d => selected.add(d.r.id));
+      rerender();
+    }, html:icon('check')});
+  }
+  function diffTags(diffs){
+    const n = diffs.filter(d => d.status === 'new').length, o = diffs.filter(d => d.status === 'override').length, s = diffs.filter(d => d.status === 'same').length;
+    return el('span',{class:'rw-tags'},
+      n ? el('span',{class:'rw-tag new'}, n+' new') : null,
+      o ? el('span',{class:'rw-tag override'}, o+' override'+(o>1?'s':'')) : null,
+      s ? el('span',{class:'rw-tag same'}, s+' unchanged') : null);
+  }
+  function destChip(d, cls){
+    const x = rdDescribe(d);
+    return el('span',{class:'rw-dest '+(cls||'')}, el('span',{class:'rw-dest-main'}, x.text), x.sub ? el('span',{class:'rw-dest-sub'}, x.sub) : null);
+  }
+
+  function treeSection(){
+    const sec = el('div',{class:'rw-sec'});
+    const head = el('div',{class:'rw-sec-head'}, el('span',{class:'rw-step'}, '2'), el('span',{class:'q-title'}, 'Which lanes should it apply to?'));
+    sec.appendChild(head);
+    if(!tabState.rows.length){
+      sec.appendChild(el('div',{class:'info-banner blue'}, el('span',{html:icon('info')}), el('span',{}, 'There are no lanes yet. Add configurations in the table first — routing decisions only change existing lanes.')));
+      return sec;
+    }
+    const ready = decisionReady();
+    if(!ready) sec.appendChild(el('div',{class:'info-banner blue'}, el('span',{html:icon('info')}), el('span',{}, 'Finish the decision above to see what would change for each lane.')));
+
+    const allDiffs = tabState.rows.map(laneDiff);
+    const toolbar = el('div',{class:'rw-toolbar'},
+      el('button',{class:'rw-link', type:'button', ...(ready ? {} : { disabled:'disabled' }), onclick:()=>{ allDiffs.forEach(d => d.selectable && selected.add(d.r.id)); rerender(); }}, 'Select all'),
+      el('button',{class:'rw-link', type:'button', onclick:()=>{ selected.clear(); rerender(); }}, 'Clear'),
+      el('button',{class:'rw-link', type:'button', onclick:()=>{ tabState.rows.forEach(r => expanded.add(r.code)); rerender(); }}, 'Expand all'),
+      el('button',{class:'rw-link', type:'button', onclick:()=>{ expanded.clear(); rerender(); }}, 'Collapse all'),
+      el('label',{class:'rw-toggle'}, (() => { const cb = el('input',{type:'checkbox', onchange:e=>{ draft.hideUnchanged = e.target.checked; rerender(); }}); cb.checked = draft.hideUnchanged; return cb; })(), 'Hide unchanged lanes'),
+      el('span',{class:'rw-legend'}, el('span',{class:'rw-tag new'}, 'new'), el('span',{class:'rw-tag override'}, 'override'), el('span',{class:'rw-tag same'}, 'unchanged'))
+    );
+    sec.appendChild(toolbar);
+
+    const codes = COUNTRIES.map(c => c.code).filter(code => tabState.rows.some(r => r.code === code));
+    const tree = el('div',{class:'rw-tree'});
+    eRegionGroups(codes).forEach(g => {
+      const regionDiffs = allDiffs.filter(d => g.codes.includes(d.r.code));
+      const rOpen = !collapsedRegions.has(g.region);
+      const reg = el('div',{class:'rw-region'});
+      reg.appendChild(el('div',{class:'rw-region-head', onclick:()=>{ rOpen ? collapsedRegions.add(g.region) : collapsedRegions.delete(g.region); rerender(); }},
+        triBox(regionDiffs),
+        el('span',{class:'rw-region-name'}, g.region),
+        el('span',{class:'rw-count'}, g.codes.length+(g.codes.length===1?' country':' countries')+' · '+regionDiffs.length+(regionDiffs.length===1?' lane':' lanes')),
+        ready ? diffTags(regionDiffs) : null,
+        el('span',{class:'rw-chev'+(rOpen?' open':''), html:icon('chevDown')})));
+      if(rOpen){
+        g.codes.forEach(code => {
+          const c = COUNTRIES.find(x => x.code === code);
+          const cDiffs = regionDiffs.filter(d => d.r.code === code);
+          const cOpen = expanded.has(code);
+          const ctry = el('div',{class:'rw-country'});
+          ctry.appendChild(el('div',{class:'rw-country-head', onclick:()=>{ cOpen ? expanded.delete(code) : expanded.add(code); rerender(); }},
+            triBox(cDiffs),
+            el('span',{class:'rw-flag'}, c.flag),
+            el('span',{class:'rw-country-name'}, c.name),
+            el('span',{class:'rw-count'}, cDiffs.length+(cDiffs.length===1?' lane':' lanes')),
+            ready ? diffTags(cDiffs) : null,
+            el('span',{class:'rw-chev'+(cOpen?' open':''), html:icon('chevDown')})));
+          if(cOpen){
+            const lanes = el('div',{class:'rw-lanes'});
+            cDiffs.forEach(d => {
+              if(draft.hideUnchanged && d.status === 'same') return;
+              const on = selected.has(d.r.id);
+              const r = d.r;
+              const lane = el('div',{class:'rw-lane '+d.status+(on?' on':'')},
+                el('button',{class:'rw-check'+(on?' all':'')+(d.selectable?'':' disabled'), type:'button', ...(d.selectable ? {} : { disabled:'disabled' }), onclick:()=>{ on ? selected.delete(r.id) : selected.add(r.id); rerender(); }, html:icon('check')}),
+                el('span',{class:'rw-lane-cfg'},
+                  el('span',{class:'rw-lane-svc'}, r.service ? r.service+(r.label ? ' · '+r.label : '') : 'Unconfigured lane'),
+                  el('span',{class:'rw-lane-carrier'}, r.carrier ? eCarrierName(r.carrier) : 'No carrier')),
+                el('span',{class:'rw-diff'},
+                  destChip(d.before, ready && on && d.status === 'override' ? 'old struck' : 'old'),
+                  ready ? el('span',{class:'rw-arrow', html:icon('arrow')}) : null,
+                  ready ? (d.after ? destChip(d.after, 'next') : el('span',{class:'rw-dest na'}, el('span',{class:'rw-dest-main'}, 'Can’t apply'), el('span',{class:'rw-dest-sub'}, 'No destination for this country'))) : null),
+                ready ? el('span',{class:'rw-tag '+(d.status==='same'?'same':d.status==='na'?'na':d.status)}, d.status==='same'?'unchanged':d.status==='na'?'n/a':d.status) : null
+              );
+              lanes.appendChild(lane);
+            });
+            ctry.appendChild(lanes);
+          }
+          reg.appendChild(ctry);
+        });
+      }
+      tree.appendChild(reg);
+    });
+    sec.appendChild(tree);
+    return sec;
+  }
+
+  function renderScroll(){
+    scroll.innerHTML = '';
+    scroll.appendChild(decisionSection());
+    scroll.appendChild(treeSection());
+  }
+
+  function renderFooter(){
+    footer.innerHTML = '';
+    const ready = decisionReady();
+    const chosen = ready ? tabState.rows.map(laneDiff).filter(d => d.selectable && selected.has(d.r.id)) : [];
+    const ov = chosen.filter(d => d.status === 'override').length;
+    footer.appendChild(el('div',{class:'rw-summary'},
+      !ready ? 'Make a decision to continue'
+        : !chosen.length ? 'No lanes selected'
+        : el('span',{}, el('b',{}, chosen.length+(chosen.length===1?' lane':' lanes')), ' will be updated',
+            ov ? el('span',{class:'rw-tag override'}, ov+' existing destination'+(ov>1?'s':'')+' overridden') : null)));
+    footer.appendChild(el('button',{class:'btn btn-ghost', type:'button', onclick:()=>closeModal(ref.o)}, 'Cancel'));
+    footer.appendChild(el('button',{class:'btn btn-primary', type:'button', ...(chosen.length ? {} : { disabled:'disabled' }), onclick:()=>{
+      const undo = chosen.map(d => ({ r:d.r, before:d.before }));
+      chosen.forEach(d => Object.assign(d.r, d.after));
+      closeModal(ref.o); rerenderE();
+      showToast('Routing decision applied to '+chosen.length+(chosen.length===1?' lane':' lanes')+(ov ? ' ('+ov+' overridden)' : '')+'.', 'Undo', ()=>{
+        undo.forEach(u => Object.assign(u.r, u.before)); rerenderE();
+      }, { tone:'ok', icon:'check' });
+    }}, 'Submit'));
+  }
+
+  card.appendChild(el('div',{class:'rw-header'},
+    el('div',{class:'modal-title'}, 'Add routing decisions'),
+    el('div',{class:'modal-sub'}, 'Decide where returns should go, pick the regions, countries or lanes to apply it to, and review the changes before submitting.'),
+    el('button',{class:'rw-close', type:'button', title:'Close', onclick:()=>closeModal(ref.o), html:icon('close')})));
+  card.appendChild(scroll);
+  card.appendChild(footer);
+  renderScroll(); renderFooter();
+  ref.o = openModal(card);
 }
 
 /* ─── destination edit modal (opened from the destination column pencil) — destination only ─── */

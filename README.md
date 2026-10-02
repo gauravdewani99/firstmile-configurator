@@ -56,6 +56,7 @@ They are selected from the landing page. `state.variant` holds the active one.
 
 | Key | Name | What it is |
 |-----|------|-----------|
+| `M` | **MyRebound FM MVP + Routing Decisions** | Copy of L without Postal Product / Parcel Type / Legacy Sync, plus a Destination column, editable **Warehouse profiles** (seeded *Local* + *ERC*) and an **Add routing decisions** wizard: pick DTW (profile) / DTR (client facility) / DTP (partner), tick region → country → lane in a diff view (overrides flagged amber), submit to apply. *(Newest.)* |
 | `G` | **Tabular 2** | Single-select return service & label → **one row per country**; a "+" adds extra configs per country. *(Current hero.)* |
 | `F` | **Manisha Tabular** | Tabular with a **Postal Product** column and a **Custom Routing Rules** section. |
 | `E` | **Tabular 1** | Multi-select return service & label → one row per country × service×label combo; fine-tune each lane. |
