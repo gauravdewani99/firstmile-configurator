@@ -957,7 +957,7 @@ tr.lane-row.unavail:hover{background:transparent}
 .rw-lane{display:grid;grid-template-columns:18px minmax(150px,1fr) minmax(0,2fr) 84px;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--border-soft);border-radius:9px;background:#fff}
 .rw-lane.on{border-color:var(--brand-2);background:var(--brand-soft)}
 .rw-lane.override.on{border-color:#F59E0B;background:#FFFBEB}
-.rw-lane.same,.rw-lane.na{opacity:.6}
+.rw-lane.na{opacity:.6}
 .rw-lane-cfg{display:flex;flex-direction:column;min-width:0}
 .rw-lane-svc{font-size:12.5px;font-weight:600;color:var(--text)}
 .rw-lane-carrier{font-size:11px;color:var(--muted)}
@@ -7173,7 +7173,7 @@ function openRoutingWizard(opts){
   function laneDiff(r){
     const before = rdLaneDest(r), after = decisionReady() ? proposed(r) : null;
     const status = !after ? 'na' : !before.destType ? 'new' : rdDestKey(before) === rdDestKey(after) ? 'same' : 'override';
-    return { r, before, after, status, selectable: status === 'new' || status === 'override' };
+    return { r, before, after, status, selectable: status !== 'na' };   // unchanged lanes stay tickable — re-applying is a no-op
   }
 
   function rerender(){ const top = scroll.scrollTop; renderScroll(); renderFooter(); scroll.scrollTop = top; }
@@ -7359,7 +7359,7 @@ function openRoutingWizard(opts){
   function renderFooter(){
     footer.innerHTML = '';
     const ready = decisionReady();
-    const chosen = ready ? tabState.rows.map(laneDiff).filter(d => d.selectable && selected.has(d.r.id)) : [];
+    const chosen = ready ? tabState.rows.map(laneDiff).filter(d => d.selectable && d.status !== 'same' && selected.has(d.r.id)) : [];   // ticked-but-unchanged lanes need no write
     const ov = chosen.filter(d => d.status === 'override').length;
     footer.appendChild(el('div',{class:'rw-summary'},
       !ready ? 'Make a decision to continue'
