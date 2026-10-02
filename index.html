@@ -983,6 +983,48 @@ tr.lane-row.unavail:hover{background:transparent}
 .rw-summary b{color:var(--text)}
 .rw-summary .rw-tag{margin-left:8px;text-transform:none}
 .rw-footer .btn[disabled]{opacity:.5;cursor:not-allowed}
+.rw-card{width:min(1240px,calc(100vw - 36px));height:90vh;max-height:90vh}
+.rw-scroll{padding:0;display:flex;flex-direction:column;min-height:0}
+.rw-cols{display:grid;grid-template-columns:330px minmax(0,1fr);flex:1;min-height:0}
+.rw-left{border-right:1px solid var(--border-soft);overflow-y:auto;padding:18px 20px 22px;background:#FCFCFD}
+.rw-right{overflow-y:auto;padding:18px 24px 22px}
+.rw-left .opt-list{display:flex;flex-direction:column;gap:6px}
+.rw-left .opt{padding:9px 12px}
+.rw-left .q-title,.rw-right .q-title{font-size:14px}
+.rw-chips{display:flex;flex-wrap:wrap;gap:6px}
+.rw-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1.5px solid var(--border);border-radius:16px;background:#fff;font-size:12px;font-weight:600;color:var(--text);cursor:pointer}
+.rw-chip:hover{border-color:var(--brand-2)}
+.rw-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.rw-chip-ic{display:inline-flex}.rw-chip-ic svg{width:14px;height:14px}
+.rw-plist{display:flex;flex-direction:column;border:1.5px solid var(--border);border-radius:var(--r-md);overflow:hidden;background:#fff}
+.rw-prow{display:grid;grid-template-columns:18px 1fr;column-gap:10px;align-items:center;text-align:left;padding:8px 12px;border:none;background:#fff;cursor:pointer}
+.rw-prow+.rw-prow{border-top:1px solid var(--border-soft)}
+.rw-prow:hover{background:#FAFBFC}
+.rw-prow.on{background:var(--brand-soft)}
+.rw-prow.on .opt-radio{border-color:var(--brand);box-shadow:inset 0 0 0 4px var(--brand)}
+.rw-prow-name{font-size:12.5px;font-weight:700;color:var(--text)}
+.rw-prow-meta{grid-column:2;font-size:11px;color:var(--muted)}
+.rw-lane{grid-template-columns:18px minmax(150px,1fr) minmax(0,2fr) 84px}
+.rw-lane.idle{opacity:.85}
+.rw-lane.idle .rw-dest{background:transparent;padding-left:0}
+.rw-lane.idle .rw-dest-main{color:var(--muted);font-weight:600}
+@media (max-width:860px){.rw-card{height:auto}.rw-cols{grid-template-columns:1fr}.rw-left{border-right:none;border-bottom:1px solid var(--border-soft)}}
+.dp-pop{position:fixed;z-index:1200;width:300px;max-height:min(440px,70vh);display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.16)}
+.dp-head{padding:10px 14px;border-bottom:1px solid var(--border-soft);font-size:12.5px;font-weight:700;color:var(--text);display:flex;flex-direction:column}
+.dp-head-sub{font-size:11px;font-weight:500;color:var(--muted)}
+.dp-body{overflow-y:auto;padding:4px 0}
+.dp-group+.dp-group{border-top:1px solid var(--border-soft)}
+.dp-group-head{display:flex;align-items:center;gap:6px;padding:8px 14px 4px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--dim)}
+.dp-group-ic{display:inline-flex}.dp-group-ic svg{width:12px;height:12px}
+.dp-item{position:relative;display:flex;flex-direction:column;width:100%;text-align:left;padding:6px 34px 6px 14px;border:none;background:none;cursor:pointer}
+.dp-item:hover{background:var(--border-soft)}
+.dp-item.on{background:var(--brand-soft)}
+.dp-item-main{font-size:12.5px;font-weight:600;color:var(--text)}
+.dp-item-sub{font-size:11px;color:var(--muted)}
+.dp-item-check{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--brand);display:inline-flex}.dp-item-check svg{width:14px;height:14px}
+.dp-foot{border-top:1px solid var(--border-soft);padding:6px 8px}
+.dp-clear{width:100%;padding:6px;border:none;background:none;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;border-radius:6px}
+.dp-clear:hover{background:#FEF2F2}
 @media (max-width:720px){.rw-lane{grid-template-columns:18px 1fr}.rw-diff,.rw-lane>.rw-tag{grid-column:2}.rw-lanes{padding-left:14px}.rw-country-head{padding-left:24px}.rw-legend{margin-left:0}}
 .whp-card{width:min(860px,calc(100vw - 36px));max-height:90vh;display:flex;flex-direction:column}
 .whp-body{display:grid;grid-template-columns:200px 1fr;gap:18px;min-height:0;flex:1;overflow:hidden}
@@ -6489,7 +6531,7 @@ function eRow(r, prio){
         el('span',{class:'dest-wrap'},
           el('span',{class:'dest-ic-slot', html:di.iconHtml}),
           el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
-          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=> eRouting() ? openRoutingWizard({ laneIds:[r.id] }) : openDestinationModal(r.id), html:icon('edit')})
+          el('button',{class:'dest-edit', title:'Edit destination', onclick:e=> eRouting() ? openDestPopover(r, e.currentTarget) : openDestinationModal(r.id), html:icon('edit')})
         )
       ));
     }
@@ -6527,7 +6569,7 @@ function eRow(r, prio){
         el('span',{class:'dest-wrap'},
           el('span',{class:'dest-ic-slot', html:di.iconHtml}),
           el('span',{class:'dest-meta'}, el('span',{class:'dest-city'}, di.city), el('span',{class:'dest-sub'}, di.sub)),
-          el('button',{class:'dest-edit', title:'Edit destination', onclick:()=> eRouting() ? openRoutingWizard({ laneIds:[r.id] }) : openDestinationModal(r.id), html:icon('edit')})
+          el('button',{class:'dest-edit', title:'Edit destination', onclick:e=> eRouting() ? openDestPopover(r, e.currentTarget) : openDestinationModal(r.id), html:icon('edit')})
         )
       ));
     }
@@ -7030,6 +7072,65 @@ function rdDescribe(d){
   return { text:'—', sub:'' };
 }
 
+function rdPartnersFor(cat){
+  const by = {};
+  dtpEntriesFor(cat).forEach(e => { const p = (by[e.partner] = by[e.partner] || { partner:e.partner, regions:new Set(), specs:new Set() }); p.regions.add(e.region); if(e.spec) p.specs.add(e.spec); });
+  return Object.values(by);
+}
+
+/* ─── variant M: single-lane destination popover (lighter than the wizard for one change) ─── */
+let _destPop = null;
+function closeDestPopover(){ if(_destPop){ _destPop.remove(); document.removeEventListener('mousedown', _destPop._out, true); window.removeEventListener('scroll', _destPop._sc, true); _destPop = null; } }
+function openDestPopover(r, anchor){
+  const reopen = _destPop && _destPop._lane === r.id; closeDestPopover(); if(reopen) return;
+  const cur = rdDestKey(rdLaneDest(r));
+  const pop = el('div',{class:'dp-pop'});
+  pop._lane = r.id;
+  function apply(next){
+    const before = rdLaneDest(r);
+    closeDestPopover();
+    if(rdDestKey(before) === rdDestKey(next)) return;
+    Object.assign(r, next); rerenderE();
+    const c = COUNTRIES.find(x => x.code === r.code);
+    showToast((c ? c.name+' · ' : '')+(r.service||'Lane')+': '+(next.destType ? rdDescribe(next).text : 'destination cleared')+'.', 'Undo', ()=>{ Object.assign(r, before); rerenderE(); }, { tone:'ok', icon:'check' });
+  }
+  function item(d, main, sub){
+    const on = rdDestKey(d) === cur;
+    return el('button',{class:'dp-item'+(on?' on':''), type:'button', onclick:()=>apply(d)},
+      el('span',{class:'dp-item-main'}, main), sub ? el('span',{class:'dp-item-sub'}, sub) : null,
+      on ? el('span',{class:'dp-item-check', html:icon('check')}) : null);
+  }
+  function group(title, ic, items){
+    items = items.filter(Boolean); if(!items.length) return null;
+    return el('div',{class:'dp-group'}, el('div',{class:'dp-group-head'}, el('span',{class:'dp-group-ic', html:icon(ic)}), title), ...items);
+  }
+  const c = COUNTRIES.find(x => x.code === r.code);
+  pop.appendChild(el('div',{class:'dp-head'}, (c ? c.flag+' '+c.name : r.code), el('span',{class:'dp-head-sub'}, r.service ? r.service+(r.label ? ' · '+r.label : '') : 'Lane')));
+  const body = el('div',{class:'dp-body'});
+  const add = g => g && body.appendChild(g);
+  add(group('ReBound Warehouse', 'warehouse', tabState.whProfiles.map(p => {
+    const wh = p.map[r.code]; if(!wh) return null;
+    return item({ destType:'DTW', dtwType:p.id, warehouse:wh, addressId:null, partner:null }, p.name, whCity(wh));
+  })));
+  add(group('Client facility', 'building', tabState.addresses.filter(a => a.city.trim() && a.countryCode).map(a => {
+    const ac = ADDRESS_COUNTRY_BY_CODE[a.countryCode];
+    return item({ destType:'DTR', dtwType:null, warehouse:null, addressId:a.id, partner:null }, (ac ? ac.flag+' ' : '')+a.city, a.company || (ac && ac.name));
+  })));
+  DTP_CATEGORIES.forEach(cat => add(group('Partners · '+cat, 'partners', rdPartnersFor(cat).map(e =>
+    item({ destType:'DTP', dtwType:null, warehouse:null, addressId:null, partner:e.partner }, e.partner, [...e.regions].join(', '))))));
+  pop.appendChild(body);
+  if(r.destType) pop.appendChild(el('div',{class:'dp-foot'}, el('button',{class:'dp-clear', type:'button', onclick:()=>apply({ destType:null, dtwType:null, warehouse:null, addressId:null, partner:null })}, 'Clear destination')));
+  document.body.appendChild(pop);
+  const b = anchor.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+  let top = b.bottom + 6; if(top + h > window.innerHeight - 8) top = Math.max(8, b.top - h - 6);
+  pop.style.top = top+'px'; pop.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, b.right - w))+'px';
+  pop._out = e => { if(!pop.contains(e.target) && !anchor.contains(e.target)) closeDestPopover(); };
+  pop._sc = e => { if(!pop.contains(e.target)) closeDestPopover(); };
+  document.addEventListener('mousedown', pop._out, true);
+  window.addEventListener('scroll', pop._sc, true);
+  _destPop = pop;
+}
+
 function openRoutingWizard(opts){
   opts = opts || {};
   const preset = (opts.laneIds || []).map(id => tabState.rows.find(r => r.id === id)).filter(Boolean);
@@ -7126,29 +7227,19 @@ function openRoutingWizard(opts){
 
     if(draft.destType === 'DTP'){
       sec.appendChild(el('div',{class:'q-mini-label rw-mini'}, 'Partner category'));
-      const cats = el('div',{class:'cat-tile-grid'});
-      DTP_CATEGORIES.forEach(cat => cats.appendChild(el('button',{class:'cat-tile'+(draft.dtpCategory===cat?' active':''), type:'button', onclick:()=>{ draft.dtpCategory = cat; draft.partner = null; rerender(); }},
-        el('span',{class:'cat-tile-ic', html:categoryIcon(cat)}),
-        el('span',{class:'cat-tile-name'}, cat),
-        el('span',{class:'cat-check', html:icon('check')})
-      )));
+      const cats = el('div',{class:'rw-chips'});
+      DTP_CATEGORIES.forEach(cat => cats.appendChild(el('button',{class:'rw-chip'+(draft.dtpCategory===cat?' on':''), type:'button', onclick:()=>{ draft.dtpCategory = cat; draft.partner = null; rerender(); }},
+        el('span',{class:'rw-chip-ic', html:categoryIcon(cat)}), cat)));
       sec.appendChild(cats);
       if(draft.dtpCategory){
         sec.appendChild(el('div',{class:'q-mini-label rw-mini'}, 'Select a partner'));
-        const grid = el('div',{class:'partner-grid'});
-        // partners serve any pickup country — the region tag is only where the partner is located
-        const byPartner = {};
-        dtpEntriesFor(draft.dtpCategory).forEach(e => { (byPartner[e.partner] = byPartner[e.partner] || { partner:e.partner, regions:new Set(), specs:new Set() }); byPartner[e.partner].regions.add(e.region); if(e.spec) byPartner[e.partner].specs.add(e.spec); });
-        Object.values(byPartner).forEach(e => {
-          const tags = el('div',{class:'opt-tags'});
-          e.regions.forEach(rg => tags.appendChild(el('span',{class:'opt-tag region', title:'Partner location'}, rg)));
-          e.specs.forEach(sp => tags.appendChild(el('span',{class:'opt-tag spec'}, sp)));
-          grid.appendChild(el('button',{class:'partner-card'+(draft.partner===e.partner?' active':''), type:'button', onclick:()=>{ draft.partner = e.partner; rerender(); }},
-            el('span',{class:'partner-card-ic', html:icon('partners')}),
-            el('span',{class:'partner-card-name'}, e.partner),
-            tags));
-        });
-        sec.appendChild(grid);
+        const list = el('div',{class:'rw-plist'});
+        // partners serve any pickup country — the region is only where the partner is located
+        rdPartnersFor(draft.dtpCategory).forEach(e => list.appendChild(el('button',{class:'rw-prow'+(draft.partner===e.partner?' on':''), type:'button', onclick:()=>{ draft.partner = e.partner; rerender(); }},
+          el('span',{class:'opt-radio'}),
+          el('span',{class:'rw-prow-name'}, e.partner),
+          el('span',{class:'rw-prow-meta', title:'Partner location'}, [...e.regions].join(', ')+(e.specs.size ? ' · '+[...e.specs].join(', ') : '')))));
+        sec.appendChild(list);
       }
     }
     return sec;
@@ -7166,7 +7257,9 @@ function openRoutingWizard(opts){
     }, html:icon('check')});
   }
   function diffTags(diffs){
-    const n = diffs.filter(d => d.status === 'new').length, o = diffs.filter(d => d.status === 'override').length, s = diffs.filter(d => d.status === 'same').length;
+    // count only ticked lanes, so a region doesn't shout "80 overrides" before anything is chosen
+    const picked = diffs.filter(d => selected.has(d.r.id));
+    const n = picked.filter(d => d.status === 'new').length, o = picked.filter(d => d.status === 'override').length, s = 0;
     return el('span',{class:'rw-tags'},
       n ? el('span',{class:'rw-tag new'}, n+' new') : null,
       o ? el('span',{class:'rw-tag override'}, o+' override'+(o>1?'s':'')) : null,
@@ -7230,16 +7323,18 @@ function openRoutingWizard(opts){
               if(draft.hideUnchanged && d.status === 'same') return;
               const on = selected.has(d.r.id);
               const r = d.r;
-              const lane = el('div',{class:'rw-lane '+d.status+(on?' on':'')},
+              const lane = el('div',{class:'rw-lane '+(on || d.status==='same' || d.status==='na' ? d.status : 'idle')+(on?' on':'')},
                 el('button',{class:'rw-check'+(on?' all':'')+(d.selectable?'':' disabled'), type:'button', ...(d.selectable ? {} : { disabled:'disabled' }), onclick:()=>{ on ? selected.delete(r.id) : selected.add(r.id); rerender(); }, html:icon('check')}),
                 el('span',{class:'rw-lane-cfg'},
                   el('span',{class:'rw-lane-svc'}, r.service ? r.service+(r.label ? ' · '+r.label : '') : 'Unconfigured lane'),
                   el('span',{class:'rw-lane-carrier'}, r.carrier ? eCarrierName(r.carrier) : 'No carrier')),
+                // unselected lanes only show where they go today — the diff + badge appear once the lane is ticked
                 el('span',{class:'rw-diff'},
                   destChip(d.before, ready && on && d.status === 'override' ? 'old struck' : 'old'),
-                  ready ? el('span',{class:'rw-arrow', html:icon('arrow')}) : null,
-                  ready ? (d.after ? destChip(d.after, 'next') : el('span',{class:'rw-dest na'}, el('span',{class:'rw-dest-main'}, 'Can’t apply'), el('span',{class:'rw-dest-sub'}, 'No destination for this country'))) : null),
-                ready ? el('span',{class:'rw-tag '+(d.status==='same'?'same':d.status==='na'?'na':d.status)}, d.status==='same'?'unchanged':d.status==='na'?'n/a':d.status) : null
+                  ready && on ? el('span',{class:'rw-arrow', html:icon('arrow')}) : null,
+                  ready && on ? destChip(d.after, 'next') : null,
+                  ready && d.status === 'na' ? el('span',{class:'rw-dest na'}, el('span',{class:'rw-dest-main'}, 'Can’t apply'), el('span',{class:'rw-dest-sub'}, 'No destination for this country')) : null),
+                ready && (on || d.status === 'na' || d.status === 'same') ? el('span',{class:'rw-tag '+(d.status==='same'?'same':d.status==='na'?'na':d.status)}, d.status==='same'?'unchanged':d.status==='na'?'n/a':d.status) : el('span',{})
               );
               lanes.appendChild(lane);
             });
@@ -7256,8 +7351,9 @@ function openRoutingWizard(opts){
 
   function renderScroll(){
     scroll.innerHTML = '';
-    scroll.appendChild(decisionSection());
-    scroll.appendChild(treeSection());
+    scroll.appendChild(el('div',{class:'rw-cols'},
+      el('div',{class:'rw-left'}, decisionSection()),
+      el('div',{class:'rw-right'}, treeSection())));
   }
 
   function renderFooter(){
