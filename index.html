@@ -7295,7 +7295,10 @@ function openRoutingWizard(opts){
     const codes = COUNTRIES.map(c => c.code).filter(code => tabState.rows.some(r => r.code === code));
     const tree = el('div',{class:'rw-tree'});
     eRegionGroups(codes).forEach(g => {
+      // "hide unchanged" also drops countries/regions where nothing would change — countries start collapsed, so filtering lanes alone looked like a no-op
+      const hideC = code => draft.hideUnchanged && ready && allDiffs.filter(d => d.r.code === code).every(d => d.status === 'same');
       const regionDiffs = allDiffs.filter(d => g.codes.includes(d.r.code));
+      if(g.codes.every(hideC)) return;
       const rOpen = !collapsedRegions.has(g.region);
       const reg = el('div',{class:'rw-region'});
       reg.appendChild(el('div',{class:'rw-region-head', onclick:()=>{ rOpen ? collapsedRegions.add(g.region) : collapsedRegions.delete(g.region); rerender(); }},
@@ -7306,6 +7309,7 @@ function openRoutingWizard(opts){
         el('span',{class:'rw-chev'+(rOpen?' open':''), html:icon('chevDown')})));
       if(rOpen){
         g.codes.forEach(code => {
+          if(hideC(code)) return;
           const c = COUNTRIES.find(x => x.code === code);
           const cDiffs = regionDiffs.filter(d => d.r.code === code);
           const cOpen = expanded.has(code);
