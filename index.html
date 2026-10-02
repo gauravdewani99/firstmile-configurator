@@ -1672,16 +1672,23 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 /* ─── scrollbar ─── */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-/* variant M: L minus Postal Product / Parcel Type / Legacy Sync, plus Destination after Label Option —
-   Priority · Return service · Label Option · Destination · Carrier · Lane type · delete */
+/* variant M: Priority · Return service · Label Option · Label format · Destination · Carrier · Lane type · Contract · delete */
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(2),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(2){width:140px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(3),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(3){width:160px}
 body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(4),
-body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(4){width:200px}
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(4){width:120px}
 body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(5),
-body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(5){width:230px}
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(5){width:200px}
 body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(6),
-body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(6){width:140px}
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(6){width:230px}
 body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(7),
-body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(7){width:48px}
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(7){width:140px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(8),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(8){width:190px}
+body[data-variant="M"] .config-table.compact.mvp-table th:nth-child(9),
+body[data-variant="M"] .config-table.compact.mvp-table td:nth-child(9){width:48px}
 </style>
 </head>
 <body data-view="landing">
@@ -2884,6 +2891,7 @@ function makeERow(code, service, label){
     carrier,
     carriers: ePoc() ? eSeedCarrierRows(code, service, label) : eManual() ? (av.length ? [{ id:av[0].id, pp:null, ppId:null }] : []) : av.map(c => c.id),   // J: auto-seeded carrier×postal-product entries. I: seed the first available carrier as P1 default (like other views' av[0]); user adds/reassigns via dropdown.
     laneType:'managed', contract: eDefaultContract(carrier),
+    labelFormat: 'PDF',
     postalProduct: null,
     priority: 0,          // First Mile - MVP Ready lane priority; 0 = none, only used when a country has >1 lane
     custom:false,
@@ -4520,7 +4528,8 @@ function buildTabJson(){
         ...(mvp && !eRouting() ? {} : { destination: tabLaneDestJson(r) }),
         laneType: r.laneType,
         carrier: mvp ? eCarrierName(r.carrier) : r.carrier,
-        ...(mvp ? {} : { contract: r.contract || null }),
+        ...(mvp && !eRouting() ? {} : { contract: r.contract || null }),
+        ...(eRouting() ? { labelFormat: r.service === 'Self-post' ? null : (r.labelFormat || 'PDF') } : {}),
         ...(eRouting() ? {} : { postalProduct: r.postalProduct || null }),
         ...(eLegacy() && !eRouting() ? { parcelType: eParcelType(r), legacySync: r.sync || 'Synced' } : {}),
         serviceable: eCarriersFor(r.code, r.service, r.label).length > 0,
@@ -6058,6 +6067,9 @@ function eLaneToggle(r){
 }
 
 /* contract cell — managed → dropdown of ReBound contracts; saas → free text */
+const LABEL_FORMATS = ['PDF','ZPL','PNG'];
+
+/* contract cell */
 function eContractCell(r){
   if(r.laneType === 'managed'){
     const opts = (MANAGED_CONTRACTS[r.carrier]||[]).map(x => ({value:x, text:x}));
@@ -6522,6 +6534,8 @@ function eRow(r, prio){
   if(isSelfPost){
     // Return Label — not applicable
     tr.appendChild(naCell());
+    // Label format (M) — not applicable
+    if(eRouting()) tr.appendChild(naCell());
     // Priority (First Mile - MVP Ready)
     if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
     // Return Destination (hidden for First Mile - MVP Ready; shown again in M)
@@ -6539,8 +6553,8 @@ function eRow(r, prio){
     tr.appendChild(naCell());
     // Lane Type — not applicable
     tr.appendChild(naCell());
-    // Contract — not applicable (hidden for First Mile - MVP Ready)
-    if(!eMvp()) tr.appendChild(naCell());
+    // Contract — not applicable (hidden for First Mile - MVP Ready, shown again in M)
+    if(!eMvp() || eRouting()) tr.appendChild(naCell());
     // Postal Product
     if(!eRouting()){
       const spPp = el('td',{class:'pp-td'+(eMyr()?'':' carrier-cell')}, ppCombobox(r));
@@ -6559,6 +6573,8 @@ function eRow(r, prio){
     tr.appendChild(el('td',{}, eLegacy()
       ? eRowLabelCell(r)
       : (r.label ? el('span',{class:'cell-svc'}, el('span',{class:'cell-svc-ic', html:labelIcon(r.label)}), r.label) : el('span',{class:'cell-dim'}, 'N/A'))));
+    // Label format (M) — kept in sync with MyRB's label formats
+    if(eRouting()) tr.appendChild(el('td',{}, eSelect(r.labelFormat || 'PDF', LABEL_FORMATS.map(x => ({value:x, text:x})), v => { r.labelFormat = v || 'PDF'; rerenderE(); })));
 
     // Priority (First Mile - MVP Ready)
     if(eMvp() && prio) tr.appendChild(ePrioCell(r, prio));
@@ -6596,7 +6612,7 @@ function eRow(r, prio){
     if(!eMyr()) carrierCell.appendChild(el('button',{class:'row-del', title:'Remove this service × label for this country', onclick:()=>tabDeleteCombo(r.id), html:icon('trash')}));
     tr.appendChild(carrierCell);
     tr.appendChild(el('td',{}, eLaneToggle(r)));
-    if(!eMvp()) tr.appendChild(el('td',{}, eContractCell(r)));
+    if(!eMvp() || eRouting()) tr.appendChild(el('td',{}, eContractCell(r)));
 
     if(!eRouting()){
       const ppCell = el('td',{class:'pp-td'+((eMvp() && !eMyr())?' carrier-cell':'')});
@@ -6847,11 +6863,12 @@ function eCardTable(locked){
     : [...(eLegacy() ? [el('th',{class:'th-rank'},'Priority')] : []),
        ...(eLegacy() ? [eFilterHeader('Return service', 'service', availableServices.sort())] : [el('th',{},'Return service')]),
        ...(eLegacy() ? [eFilterHeader('Label Option', 'label', availableLabels.sort())] : [el('th',{}, eMvp() ? 'Label Option' : 'Return label')]),
+       ...(eRouting() ? [el('th',{},'Label format')] : []),
        ...(prioOn ? [el('th',{},'Priority')] : []),
        ...(eMvp() && !eRouting() ? [] : [el('th',{},'Destination')]),
        ...(eLegacy() ? [eFilterHeader('Carrier', 'carrier', availableCarriers.sort())] : [el('th',{class:'th-carrier'},'Carrier')]),
        ...(eLegacy() ? [eFilterHeader('Lane type', 'laneType', availableLaneTypes.sort())] : [el('th',{},'Lane type')]),
-       ...(eMvp() ? [] : [el('th',{},'Contract')]),
+       ...(eMvp() && !eRouting() ? [] : [el('th',{},'Contract')]),
        ...(eRouting() ? [] : eLegacy() ? [eFilterHeader('Postal Product', 'postalProduct', availablePostalProducts.sort())] : [el('th',{class:'th-pp'},'Postal Product')]),
        ...(eLegacy() && !eRouting() ? [eFilterHeader('Parcel Type', 'parcelType', availableParcelTypes.sort()), eFilterHeader('Legacy Sync', 'legacySync', availableLegacySyncs.sort())] : [])];
   if(showAddBtn) headerCols.push(el('th',{class:'th-add-col'}));
@@ -6915,7 +6932,7 @@ function eCardTable(locked){
   }
   if((eManual() || eMvp()) && tabState.reviewCountries.length) codes = codes.filter(code => tabState.reviewCountries.includes(code));
 
-  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eRouting() ? 1 : eLegacy() ? 3 : 0) : 7;
+  const baseCols = eManual() ? 4 : eRanked() ? 5 : eMvp() ? (prioOn ? 6 : 5) + (eRouting() ? 3 : eLegacy() ? 3 : 0) : 7;
   const colCount = showAddBtn ? baseCols + 1 : baseCols;
   if(!codes.length){
     body.appendChild(el('div',{class:'info-banner blue', style:{marginBottom:'0'}},
