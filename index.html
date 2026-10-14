@@ -155,6 +155,10 @@ a{color:inherit;text-decoration:none}
 .variant-icon.j{background:#FEFCE8;color:#CA8A04}
 .variant-icon.g{background:#EFF6FF;color:#2563EB}
 .variant-icon.i{background:#ECFEFF;color:#0891B2}
+.variant-icon.k{background:#F5F3FF;color:#7C3AED}
+.variant-icon.h{background:#F0F9FF;color:#0284C7}
+.variant-icon.l{background:#FFF1F2;color:#E11D48}
+.variant-icon.f{background:#FFFBEB;color:#D97706}
 .variant-info{flex:1;min-width:0}
 .variant-name{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--text);margin-bottom:2px;text-align:left;display:flex;align-items:center;gap:8px}
 .vtag{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:18px;padding:0 5px;border-radius:5px;background:var(--brand-soft);color:var(--brand);font-size:10.5px;font-weight:800;letter-spacing:.3px;flex-shrink:0}
@@ -1907,15 +1911,6 @@ body:is([data-variant="N"],[data-variant="O"]) .config-table.compact.mvp-table :
       <div class="landing-new">
         <div class="col-label">Create a new flow</div>
 
-        <button class="primary-card" onclick="startVariant('K')">
-          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
-          <span class="pc-info">
-            <span class="pc-name">MyRebound FM MVP <span class="pc-badge">MVP Ready</span></span>
-            <span class="pc-desc">MyRebound FM MVP-ready build — one return service &amp; label, one row per country; add extra carriers/configs per country as needed.</span>
-          </span>
-          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-        </button>
-
         <button class="primary-card" onclick="startVariant('M')">
           <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6h7"/><path d="M6 8.5v4a5.5 5.5 0 0 0 5.5 5.5h4"/></svg></span>
           <span class="pc-info">
@@ -1943,72 +1938,65 @@ body:is([data-variant="N"],[data-variant="O"]) .config-table.compact.mvp-table :
           <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
         </button>
 
-        <button class="primary-card" onclick="startVariant('L')">
-          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/><path d="M15 15l3 3"/><circle cx="16" cy="16" r="3"/></svg></span>
-          <span class="pc-info">
-            <span class="pc-name">MyRebound FM MVP + Legacy Sync <span class="pc-badge">POC</span></span>
-            <span class="pc-desc">Exact copy of MyRebound FM MVP, plus the FM → legacy back-propagation additions: a generated Parcel Type per lane, a Legacy Sync status, and a one-click "Add all configuration".</span>
-          </span>
-          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-        </button>
-
-        <button class="primary-card" onclick="startVariant('H')">
-          <span class="pc-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
-          <span class="pc-info">
-            <span class="pc-name">First Mile - MVP Ready <span class="pc-badge">MVP Ready</span></span>
-            <span class="pc-desc">MVP-ready build based on Tabular 2 — one return service &amp; label, one row per country; add extra configs per country as needed.</span>
-          </span>
-          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-        </button>
-
-        <button class="primary-card" onclick="startVariant('F')">
-          <span class="pc-icon alt"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
-          <span class="pc-info">
-            <span class="pc-name">Manisha Tabular</span>
-            <span class="pc-desc">Tabular with postal products and custom routing rules.</span>
-          </span>
-          <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
-        </button>
-
         <div class="legacy-section">
           <div class="legacy-head"><span class="legacy-title">Earlier versions</span></div>
           <div class="legacy-stack">
-            <button class="legacy-card" style="--depth:0" onclick="startVariant('I')">
+            <button class="legacy-card" style="--depth:0" onclick="startVariant('K')">
+              <span class="variant-icon k"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+              <span class="variant-info"><span class="variant-name"><span class="vtag">MVP</span>MyRebound FM MVP</span><span class="variant-desc">MVP-ready build — one return service &amp; label, one row per country; add extra carriers/configs per country as needed.</span></span>
+              <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </button>
+            <button class="legacy-card" style="--depth:1" onclick="startVariant('H')">
+              <span class="variant-icon h"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+              <span class="variant-info"><span class="variant-name"><span class="vtag">MVP</span>First Mile - MVP Ready</span><span class="variant-desc">MVP-ready build based on Tabular 2 — one return service &amp; label, one row per country; add extra configs per country as needed.</span></span>
+              <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </button>
+            <button class="legacy-card" style="--depth:2" onclick="startVariant('L')">
+              <span class="variant-icon l"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/><path d="M15 15l3 3"/><circle cx="16" cy="16" r="3"/></svg></span>
+              <span class="variant-info"><span class="variant-name"><span class="vtag">Legacy</span>MyRebound FM MVP + Legacy Sync</span><span class="variant-desc">Exact copy of MyRebound FM MVP, plus the FM → legacy back-propagation additions: a generated Parcel Type per lane, a Legacy Sync status, and a one-click &quot;Add all configuration&quot;.</span></span>
+              <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </button>
+            <button class="legacy-card" style="--depth:3" onclick="startVariant('F')">
+              <span class="variant-icon f"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
+              <span class="variant-info"><span class="variant-name"><span class="vtag">MT</span>Manisha Tabular</span><span class="variant-desc">Tabular with postal products and custom routing rules.</span></span>
+              <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
+            </button>
+            <button class="legacy-card" style="--depth:4" onclick="startVariant('I')">
               <span class="variant-icon i"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">POC</span>MyRebound FM POC</span><span class="variant-desc">Tabular 2 without destination, lane type or contract — pick and rank multiple carriers per country, each linked to a unique postal product.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:1" onclick="startVariant('J')">
+            <button class="legacy-card" style="--depth:5" onclick="startVariant('J')">
               <span class="variant-icon j"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">P1</span>POC Phase 1</span><span class="variant-desc">Tabular 2 trimmed to Phase 1 — return service &amp; label, one row per country, ranked carriers.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:2" onclick="startVariant('G')">
+            <button class="legacy-card" style="--depth:6" onclick="startVariant('G')">
               <span class="variant-icon g"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">T2</span>Tabular 2</span><span class="variant-desc">One return service &amp; label, one row per country — add extra configs per country as needed.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:3" onclick="startVariant('E')">
+            <button class="legacy-card" style="--depth:7" onclick="startVariant('E')">
               <span class="variant-icon e"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">T1</span>Tabular 1</span><span class="variant-desc">Multi-select service &amp; label — fine-tune every lane in a pre-filled table.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:4" onclick="startVariant('D')">
+            <button class="legacy-card" style="--depth:8" onclick="startVariant('D')">
               <span class="variant-icon d"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v4</span>Client Preferences</span><span class="variant-desc">Guided preference questions derive every lane for you.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:5" onclick="startVariant('C')">
+            <button class="legacy-card" style="--depth:9" onclick="startVariant('C')">
               <span class="variant-icon c"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v3</span>Inline Grid</span><span class="variant-desc">All lanes in one table with inline dropdowns.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:6" onclick="startVariant('B')">
+            <button class="legacy-card" style="--depth:10" onclick="startVariant('B')">
               <span class="variant-icon b"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v2</span>Carrier-First Bulk</span><span class="variant-desc">Pick a carrier first, then assign lanes to it.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
             </button>
-            <button class="legacy-card" style="--depth:7" onclick="startVariant('A')">
+            <button class="legacy-card" style="--depth:11" onclick="startVariant('A')">
               <span class="variant-icon a"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg></span>
               <span class="variant-info"><span class="variant-name"><span class="vtag">v1</span>Lane-by-Lane Stepper</span><span class="variant-desc">Configure each country one at a time.</span></span>
               <span class="variant-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
