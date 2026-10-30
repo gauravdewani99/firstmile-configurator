@@ -1580,8 +1580,6 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .wh-eye:hover{color:var(--brand);background:var(--brand-soft)}
 .wh-eye svg{width:15px;height:15px}
 .btn-save[disabled]{opacity:.45;pointer-events:none}
-.whpop-off{color:var(--red) !important}
-.whpop-off:hover{border-color:var(--red) !important;background:var(--red-soft) !important}
 
 /* variant L: everything — Return service / Label option filters, Country, Group by, and the bulk /
    setup actions — as a fixed bar of stacked rows instead of a stacked, separately-boxed panel.
@@ -5721,12 +5719,6 @@ function openWebhookModal(){
   function syncSave(){ if(saveBtn) saveBtn.toggleAttribute('disabled', !isValidWebhookUrl(wh.url)); }
 
   const actions = el('div',{class:'modal-actions'});
-  if(wasEnabled){
-    actions.appendChild(el('button',{class:'btn btn-ghost whpop-off', type:'button', onclick:()=>{
-      wh.enabled = false; closeModal(overlay); rerenderE();
-      showToast('Webhook disabled for this configuration. Your settings are kept.', null, null, {icon:'info'});
-    }}, 'Turn off webhook'));
-  }
   const spacer = el('span',{style:{flex:'1'}});
   actions.appendChild(spacer);
   actions.appendChild(el('button',{class:'btn btn-ghost', type:'button', onclick:()=>{
