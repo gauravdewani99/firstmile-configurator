@@ -1539,6 +1539,48 @@ body[data-variant="L"] .carrier-inactive-tag{margin-top:0;flex:0 0 auto;white-sp
 .fm-svc-chip{cursor:pointer;border:1.5px solid var(--border);background:var(--card);color:var(--muted);transition:all .12s}
 .fm-svc-chip:hover{border-color:var(--brand-2);color:var(--brand)}
 .fm-svc-chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+/* variant M: webhook — header chip (use a webhook for this configuration?) + setup popup */
+.wh-chip .fm-toggle{display:inline-block;margin-left:2px}
+.wh-chip-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:999px;color:var(--dim);background:var(--bg);border:1px solid var(--border)}
+.wh-chip-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--dim)}
+.wh-chip-status.partial{color:#B45309;background:var(--amber-soft);border-color:#FDE68A}
+.wh-chip-status.partial::before{background:var(--amber)}
+.wh-chip-status.on{color:#15803D;background:var(--green-soft);border-color:var(--green-ring)}
+.wh-chip-status.on::before{background:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,.16)}
+.wh-chip.on{border-color:var(--brand-2);background:var(--brand-soft)}
+/* the setup popup */
+.whpop{width:520px;max-width:calc(100vw - 40px)}
+/* endpoint url + credential fields */
+.wh-url-wrap{position:relative;display:flex;align-items:center}
+.wh-url-wrap .wh-url-ic{position:absolute;left:12px;width:15px;height:15px;color:var(--dim);pointer-events:none}
+.wh-url-wrap .wh-url-check{position:absolute;right:12px;width:16px;height:16px;color:var(--green)}
+.wh-url-wrap .wh-url-x{position:absolute;right:12px;width:16px;height:16px;color:var(--red)}
+.wh-url{width:100%;padding:11px 36px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-weight:500;color:var(--text);background:#fff;outline:none;transition:border-color .15s,box-shadow .15s;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.wh-url:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.wh-url.invalid{border-color:var(--red)}
+.wh-url.invalid:focus{box-shadow:0 0 0 3px rgba(239,68,68,.12)}
+.wh-url-msg{font-size:11.5px;font-weight:600;margin-top:6px;display:flex;align-items:center;gap:5px;min-height:16px}
+.wh-url-msg svg{width:13px;height:13px}
+.wh-url-msg.ok{color:#15803D}
+.wh-url-msg.err{color:var(--red)}
+.wh-auth-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-bottom:7px;display:block}
+.wh-auth{display:flex;gap:6px;flex-wrap:wrap}
+.wh-auth-opt{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;transition:all .13s}
+.wh-auth-opt:hover{border-color:var(--brand-2);color:var(--brand)}
+.wh-auth-opt.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.wh-auth-opt svg{width:14px;height:14px}
+.wh-cred-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.wh-cred-grid .fg-full{grid-column:1 / -1}
+@media (max-width:620px){.wh-cred-grid{grid-template-columns:1fr}}
+.wh-cred-grid .fg input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+.wh-cred-grid .fg input:focus{border-color:var(--brand-2);box-shadow:0 0 0 3px rgba(45,95,138,.12)}
+.wh-pass-wrap{position:relative;display:flex;align-items:center}
+.wh-pass-wrap input{padding-right:38px !important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.wh-eye{position:absolute;right:6px;width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--dim);cursor:pointer;background:none;border:none}
+.wh-eye:hover{color:var(--brand);background:var(--brand-soft)}
+.wh-eye svg{width:15px;height:15px}
+.btn-save[disabled]{opacity:.45;pointer-events:none}
+
 /* variant L: everything — Return service / Label option filters, Country, Group by, and the bulk /
    setup actions — as a fixed bar of stacked rows instead of a stacked, separately-boxed panel.
    Row 1 = Return service / Label option / Add all configuration (pinned top-right). Row 2 =
@@ -2746,6 +2788,7 @@ function initTabular(){
     serviceLevel:   'STANDARD', // First Mile - MVP Ready shipping pref — 'STANDARD' | 'PREMIUM'
     returnPayload:  'Parcel',   // First Mile - MVP Ready shipping pref — 'Parcel' | 'Box' | 'Pallet'
     returnFlow:     'B2C',      // MyRebound FM MVP return flow type — 'B2C' (B2B disabled)
+    webhook:        whDefaults(), // variant M: outbound webhook — choose Yes/No, then URL + credentials
     setupDone:      false,      // MyRebound FM MVP: has the "Ship First Mile · Setup" screen been completed?
     methods: {                // MyRebound FM MVP: return methods enabled on the setup screen (id -> on). B2C on by default; B2B disabled for now
       'parcel-dropoff':    true,
@@ -3265,6 +3308,10 @@ function icon(name){
     package: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
     layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
     sliders: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="4" y2="12"/><line x1="4" y1="16" x2="4" y2="22"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="20" y1="5" x2="20" y2="13"/><line x1="20" y1="17" x2="20" y2="22"/><circle cx="4" cy="14" r="2"/><circle cx="12" cy="16" r="2"/><circle cx="20" cy="15" r="2"/></svg>',
+    zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+    eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+    eyeOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="3" x2="21" y2="21"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
   };
   return icons[name] || '';
 }
@@ -4712,6 +4759,7 @@ function buildTabJson(){
     returnLabels: eNonSelfServices().length ? tabState.returnLabels : [],
     ...(mvp ? {} : { destination: tabGlobalDestJson() }),
     ...(eRouting() ? { [eRulesVariant() ? 'fmRoutingProfiles' : 'warehouseProfiles']: whStore().map(p => ({ id:p.id, name:p.name, warehouses:{...p.map} })) } : {}),
+    ...(state.variant === 'M' ? { webhook: webhookJson() } : {}),
     ...(eRulesVariant() ? { advancedRules: advRules().map((rl, i) => ({ id:rl.id, name:rl.name, priority:i + 1, conditions:{ productCategory:rl.productCategory || null, returnReason:rl.returnReason || null, sku:rl.sku || null, ean:rl.ean || null, minValue:(rl.minValue === '' || rl.minValue == null) ? null : Number(rl.minValue), maxValue:(rl.maxValue === '' || rl.maxValue == null) ? null : Number(rl.maxValue) } })) } : {}),
     ...(mvp && !eRouting() ? {} : { clientAddresses: (tabState.destination === 'DTR' || eRouting())
       ? tabState.addresses.filter(a => a.city.trim() && a.countryCode).map(a => ({ line1:a.line1, line2:a.line2 || undefined, city:a.city, postalCode:a.postal || undefined, country:a.countryCode, appliesToCountries:(a.countries||[]) }))
@@ -5555,7 +5603,145 @@ function eCardFlowType(){
   return card;
 }
 
-/* First Mile - MVP Ready: Shipping preferences pane — Service level + What are you returning?, side by side */
+/* variant M: webhook — the Yes/No choice lives in the config header as a chip; enabling it opens a
+   simple popup with just the endpoint URL and credentials. State lives on tabState.webhook, so it
+   flows into the JSON payload and saved flows. The chip shows live status: Off / Setup needed / On. */
+function whChip(){
+  const wh = whEnsure();
+  const complete = whComplete();
+  const st = !wh.enabled ? 'off' : (complete ? 'on' : 'partial');
+  const label = st === 'off' ? 'Off' : st === 'on' ? 'On' : 'Setup needed';
+  // the mini switch is the Yes/No control; the rest of the chip opens the popup
+  const switchEl = el('span',{class:'fm-toggle'+(wh.enabled?' on':''), role:'switch', 'aria-checked':String(wh.enabled), title: wh.enabled ? 'Turn the webhook off for this configuration' : 'Yes — use a webhook for this configuration',
+    onclick:e=>{
+      e.stopPropagation();
+      if(wh.enabled){
+        wh.enabled = false;
+        rerenderE();
+        showToast('Webhook disabled for this configuration. Your settings are kept.', null, null, {icon:'info'});
+      } else {
+        wh.enabled = true;
+        if(!wh.url) wh.url = 'https://';
+        rerenderE();          // repaint the chip so its status pill is honest behind the popup
+        openWebhookModal();
+      }
+    }}, el('span',{class:'fm-toggle-knob'}));
+  return el('button',{class:'csc-btn wh-chip'+(st==='on'?' on':''), type:'button', title:'Webhook for this configuration — URL and credentials',
+    onclick:()=>{ if(!wh.enabled){ wh.enabled = true; if(!wh.url) wh.url = 'https://'; } openWebhookModal(); }},
+    el('span',{class:'csc-btn-ic', html:icon('zap')}), 'Webhook',
+    el('span',{class:'wh-chip-status '+st}, label),
+    switchEl);
+}
+
+/* password / secret input with a show-hide eye; never re-renders, just flips the input type */
+function passField(type, placeholder, value, onInput){
+  const inp = el('input',{type, value:value||'', placeholder, autocomplete:'new-password',
+    oninput:e=>onInput(e.target.value)});
+  const eye = el('button',{class:'wh-eye', type:'button', title:'Show / hide', tabindex:'-1',
+    onclick:()=>{
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      eye.innerHTML = icon(show ? 'eyeOff' : 'eye');
+    }, html:icon(type === 'password' ? 'eye' : 'eyeOff')});
+  return el('span',{class:'wh-pass-wrap'}, inp, eye);
+}
+
+/* the webhook popup: endpoint URL + credentials, nothing else */
+function openWebhookModal(){
+  const wh = whEnsure();
+  const wasEnabled = wh.enabled;
+  let overlay, urlMsg, urlMark, urlInp, saveBtn;
+
+  const card = el('div',{class:'modal-card whpop'},
+    el('div',{class:'modal-title'}, 'Webhook notifications'),
+    el('div',{class:'modal-sub'}, 'Use a webhook for this configuration? Lane events will be pushed to your system the moment they happen.'));
+
+  // endpoint URL — live validated
+  const urlField = el('div',{class:'wh-field', style:{marginBottom:'16px'}});
+  urlField.appendChild(el('label',{style:{display:'block',fontSize:'11px',fontWeight:'700',textTransform:'uppercase',letterSpacing:'.5px',color:'var(--dim)',marginBottom:'6px'}}, 'Endpoint URL *'));
+  const urlWrap = el('div',{class:'wh-url-wrap'});
+  urlInp = el('input',{class:'wh-url', type:'text', placeholder:'https://api.yourcompany.com/v1/rebound-events', value:wh.url, spellcheck:'false',
+    oninput:e=>{ wh.url = e.target.value.trim(); paintUrlState(); syncSave(); }});
+  urlWrap.appendChild(el('span',{class:'wh-url-ic', html:icon('link')}));
+  urlWrap.appendChild(urlInp);
+  urlMark = el('span',{});
+  urlWrap.appendChild(urlMark);
+  urlField.appendChild(urlWrap);
+  urlMsg = el('span',{class:'wh-url-msg'});
+  urlField.appendChild(urlMsg);
+  card.appendChild(urlField);
+
+  // credentials
+  card.appendChild(el('span',{class:'wh-auth-label'}, 'Credentials'));
+  const AUTH = [
+    { v:'none',   n:'None',       ic:'info'   },
+    { v:'basic',  n:'Basic auth', ic:'client' },
+    { v:'bearer', n:'Bearer',     ic:'zap'    },
+    { v:'apikey', n:'API key',    ic:'tool'   },
+  ];
+  const authRow = el('div',{class:'wh-auth'});
+  AUTH.forEach(a => authRow.appendChild(el('button',{class:'wh-auth-opt'+(wh.authType===a.v?' on':''), type:'button',
+    onclick:()=>{ wh.authType = a.v; paintCreds(); }},
+    el('span',{html:icon(a.ic),style:{display:'flex',width:'14px',height:'14px'}}), a.n)));
+  card.appendChild(authRow);
+  const credSlot = el('div',{});
+  card.appendChild(credSlot);
+
+  function paintUrlState(){
+    const ok = isValidWebhookUrl(wh.url);
+    urlInp.classList.toggle('invalid', !!wh.url && !ok);
+    urlMark.className = ok ? 'wh-url-check' : (wh.url ? 'wh-url-x' : '');
+    urlMark.innerHTML = ok ? icon('check') : (wh.url ? icon('close') : '');
+    if(!wh.url){ urlMsg.className = 'wh-url-msg'; urlMsg.innerHTML = ''; }
+    else if(ok){ urlMsg.className = 'wh-url-msg ok'; urlMsg.innerHTML = icon('check') + ' Endpoint looks good'; }
+    else { urlMsg.className = 'wh-url-msg err'; urlMsg.innerHTML = icon('warn') + ' Enter a valid http(s) URL'; }
+  }
+  function paintCreds(){
+    [...authRow.children].forEach((b, i) => b.classList.toggle('on', AUTH[i].v === wh.authType));
+    credSlot.innerHTML = '';
+    if(wh.authType === 'none') return syncSave();
+    const grid = el('div',{class:'wh-cred-grid'});
+    const fg = (label, input, full) => el('div',{class:'fg'+(full?' fg-full':'')}, el('label',{}, label), input);
+    if(wh.authType === 'basic'){
+      grid.appendChild(fg('Username', el('input',{type:'text', value:wh.username, placeholder:'e.g. rebound-integration', autocomplete:'off',
+        oninput:e=>{ wh.username = e.target.value; }})));
+      grid.appendChild(fg('Password', passField('password', '••••••••••', wh.password, v=>{ wh.password = v; })));
+    } else if(wh.authType === 'bearer'){
+      grid.appendChild(fg('Token', passField('password', 'Paste your bearer token', wh.token, v=>{ wh.token = v; }), true));
+    } else {
+      grid.appendChild(fg('Header name', el('input',{type:'text', value:wh.keyName, placeholder:'X-API-Key',
+        oninput:e=>{ wh.keyName = e.target.value; }})));
+      grid.appendChild(fg('Key value', passField('password', 'Paste your API key', wh.keyValue, v=>{ wh.keyValue = v; })));
+    }
+    credSlot.appendChild(grid);
+  }
+
+  function syncSave(){ if(saveBtn) saveBtn.toggleAttribute('disabled', !isValidWebhookUrl(wh.url)); }
+
+  const actions = el('div',{class:'modal-actions'});
+  const spacer = el('span',{style:{flex:'1'}});
+  actions.appendChild(spacer);
+  actions.appendChild(el('button',{class:'btn btn-ghost', type:'button', onclick:()=>{
+    if(!wasEnabled) wh.enabled = false;   // cancelled the very first setup — don't leave it half-on
+    closeModal(overlay); rerenderE();
+  }}, 'Cancel'));
+  saveBtn = el('button',{class:'btn btn-primary btn-save', type:'button', onclick:()=>{
+    wh.enabled = true;
+    closeModal(overlay);
+    rerenderE();
+    showToast(wasEnabled ? 'Webhook updated for this configuration.' : 'Webhook enabled for this configuration.', null, null, {icon:'check', tone:'ok'});
+  }}, wasEnabled ? 'Save' : 'Save & enable');
+  actions.appendChild(saveBtn);
+  card.appendChild(actions);
+
+  paintUrlState();
+  paintCreds();
+  syncSave();
+  overlay = openModal(card);
+  setTimeout(()=> urlInp.focus(), 80);
+}
+
+/* First Mile - MVP Ready: Shipping preferences pane/* First Mile - MVP Ready: Shipping preferences pane/* First Mile - MVP Ready: Shipping preferences pane — Service level + What are you returning?, side by side */
 function eCardShippingPrefs(locked){
   const card = el('div',{class:'q-card'+(locked?' locked':'')},
     el('div',{class:'q-card-head'},
@@ -5943,6 +6129,7 @@ function eLegacyFeatureRow(){
       el('span',{class:'csc-btn-ic', html:icon('warehouse')}), 'Warehouse profiles'));
     actions.appendChild(el('button',{class:'csc-btn', type:'button', title:'Pick a destination and apply it to many lanes at once', onclick:()=>openRoutingWizard()},
       el('span',{class:'csc-btn-ic', html:icon('partners')}), 'Add routing decisions'));
+    if(state.variant === 'M') actions.appendChild(whChip());  // "use a webhook for this configuration?" — toggle opens the setup wizard
   }
 
   const section1 = el('div',{class:'lf-section lf-section-1'}, row1);
@@ -7494,6 +7681,45 @@ function whStore(){ return eRulesVariant() ? fmProfiles() : (tabState.whProfiles
 function whProfileById(id){ return whStore().find(p => p.id === id) || null; }
 function newProfileId(){ return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 let _whProfileSeq = 0;
+
+/* ─── variant M: webhook selection & configuration ─────────────────────────
+   The client chooses whether ReBound should push lane events to their system.
+   "No" keeps a single tidy card with a toggle. "Yes" reveals the endpoint URL
+   and credentials (Basic / Bearer / API key), with live validation and a
+   simulated test event. State lives on tabState.webhook so it flows into the
+   JSON payload and saved flows. */
+function whDefaults(){
+  return { enabled:false, url:'', authType:'none', username:'', password:'', token:'', keyName:'X-API-Key', keyValue:'' };
+}
+/* merge defaults in place, so flows saved before this feature still load cleanly */
+function whEnsure(){
+  if(!tabState.webhook || typeof tabState.webhook !== 'object') tabState.webhook = whDefaults();
+  const d = whDefaults();
+  Object.keys(d).forEach(k => { if(tabState.webhook[k] === undefined) tabState.webhook[k] = d[k]; });
+  return tabState.webhook;
+}
+function isValidWebhookUrl(u){
+  if(!u) return false;
+  try{ const p = new URL(u); return p.protocol === 'https:' || p.protocol === 'http:'; }catch(e){ return false; }
+}
+/* the card counts as done when enabled, the URL is valid, and the chosen auth method is filled in */
+function whComplete(){
+  const wh = whEnsure();
+  if(!wh.enabled || !isValidWebhookUrl(wh.url)) return false;
+  if(wh.authType === 'basic')   return !!(wh.username.trim() && wh.password);
+  if(wh.authType === 'bearer')  return !!wh.token.trim();
+  if(wh.authType === 'apikey')  return !!(wh.keyName.trim() && wh.keyValue.trim());
+  return true;
+}
+function webhookJson(){
+  const wh = whEnsure();
+  if(!wh.enabled || !isValidWebhookUrl(wh.url)) return null;  // only emit a fully-formed webhook
+  const auth = wh.authType === 'basic'  ? { type:'basic', username:wh.username, password:wh.password }
+             : wh.authType === 'bearer' ? { type:'bearer', token:wh.token }
+             : wh.authType === 'apikey' ? { type:'api-key', header:wh.keyName || 'X-API-Key', value:wh.keyValue }
+             : { type:'none' };
+  return { url: wh.url, auth };
+}
 
 /* regions → country codes, in the table's region order */
 function eRegionGroups(codes){
